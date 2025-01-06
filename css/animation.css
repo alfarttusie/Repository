@@ -1,0 +1,68 @@
+@keyframes moveAndExpand {
+  0% {
+    top: -8%;
+    width: 0.3%;
+  }
+  20% {
+    top: 5%;
+    width: 0.3%;
+  }
+  40% {
+    top: 5%;
+    width: 50%;
+  }
+  50% {
+    top: 5%;
+    width: 50%;
+  }
+  80% {
+    top: 5%;
+    width: 0.3%;
+  }
+  90% {
+    width: 0%;
+  }
+  100% {
+    top: -10vh;
+    width: 0%;
+  }
+}
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-15px);
+  }
+
+  50% {
+    transform: translateX(15px);
+  }
+
+  75% {
+    transform: translateX(-15px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes indicator {
+  100% {
+    background-position: 100% 0, 100% 100%, 0 100%, 0 0;
+  }
+}
+@keyframes MoveDown {
+  1% {
+    top: -150vh;
+    width: 0;
+  }
+  5% {
+    width: 0%;
+  }
+  100% {
+    top: 1%;
+    width: 50%;
+  }
+}

@@ -1,0 +1,66 @@
+.Key-holder {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.key-line {
+  border-radius: 8px;
+  margin: auto;
+  margin-top: -4%;
+  width: 90%;
+  height: 10%;
+  max-height: 40px;
+  animation-name: open;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+}
+.Key-holder input {
+  padding: 1%;
+  border-bottom: 1px solid wheat;
+  font-size: clamp(10px, 2.3vw, 22px);
+  text-align: center;
+  color: whitesmoke;
+  border-radius: 8px;
+  outline: none;
+  height: 100%;
+  width: 70%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.308);
+}
+.Key-holder button {
+  font-size: clamp(10px, 2.3vw, 22px);
+  font-weight: bold;
+  border-radius: 8px;
+  width: 50%;
+  max-width: 140px;
+  height: 100%;
+}
+@keyframes open {
+  0% {
+    margin-top: -4%;
+    width: 0%;
+  }
+  50% {
+    margin-top: 10%;
+    width: 0%;
+  }
+  100% {
+    margin-top: 10%;
+    width: 90%;
+  }
+}
+@keyframes close {
+  0% {
+    margin-top: 10%;
+    width: 90%;
+  }
+  50% {
+    margin-top: 10%;
+    width: 0%;
+  }
+  100% {
+    margin-top: -4%;
+    width: 0%;
+  }
+}

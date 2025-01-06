@@ -1,0 +1,50 @@
+submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+input {
+  direction: rtl;
+}
+.line {
+  margin: auto;
+  direction: rtl;
+  border: 1px solid whitesmoke;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 50px;
+}
+.line label {
+  font-size: 20px;
+  color: whitesmoke;
+}
+/* التصميم الأساسي للزر */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4caf50; /* اللون الأساسي */
+  color: white; /* لون النص */
+  border: none;
+  border-radius: 5px; /* حواف دائرية */
+  cursor: pointer; /* تغيير الشكل إلى يد عند المرور على الزر */
+  transition: background-color 0.3s, transform 0.2s; /* تأثير الانتقال */
+}
+
+/* تأثير التحويم */
+button:hover {
+  background-color: #45a049; /* تغيير اللون عند التحويم */
+  transform: scale(1.05); /* تكبير الزر قليلاً */
+}
+
+/* تأثير النقر */
+button:active {
+  background-color: #3e8e41; /* تغيير اللون عند النقر */
+  transform: scale(0.98); /* تصغير الزر قليلاً عند النقر */
+}
+
+/* إذا كان الزر معطلاً */
+button:disabled {
+  background-color: #b5b5b5; /* لون باهت للزر المعطل */
+  cursor: not-allowed; /* تغيير المؤشر عند المرور على الزر المعطل */
+}
