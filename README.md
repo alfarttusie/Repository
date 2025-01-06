@@ -11,6 +11,7 @@ This project is a **secure password manager** that allows users to **store encry
 - 🔑 **Secure user authentication**.
 - 📁 **Organized and user-friendly data handling**.
 - 🎨 **Responsive and elegant UI design**.
+- 📱 **API support for mobile apps and other applications** – The system is not limited to web browsers.
 
 ## 🛠️ Requirements
 To ensure the project runs properly, make sure you have:
@@ -26,6 +27,16 @@ To ensure the project runs properly, make sure you have:
 2. **Move the project** to your local server directory (`htdocs` for XAMPP or `www` for WAMP).
 3. **Start your local server** and open `http://localhost/repository/index.php` in your browser.
 4. **Begin using the application** to manage your passwords securely.
+
+## 📡 API Usage for Mobile and Other Applications
+This password manager provides an **API** that allows integration with **mobile applications and other platforms**, meaning it is **not limited to web browsers**. Developers can use this API to securely store and retrieve passwords from external applications.
+
+### Example API Endpoints:
+- **Authentication**: `/api/authenticate.php`
+- **Store a new password**: `/api/store_password.php`
+- **Retrieve saved passwords**: `/api/get_passwords.php`
+
+For more details on how to use the API, please refer to the documentation.
 
 ## 📄 License
 This project is licensed under the **MIT License**, meaning you can use it freely under the terms of the license.
