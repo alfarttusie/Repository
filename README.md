@@ -31,10 +31,6 @@ To ensure the project runs properly, make sure you have:
 ## 📡 API Usage for Mobile and Other Applications
 This password manager provides an **API** that allows integration with **mobile applications and other platforms**, meaning it is **not limited to web browsers**. Developers can use this API to securely store and retrieve passwords from external applications.
 
-### Example API Endpoints:
-- **Authentication**: `/api/authenticate.php`
-- **Store a new password**: `/api/store_password.php`
-- **Retrieve saved passwords**: `/api/get_passwords.php`
 
 For more details on how to use the API, please refer to the documentation.
 
