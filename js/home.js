@@ -208,7 +208,7 @@ class home {
       if (callback.response == "empty") {
         HolderDiv.innerHTML = "لا توجد ازرا";
       } else if (callback.response == "ok") {
-        console.log(callback.buttons);
+        HolderDiv.innerHTML = "";
         callback.buttons.forEach((button) =>
           elementCreator({
             parent: HolderDiv,

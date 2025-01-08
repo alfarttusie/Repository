@@ -26,61 +26,68 @@ class queries
             $job = $post['job'] ?? null;
             self::$encryptionKey = $key;
             $button = $post['button'] ?? null;
-            if (empty($job)) exit(new Response(400, ['debug' => 'empty job']));
+            if (empty($job)) return new Response(400, ['debug' => 'empty job']);
             self::$connection = $link;
-            switch (true) {
-                case empty($job):
-                    exit(new Response(400, ['debug' => 'empty job']));
-                case $job == 'buttons list':
-                    exit(self::ButtonsList());
-                case $job == 'rename button':
-                    exit(self::RenameButton($post));
-                case $job == 'new button':
-                    exit(self::NewButton($button, $post));
+
+            switch ($job) {
+                case  'buttons list':
+                    return self::ButtonsList(self::$connection);
+                    break;
+                case 'new button':
+                    return self::NewButton($button, $post, self::$connection);
+                    break;
+            }
+
+
+            if (!self::Button_exist($button)) return new Response(200, ['response' => 'button not exist']);
+
+            switch ($job) {
+                case 'rename button':
+                    return self::RenameButton($post, self::$connection);
                 case !self::Button_exist($button):
                     return new Response(200, ['response' => 'button not exist']);
-                case $job == 'show Button':
-                    exit(self::GetButton($button));
-                case $job == 'delete button':
-                    exit(self::DeleteButton($button));
-                case $job == 'Get Columns':
-                    exit(self::ButtonColumns($button));
-                case $job == 'insert Data':
-                    exit(self::insertData($post, $button));
-                case $job == 'select id':
-                    exit(self::SelectID($button, $post));
-                case $job == 'delete id':
-                    exit(self::DeleteID($post, $button));
-                case $job == 'New Column':
-                    exit(self::NewColumn($button, $post));
-                case $job == 'update value':
-                    return self::updateValue($button, $post);
-                case $job == 'change type':
-                    return self::ChangeType($button, $post);
-                case $job == 'Button Columns Type':
-                    return self::ButtonColumnsType($button);
-                case $job == 'Rename Column':
-                    return self::RenameColumn($button, $post);
-                case $job == 'Column Validation':
-                    return self::ColumnValidation($button, $post);
+                case 'show Button':
+                    return self::GetButton($button, self::$connection);
+                case 'delete button':
+                    return self::DeleteButton($button, self::$connection);
+                case 'Get Columns':
+                    return self::ButtonColumns($button, self::$connection);
+                case 'insert Data':
+                    return self::insertData($post, $button, self::$connection);
+                case 'select id':
+                    return self::SelectID($button, $post, self::$connection);
+                case 'delete id':
+                    return self::DeleteID($post, $button, self::$connection);
+                case 'New Column':
+                    return self::NewColumn($button, $post, self::$connection);
+                case 'update value':
+                    return self::updateValue($button, $post, self::$connection);
+                case 'change type':
+                    return self::ChangeType($button, $post, self::$connection);
+                case 'Button Columns Type':
+                    return self::ButtonColumnsType($button, self::$connection);
+                case 'Rename Column':
+                    return self::RenameColumn($button, $post, self::$connection);
+                case 'Column Validation':
+                    return self::ColumnValidation($button, $post, self::$connection);
                 default:
-                    exit(new Response(400, ['debug' => 'no job found']));
+                    return new Response(400, ['debug' => 'no job found']);
             }
         } catch (Exception $exception) {
-            new Response(500, ['debug' => $exception->getMessage()]);
+            return new Response(500, ['debug' => $exception->getMessage()]);
         }
     }
-    private static function NewButton($button, $input_data)
+    private static function NewButton($button, $input_data, $link)
     {
         if (self::Button_exist($button))  return new Response(200, ['response' => 'Button exist']);
-        $uniqueid = self::generateRandomString(rand(5, 22));
+        $unique_id = self::generateRandomString(rand(5, 22));
         $encrypted_button = self::encryptText($button);
 
-        $main = @$input_data['main'] ?? array();
-        $main = self::encryptText(json_encode($main));
+        $mainColumns = @$input_data['main'] ?? array();
+        $mainColumns = self::encryptText(json_encode($mainColumns));
 
-        $password = @$input_data['password'] ?? array();
-        $password = self::encryptText(json_encode($password));
+        $passwordColumns = @$input_data['password'] ?? array();
+        $passwordColumns = self::encryptText(json_encode($passwordColumns));
 
         $all_columns = @$input_data['columns'] ?? array();
         $all_columns = self::encryptText(json_encode($all_columns));
@@ -89,26 +96,23 @@ class queries
         $link = self::connectToDB();
 
         do {
-            $uniqueid = self::generateRandomString(rand(5, 22));
-            $uniqueChekcer = @$link->query("SELECT `id` FROM `buttons` WHERE `unique_id` = '" . $uniqueid . "'")->fetch_array()['id'];
-            $tableChecker = $link->query("SHOW TABLES LIKE '" . $uniqueid . "'");
+            $unique_id = self::generateRandomString(rand(5, 22));
+            $uniqueChekcer = @$link->query("SELECT `id` FROM `buttons` WHERE `unique_id` = '" . $unique_id . "'")->fetch_array()['id'];
+            $tableChecker = $link->query("SHOW TABLES LIKE '" . $unique_id . "'");
         } while (!empty($uniqueChekcer) || $tableChecker->fetch_row() > 1);
 
-        $link->query("INSERT INTO `buttons` (`button`,`unique_id`,`main`,`password`,`columns`) VALUES ('" . $encrypted_button . "','" . $uniqueid . "','" . $main . "','" . $password . "','" . $all_columns . "')");
+        $link->query("INSERT INTO `buttons` (`button`,`unique_id`,`main`,`password`,`columns`) VALUES ('" . $encrypted_button . "','" . $unique_id . "','" . $mainColumns . "','" . $passwordColumns . "','" . $all_columns . "')");
 
 
-        $link->query("create table `$uniqueid` ( id INT AUTO_INCREMENT primary key NOT NULL )");
+        $link->query("create table `$unique_id` ( id INT AUTO_INCREMENT primary key NOT NULL )");
         if ($columns != 'empty')
-            foreach ($columns as $column) $link->query("ALTER TABLE `" . $uniqueid . "` ADD `" . self::encryptText($column) . "` TEXT(99999) NOT NULL;");
+            foreach ($columns as $column) $link->query("ALTER TABLE `" . $unique_id . "` ADD `" . self::encryptText($column) . "` TEXT(99999) NOT NULL;");
 
-
-        $link->close();
         return new Response(200, ['response' => 'successful']);
     }
-    private static function ButtonsList()
+    private static function ButtonsList($link)
     {
         $buttons = [];
-        $link = self::connectToDB();
         $queryResult = @$link->query("SELECT `button` FROM `buttons` ORDER by `id`");
         if ($queryResult->num_rows > 0) {
             while ($buttonData = $queryResult->fetch_assoc()) {
@@ -116,38 +120,31 @@ class queries
                 $decodedButton = htmlspecialchars_decode(htmlspecialchars($decryptedButton));
                 array_push($buttons, $decodedButton);
             }
-            $link->close();
             return new Response(200, ['response' => 'ok', 'buttons' => $buttons]);
         } else
             return new Response(200, ['response' => 'empty']);
     }
-    private static function DeleteButton($button)
+    private static function DeleteButton($button, $link)
     {
         $button = self::encryptText($button);
-        $link = queries::connectToDB();
         $uniqueid = $link->query("SELECT `unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc()['unique_id'];
         $link->query("DELETE FROM `buttons` WHERE `button` = '$button'");
         $link->query("DROP TABLE IF EXISTS " . $uniqueid);
-        $link->close();
         return new Response(200);
     }
-    private static function RenameButton($data)
+    private static function RenameButton($data, $link)
     {
         $New_button = $data['new'] ?? null;
-        $old_button = $data['old'] ?? null;
+        $old_button = $data['button'] ?? null;
         if (!$New_button) return new Response(400, ['debug' => 'new name not set']);
-        if (!$old_button) return new Response(400, ['debug' => 'old name not set']);
-        if (!self::Button_exist($old_button)) return new Response(500, ['debug' => 'button not found']);
         if (self::Button_exist($New_button)) return new Response(200, ['response' => 'new button exist']);
         $encrypted_button = self::encryptText($New_button);
         $button = self::encryptText($old_button);
-        $link = self::connectToDB();
         $link->query("UPDATE `buttons` SET `button` = '" . $encrypted_button . "' WHERE `buttons`.`button` = '" . $button . "'");
         return new Response(200, ['response' => 'ok']);
     }
-    private static function GetButton($button)
+    private static function GetButton($button, $link)
     {
-        $link = self::connectToDB();
         $encrypted_button = self::encryptText($button);
         $buttonData = $link->query("SELECT `unique_id`,`main`,`password`,`columns` FROM `buttons` WHERE `button` = '" . $encrypted_button . "'")->fetch_assoc();
         $uniqueid = $buttonData['unique_id'];
@@ -185,24 +182,21 @@ class queries
         }
         return new Response(200, ['data' => $finalData]);
     }
-    private static function ButtonColumns($button)
+    private static function ButtonColumns($button, $link)
     {
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $buttonData = @$link->query("SELECT `columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_array(MYSQLI_ASSOC);
         $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
         if (count($columns) > 0) {
-            $link->close();
             return new Response(200, ['columns' => $columns]);
         } else return new Response(200, ['response' => 'no columns']);
     }
-    private static function insertData($data, $button)
+    private static function insertData($data, $button, $link)
     {
         $info = @$data['info'] ?? null;
         if (!$info) return new Response(400, ['debug' => 'empty info']);
 
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $buttonData = $link->query("SELECT `unique_id`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $uniqueid = $buttonData['unique_id'];
         $columns = json_decode(self::decryptText($buttonData['columns']), true);
@@ -210,16 +204,14 @@ class queries
         $encrypted_data = array();
         foreach ($info as $key => $value) $encrypted_data[self::encryptText($key)] = $value ? self::encryptText($value) : 'empty';
         $link->query("INSERT INTO `$uniqueid` (`" . implode("`,`", array_keys($encrypted_data)) . "`) VALUES ('" . implode("','", $encrypted_data) . "')");
-        $link->close();
         return new Response(200);
     }
-    private static function SelectID($button, $data)
+    private static function SelectID($button, $data, $link)
     {
         $id = @$data['id'] ?? null;
         if (!$id) return new Response(400, ['debug' => 'empty id']);
         if (!is_numeric($id)) return new Response(400, ['debug' => 'invalid id']);
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $buttonData = $link->query("SELECT `unique_id`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $uniqueid = $buttonData['unique_id'];
         $columns = json_decode(self::decryptText($buttonData['columns']), true);
@@ -235,27 +227,25 @@ class queries
         }
         return new Response(200, ["data" => $data]);
     }
-    private static function DeleteID($data, $button)
+    private static function DeleteID($data, $button, $link)
     {
         $id = @$data['id'] ?? null;
         if (!$id) return new Response(400, ['debug' => 'empty id']);
         if (!is_numeric($id)) return new Response(400, ['debug' => 'invalid id']);
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $uniqueid = $link->query("SELECT `unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc()['unique_id'];
         $stmt = $link->prepare("DELETE FROM `$uniqueid` WHERE `id` = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         return new Response(200);
     }
-    private static function NewColumn($button, $data)
+    private static function NewColumn($button, $data, $link)
     {
         $column = @$data['column'] ?? null;
         if (!$column) return new Response(200, ['debug' => 'no column set']);
         $type = $data['FieldType'] ?? 'normal';
 
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $buttonData = $link->query("SELECT `main`,`password`,`unique_id`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $columns = json_decode(self::decryptText($buttonData['columns']), true);
         $uniqueid = $buttonData['unique_id'];
@@ -279,10 +269,9 @@ class queries
                 $link->query("UPDATE `buttons` SET `password` = '" . $new . "' WHERE `buttons`.`button` = '" . $button . "'");
                 break;
         }
-        $link->close();
         return new Response(200);
     }
-    private static function updateValue($button, $data)
+    private static function updateValue($button, $data, $link)
     {
         $id = @$data['id'] ?? null;
         $column = @$data['column'] ?? null;
@@ -293,17 +282,16 @@ class queries
         if (!$value) return new Response(400, ['debug ' => 'empty value']);
 
         $button = self::encryptText($button);
-        $column = self::encryptText($column);
         $value  = self::encryptText($value);
-        $link   = self::connectToDB();
         $buttonData = $link->query("SELECT `unique_id`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $uniqueid = $buttonData['unique_id'];
         $columns = json_decode(self::decryptText($buttonData['columns']), true);
         if (!in_array($column, $columns)) return new Response(400, ['debug' => 'column not found']);
+        $column = self::encryptText($column);
         $link->query("UPDATE `" . $uniqueid . "` SET `" . $column . "` = '" . $value . "'  WHERE `id` = " . $id);
         return new Response(200);
     }
-    private static function ChangeType($button, $data)
+    private static function ChangeType($button, $data, $link)
     {
         $column = @$data['column'] ?? null;
         $type = @$data['FieldType'] ?? null;
@@ -311,7 +299,6 @@ class queries
         if (!$type) return new Response(400, ['debug ' => 'empty value']);
 
         $button = self::encryptText($button);
-        $link   = self::connectToDB();
         $buttonData = $link->query("SELECT `main`,`password`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $columns = json_decode(self::decryptText($buttonData['columns']), true);
         $sqlMains = json_decode(self::decryptText($buttonData['main']), true) ?? array();
@@ -363,11 +350,10 @@ class queries
         }
         return new Response(200);
     }
-    private static function ButtonColumnsType($button)
+    private static function ButtonColumnsType($button, $link)
     {
         /** this function use for settings */
         $button = self::encryptText($button);
-        $link = self::connectToDB();
         $buttonData = @$link->query("SELECT `main`,`password`,`columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_array();
         $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
         $sqlMains = json_decode(self::decryptText($buttonData['main']), true) ?? null;
@@ -380,7 +366,7 @@ class queries
         }
         new Response(200, ['columns' => $Allcolumns]);
     }
-    private static function RenameColumn($button, $data)
+    private static function RenameColumn($button, $data, $link)
     {
         $column = @$data['column'] ?? null;
         $new = @$data['new'] ?? null;
@@ -388,7 +374,6 @@ class queries
         if (!$new) return new Response(400, ['debug ' => 'empty new']);
 
         $button = self::encryptText($button);
-        $link   = self::connectToDB();
         $buttonData = $link->query("SELECT `main`,`password`,`columns`,`unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
         $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? array();
         $sqlMains = json_decode(self::decryptText($buttonData['main']), true) ?? array();
@@ -416,9 +401,8 @@ class queries
         $link->query("ALTER TABLE `" . $uniqueid . "` CHANGE `" . self::encryptText($column) . "` `" . self::encryptText($new) . "` TEXT");
         return new Response(200);
     }
-    private static function ColumnValidation($button, $input_data)
+    private static function ColumnValidation($button, $input_data, $link)
     {
-        $link = self::connectToDB();
         $column = $input_data['column'];
         if (empty($column)) return new Response(400, ['debug' => 'empty column']);
         $encryptedButtonName = self::encryptText($button);

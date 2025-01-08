@@ -1,4 +1,5 @@
 <?php
+if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require 'php/tools.php';
 class index
@@ -6,16 +7,11 @@ class index
     use Tools;
     function __construct()
     {
-        if (self::SysTemCheck($response)) {
-            session_start();
-            $Token = @$_SESSION['token'] ?? null;
-            if ($Token && self::loginChecker($Token)) {
-                exit(header('Location: home.php'));
-            } else {
-                index::View();
-            }
-        } else
-            print($response);
+        if (!self::SysTemCheck($response)) return self::Msg($response);
+        session_start();
+        $Token = @$_SESSION['session_token'] ?? null;
+        if ($Token && self::loginChecker($Token)) return header('Location: home.php');
+        index::View();
     }
     private static function View()
     {
@@ -43,6 +39,29 @@ class index
                     <script src='js/assistant.js'></script>
                 </body>
             </html>
+        ");
+    }
+    private static function Msg($error)
+    {
+        print("
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8' />
+            <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+            <title>system error</title>
+            <link rel='stylesheet' href='css/main.css'>
+            <link rel='stylesheet' href='css/error.css'>
+
+        </head>
+        <body>
+        <div class='error-holder'>
+            <div class='error-text'>
+            $error
+            </div>
+        </div>
+        </body>
+        </html>
         ");
     }
 }

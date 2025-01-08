@@ -112,10 +112,6 @@ trait Tools
 
             if (stripos($contentType, 'application/json') === false)
                 throw new Exception('Data not JSON');
-
-            // if ($origin !== $_SERVER['HTTP_HOST'])
-            //     throw new Exception('Missing or invalid origin');
-
             return true;
         } catch (Exception $exception) {
             $response = $exception->getMessage();

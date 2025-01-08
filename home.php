@@ -6,7 +6,7 @@ class Home
     function __construct()
     {
         session_start();
-        $Token = @$_SESSION['token'] ?? null;
+        $Token = @$_SESSION['session_token'] ?? null;
         if ($Token && self::loginChecker($Token)) {
             self::View();
         } else {

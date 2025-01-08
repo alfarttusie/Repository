@@ -85,11 +85,10 @@ class Key {
   static checker() {
     sendRequest({ type: "Key checker", key: localStorage.encKey }).then(
       (response) => {
-        home.GetButtons();
         if (response.status != "successful") {
           document.querySelector("#key").style.backgroundColor = "red";
         } else if (response.status == "successful") {
-          return true;
+          home.GetButtons();
         }
       }
     );

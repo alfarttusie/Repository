@@ -1,7 +1,6 @@
 <?php
 // error_reporting(0);
 
-
 require 'tools.php';
 require 'response_handler.php';
 require 'Signin.php';
@@ -17,37 +16,34 @@ class Requests
         $link->query("UPDATE `admin_info` SET `Token` = '', `enckey` = '' WHERE `username` = '$user'");
         new Response(200, ['status' => 'log out']);
     }
-    private static function SetKey($data)
+    private static function SetKey($data, $link)
     {
 
-        $key = @$data['key'];
-        if (!empty($key)) {
-            $link = self::connectToDB();
-            $bearerToken = self::Headers();
-            $user = $bearerToken['user'] ?? null;
-            $stmt = $link->prepare("SELECT `enckey` FROM `admin_info` WHERE `username` = ?");
-            $stmt->bind_param("s", $user);
-            $stmt->execute();
-            $sqlKey = $stmt->get_result()->fetch_assoc()['enckey'];
+        $key = @$data['key'] ?? null;
 
-            $enckey = self::encryptText($key, $sqlKey);
-            $response['response'] = (self::Keychecker($key)) ? "update" : "save";
-            new Response(200, $response, payload: ['key' => $enckey]);
-        } else {
-            new Response(400, ['debug' => 'empty key']);
-        }
+        if (!$key) return new Response(400, ['debug' => 'empty key']);
+
+        $link = self::connectToDB();
+        $bearerToken = self::Headers();
+        $user = $bearerToken['user'] ?? null;
+        $stmt = $link->prepare("SELECT `enckey` FROM `admin_info` WHERE `username` = ?");
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $sqlKey = $stmt->get_result()->fetch_assoc()['enckey'];
+
+        $enckey = self::encryptText($key, $sqlKey);
+        $response['response'] = (self::Keychecker($key, $link)) ? "update" : "save";
+        new Response(200, $response, payload: ['key' => $enckey]);
     }
-    private static function Keychecker(&$key)
+    private static function Keychecker(&$key, $link)
     {
         $bearerToken = self::Headers();
         if ($bearerToken != 'empty') {
             $key  = @$bearerToken['key'] ?? null;
             $user = $bearerToken['user'] ?? null;
             if ($key && $user) {
-                $link = self::connectToDB();
                 $sql_key = $link->query("SELECT `enckey` FROM `admin_info` WHERE `username` = '$user'")->fetch_assoc()['enckey'];
                 $key = self::decryptText($key, $sql_key);
-                $link->close();
                 return true;
             } else
                 return false;
@@ -93,10 +89,10 @@ class Requests
 
             switch ($type) {
                 case 'Key checker':
-                    self::Keychecker($key) ? new Response(200, ['status' => 'successful']) : new Response(200, ['status' => 'invalid key']);
+                    self::Keychecker($key, self::$connection) ? new Response(200, ['status' => 'successful']) : new Response(200, ['status' => 'invalid key']);
                     return;
                 case 'Set Key':
-                    self::SetKey($data);
+                    self::SetKey($data, self::$connection);
                     return;
                 case 'log out':
                     self::logOut($data);
@@ -105,7 +101,7 @@ class Requests
 
             /** after Key Setup */
 
-            if (!self::Keychecker($key)) return new Response(200, ['response' => 'invalid key']);
+            if (!self::Keychecker($key, self::$connection)) return new Response(200, ['response' => 'invalid key']);
 
 
             switch ($type) {
