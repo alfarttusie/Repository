@@ -51,6 +51,7 @@ class Home
 
                         </div>
                         <script src='js/assistant.js'></script>
+                        <script src='js/addbutton.js'></script>
                         <script src='js/key.js'></script>
                     <script src='js/home.js'></script>
                 </body>
