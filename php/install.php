@@ -22,6 +22,7 @@ class install
     {
         try {
             $dbConnection = @new mysqli($Serverip, $user, $password);
+            $dbConnection->close();
             return !$dbConnection->connect_error;
         } catch (Exception $error) {
             return false;
@@ -40,7 +41,7 @@ class install
     {
         $link = new mysqli($Serverip, $user, $password);
 
-
+        $database = $link->real_escape_string($database);
         $link->query("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
 
         $link->select_db($database);
@@ -90,6 +91,7 @@ class install
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4";
 
         $link->multi_query($sql);
+        $link->close();
     }
     private static function generateRandomString($length = null): string
     {
@@ -103,20 +105,21 @@ class install
     }
     function __construct($Post)
     {
-        if (file_exists('db.php')) return self::Response(200, ['Response' => 'repository installed']);
+        if (file_exists('db.php')) return self::Response(200, ['error' => 'repository already installed']);
         $Post = json_decode($Post, true);
-        $db_user = $Post['db_user'] ?? null;
+        $db_user = $Post['db_username'] ?? null;
         $db_password = $Post['db_password'] ?? "";
         $db_name = $Post['db_name'] ?? null;
-        $Serverip = $_SERVER['HTTP_HOST'] ?? null;
+        $Serverip = $_SERVER['HTTP_HOST'] ?? '127.0.0.1';
 
-        if (!self::db_check($Serverip)) return self::Response(200, ['Response' => 'mysql services off']);
 
-        if (empty($db_user) || empty($db_name)) return self::Response(200, ['Response' => 'missing info']);
+        if (!self::db_check($Serverip)) return self::Response(200, ['error' => 'mysql services off']);
 
-        if (!self::DataBase_Info($db_user, $db_password, $Serverip)) return self::Response(200, ['Response' => 'worng info']);
+        if (empty($db_user) || empty($db_name)) return self::Response(200, ['error' => 'missing info']);
 
-        if (self::isDatabaseAvailable($db_user, $db_password, $Serverip, $db_name)) return self::Response(200, ['Response' => 'database exsit']);
+        if (!self::DataBase_Info($db_user, $db_password, $Serverip)) return self::Response(200, ['error' => 'wrong info']);
+
+        if (self::isDatabaseAvailable($db_user, $db_password, $Serverip, $db_name)) return self::Response(200, ['error' => 'database exists']);
 
         self::CreatDatabase($db_user, $db_password, $db_name, $Serverip);
         $file_content = preg_replace('/^\s+/', '', "
@@ -134,8 +137,10 @@ class install
         \r\t}
         
         ");
-        file_put_contents('db.php', $file_content);
-        return self::Response(200, ['Response' => 'ok']);
+        if (!file_put_contents('db.php', $file_content)) {
+            return self::Response(500, ['error' => 'Failed to create database file']);
+        }
+        return self::Response(200, ['success' => 'ok']);
     }
 }
 $PostData = file_get_contents('php://input');
