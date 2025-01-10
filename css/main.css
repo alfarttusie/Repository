@@ -28,9 +28,12 @@ body {
   background-color: transparent;
   max-height: 20px;
   max-width: 20px;
+  border: none;
+  transition: transform 0.2s ease-in-out;
 }
 .view-password:hover {
   transform: rotate(-5deg);
+  animation: dance 0.5s infinite alternate ease-in-out;
   background-color: transparent;
 }
 .Showerror {

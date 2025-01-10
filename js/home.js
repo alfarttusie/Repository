@@ -17,91 +17,52 @@ class AddButton {
                 elementCreator(
                   /*label*/ {
                     type: "label",
-                    params: { innerText: " الاسم : " },
+                    params: { innerText: " الاسم : ", for: "button-name" },
                   }
                 ),
-                elementCreator(/* name input */ { type: "input" }),
-                elementCreator(
-                  /** label */ {
-                    type: "label",
-                    params: { innerText: " عدد الجداول : " },
-                  }
-                ),
-                elementCreator(
-                  /* counter */ {
-                    type: "input",
-                    params: {
-                      type: "number",
-                      value: 1,
-                      min: "1",
-                      onwheel: (event) => {
-                        if (event.deltaY < 0) {
-                          event.target.value = parseInt(event.target.value) + 1;
-                          AddButton.lineHandler(parseInt(event.target.value));
-                        } else if (event.deltaY > 0) {
-                          event.target.value =
-                            parseInt(event.target.value) - 1 > 1
-                              ? parseInt(event.target.value) - 1
-                              : 1;
-                          AddButton.lineHandler(parseInt(event.target.value));
-                        }
-                      },
-                      onkeydown: (event) => false,
+                /* button name  input */
+                elementCreator({
+                  type: "input",
+                  params: { className: "button-name", id: "button-name" },
+                }),
+                /** counter label */
+                elementCreator({
+                  type: "label",
+                  params: { innerText: " عدد الجداول : " },
+                }),
+                /* counter input */
+                elementCreator({
+                  type: "input",
+                  params: {
+                    type: "number",
+                    value: 1,
+                    min: "1",
+                    onwheel: (event) => {
+                      if (event.deltaY < 0) {
+                        event.target.value = parseInt(event.target.value) + 1;
+                        AddButton.lineHandler(parseInt(event.target.value));
+                      } else if (event.deltaY > 0) {
+                        event.target.value =
+                          parseInt(event.target.value) - 1 > 1
+                            ? parseInt(event.target.value) - 1
+                            : 1;
+                        AddButton.lineHandler(parseInt(event.target.value));
+                      }
                     },
-                  }
-                ),
+                    onkeydown: (event) => false,
+                  },
+                }),
                 elementCreator({
                   type: "button",
                   params: {
                     innerText: "حفظ ",
-                    onclick: () => {
-                      const name = document.querySelector(
-                        ".addbutton-header > input"
-                      );
-                      if (name.value.length > 0) {
-                        const allLine =
-                          document.querySelectorAll(".button-line");
-                        const main = [];
-                        const passwords = [];
-                        const others = [];
-                        allLine.forEach((line) => {
-                          const all = {};
-                          const space = line.children[1].value;
-                          const column = line.children[2].value;
-                          const type = line.children[4].value;
-                          if (type == "main") main.push(column);
-                          else if (type == "password") passwords.push(column);
-                          else others.push(column);
-                          // all["space"] = space;
-                          // all["column"] = column;
-                          // all["type"] = type;
-                          // test.push(all);
-                        });
-                        // sendRequest({
-                        //   type: "queries",
-                        //   job: "new button",
-                        //   button: name,
-                        // }).then((callback) => {
-                        //   console.log(callback);
-                        //   if (callback.response == "invalid key") {
-                        //     showNotification(`لا يوجد مفتاح تشفير`);
-                        //   } else if (callback.response == "Button exist") {
-                        //     showNotification(`الاسم موجود مسبقا`);
-                        //   } else if (callback.response == "successful") {
-                        //     showNotification(`تم اظافة بنجاح`);
-                        //     home.GetButtons();
-                        //   }
-                        // });
-                      } else {
-                        ShowMsg(`اكتب اسم للزر`);
-                        Shake(".addbutton-header > input");
-                      }
-                    },
+                    onclick: AddButton.SendButton,
                   },
                 }),
               ],
             }
           ),
+          /** Header end */
           AddButton.line(),
         ],
       }
@@ -174,6 +135,53 @@ class AddButton {
           ],
         }),
       ],
+    });
+  }
+  static SendButton() {
+    const name = document.querySelector(".button-name");
+    if (name.value.length < 1) {
+      ShowMsg(`اكتب اسم للزر`);
+      Shake(".button-name");
+      return;
+    }
+    const allLine = document.querySelectorAll(".button-line");
+    const main = [];
+    const passwords = [];
+    const others = [];
+    const all = [];
+    allLine.forEach((line) => {
+      if (line.children[2].value.length > 0) all.push(line.children[2].value);
+    });
+    if (allLine.length != all.length) {
+      if (!confirm(`you ignored ${allLine.length - all.length} column ok?`)) {
+        return;
+      }
+    }
+    allLine.forEach((line) => {
+      const column = line.children[2].value;
+      const type = line.children[4].value;
+      if (column.length > 0) {
+        if (type == "main") main.push(column);
+        else if (type == "password") passwords.push(column);
+      }
+    });
+    sendRequest({
+      type: "queries",
+      job: "new button",
+      button: name.value,
+      main: main,
+      password: passwords,
+      columns: all,
+    }).then((callback) => {
+      console.log(callback);
+      if (callback.response == "invalid key") {
+        showNotification(`لا يوجد مفتاح تشفير`);
+      } else if (callback.response == "Button exist") {
+        showNotification(`الاسم موجود مسبقا`);
+      } else if (callback.response == "successful") {
+        showNotification(`تم اظافة بنجاح`);
+        home.GetButtons();
+      }
     });
   }
 }

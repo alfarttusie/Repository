@@ -19,32 +19,30 @@ input {
   font-size: 20px;
   color: whitesmoke;
 }
-/* التصميم الأساسي للزر */
 button {
-  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 16px;
-  background-color: #4caf50; /* اللون الأساسي */
-  color: white; /* لون النص */
+  background-color: #4caf50; 
+  color: white;
   border: none;
-  border-radius: 5px; /* حواف دائرية */
-  cursor: pointer; /* تغيير الشكل إلى يد عند المرور على الزر */
-  transition: background-color 0.3s, transform 0.2s; /* تأثير الانتقال */
+  border-radius: 5px;
+  cursor: pointer; 
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-/* تأثير التحويم */
 button:hover {
-  background-color: #45a049; /* تغيير اللون عند التحويم */
-  transform: scale(1.05); /* تكبير الزر قليلاً */
+  background-color: #45a049; 
+  transform: scale(1.05); 
 }
 
-/* تأثير النقر */
 button:active {
-  background-color: #3e8e41; /* تغيير اللون عند النقر */
-  transform: scale(0.98); /* تصغير الزر قليلاً عند النقر */
+  background-color: #3e8e41;
+  transform: scale(0.98);
 }
 
-/* إذا كان الزر معطلاً */
 button:disabled {
-  background-color: #b5b5b5; /* لون باهت للزر المعطل */
-  cursor: not-allowed; /* تغيير المؤشر عند المرور على الزر المعطل */
+  background-color: #b5b5b5;
+  cursor: not-allowed; 
 }

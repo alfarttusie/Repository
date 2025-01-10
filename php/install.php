@@ -60,8 +60,7 @@ class install
                 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
     
                 INSERT IGNORE INTO `admin_info` (`username`, `password`, `Token`, `enckey`) VALUES
-                ('admin', '\$2y\$10\$VyWwkhiW3hIFwI9YfFQnLOOkTatU01GQnZ5bNuP5wm2hf1JWm8w/e', '', ''),
-                ('devuser', '\$2y\$10\$eMnHzfjAt3e9yED/23tgG.TkFO/Qa3XO6hZdoGAWFID9Mv/2lB7tK', '9dkwq45phy1nitakb2go', 'a8gwr589rl');
+                ('admin', '\$2y\$10\$dxdmygPf/jnCYuzXv7PRg.XO.5qfKhXOGsV.XETb046Sg/.ewO4re', '', '');
     
                 CREATE TABLE IF NOT EXISTS `buttons` (
                     `id` int NOT NULL AUTO_INCREMENT,

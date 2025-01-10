@@ -1,5 +1,5 @@
 .loading-indicator {
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,26 +35,27 @@
   grid-column: 5 / 95;
 }
 .login-holder .username {
-  grid-row: 40;
-  max-height: 35px;
+  grid-row: 40/55;
+  height: clamp(30px, 100%, 40px);
 }
 .login-holder .password {
   grid-row: 60/68;
+  height: clamp(30px, 100%, 35px);
 }
 .login-holder .view-password {
-  grid-column: 93;
-  grid-row: 63;
+  grid-column: 92;
+  grid-row: 61;
 }
 .login-holder input {
   outline: none;
-  padding: 5%;
+  padding: 3%;
   color: white;
   text-align: left;
   font-size: clamp(10px, 3vw, 24px);
   border-bottom: 1px solid whitesmoke;
   background-color: transparent;
 }
-.login-holder input:is(:hover, :focus) {
+.login-holder input:focus {
   border: 1px solid whitesmoke;
   border-radius: 10px;
 }
@@ -112,8 +113,7 @@
   vertical-align: middle;
   white-space: nowrap;
   width: 100%;
-}
-.login-btn {
+  appearance: button;
   box-shadow: 0 0 5px #03e9f4, 0 0 10px #03e9f4, 0 0 15px #03e9f4,
     0 0 50px #03e9f4;
 }
@@ -170,8 +170,8 @@
     grid-row: 40 / 45;
   }
   .login-holder .view-password {
-    grid-column: 89 / 90;
-    grid-row: 43 / 45;
+    grid-column: 93;
+    grid-row: 43;
   }
   .login-holder .login-btn {
     grid-row: 65;
