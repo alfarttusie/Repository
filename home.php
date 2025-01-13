@@ -30,11 +30,11 @@ class Home
                         <link rel='stylesheet' href='css/key.css'>
                         <link rel='stylesheet' href='css/notification.css'>
                         <link rel='stylesheet' href='css/add-button.css'>
+                        <link rel='stylesheet' href='css/contextMenu.css'>
                         <title>المستودع</title>
                     </head>
                 <body>
                     <div class='indicator'><p></p></div>
-                    
                         <div class='header'>
                             <button class='header-btn' id='logout'>خروج</button>
                             <button class='header-btn'>test</button>
@@ -52,6 +52,7 @@ class Home
                         </div>
                         <script src='js/assistant.js'></script>
                         <script src='js/addbutton.js'></script>
+                        <script src='js/contextMenu.js'></script>
                         <script src='js/key.js'></script>
                     <script src='js/home.js'></script>
                 </body>

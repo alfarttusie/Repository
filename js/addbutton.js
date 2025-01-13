@@ -1,6 +1,5 @@
 class AddButton {
   static start() {
-    console.log(`it's working..`);
     const leftDiv = document.querySelector(".left");
     leftDiv.innerHTML = "";
     elementCreator(

@@ -33,7 +33,13 @@ class home {
           elementCreator({
             parent: HolderDiv,
             type: "button",
-            params: { innerText: button, onclick: home.ShowButton },
+            params: {
+              innerText: button,
+              onclick: home.ShowButton,
+              oncontextmenu: (e) => ContextMenuHandler.Start(e),
+              ontouchstart: (e) => ContextMenuHandler.Start(e),
+              ontouchend: (e) => ContextMenuHandler.HandleTouchEnd?.(e),
+            },
           })
         );
       }
