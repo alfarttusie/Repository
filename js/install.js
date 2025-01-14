@@ -62,14 +62,14 @@ class Install {
         db_username,
         db_password,
         db_name,
-      }).then((response) => {
+      }).then((callback) => {
         installButton.disabled = false;
         installButton.textContent = "Install";
-        if (response.success) {
+        if (callback.success) {
           alert("Installation completed successfully!");
-          window.location.href = response.redirect || "index.php";
+          window.location.href = callback.redirect || "index.php";
         } else {
-          this.ShowMsg(response.error);
+          this.ShowMsg(callback.response);
         }
       });
     };

@@ -2,14 +2,14 @@
 
 class install
 {
-    private static function Response($code, $data)
+    private static function sendResponse($statusCode, $data)
     {
         header('Content-Type: application/json');
-        http_response_code($code);
-        print_r(json_encode($data));
+        http_response_code($statusCode);
+        echo json_encode($data);
         return;
     }
-    private static function db_check($Serverip)
+    private static function checkDatabaseConnection($Serverip)
     {
         try {
             $socket = @fsockopen($Serverip, 3306, $errno, $errstr, 4);
@@ -18,7 +18,7 @@ class install
             return false;
         }
     }
-    private static function DataBase_Info($user, $password, $Serverip)
+    private static function validateDatabaseCredentials($user, $password, $Serverip)
     {
         try {
             $dbConnection = @new mysqli($Serverip, $user, $password);
@@ -28,7 +28,7 @@ class install
             return false;
         }
     }
-    private static function isDatabaseAvailable($user, $password, $Serverip, $database)
+    private static function isDatabaseAccessible($user, $password, $Serverip, $database)
     {
         try {
             $dbConnection = @new mysqli($Serverip, $user, $password);
@@ -37,7 +37,7 @@ class install
             return false;
         }
     }
-    private static function CreatDatabase($user, $password, $database, $Serverip)
+    private static function createDatabase($user, $password, $database, $Serverip)
     {
         $link = new mysqli($Serverip, $user, $password);
 
@@ -46,7 +46,7 @@ class install
 
         $link->select_db($database);
 
-        $sql = "
+        $createTables = "
                 SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
                 SET time_zone = '+00:00';
                 
@@ -89,7 +89,7 @@ class install
                     PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4";
 
-        $link->multi_query($sql);
+        $link->multi_query($createTables);
         $link->close();
     }
     private static function generateRandomString($length = null): string
@@ -104,7 +104,7 @@ class install
     }
     function __construct($Post)
     {
-        if (file_exists('db.php')) return self::Response(200, ['error' => 'repository already installed']);
+        if (file_exists('db.php')) return self::sendResponse(400, ['debug' => 'repository already installed']);
         $Post = json_decode($Post, true);
         $db_user = $Post['db_username'] ?? null;
         $db_password = $Post['db_password'] ?? "";
@@ -112,15 +112,16 @@ class install
         $Serverip = $_SERVER['HTTP_HOST'] ?? '127.0.0.1';
 
 
-        if (!self::db_check($Serverip)) return self::Response(200, ['error' => 'mysql services off']);
+        if (empty($db_user) || empty($db_name)) return self::sendResponse(400, ['debug' => 'missing info']);
 
-        if (empty($db_user) || empty($db_name)) return self::Response(200, ['error' => 'missing info']);
+        if (!self::checkDatabaseConnection($Serverip)) return self::sendResponse(200, ['response' => 'mysql services off']);
 
-        if (!self::DataBase_Info($db_user, $db_password, $Serverip)) return self::Response(200, ['error' => 'wrong info']);
 
-        if (self::isDatabaseAvailable($db_user, $db_password, $Serverip, $db_name)) return self::Response(200, ['error' => 'database exists']);
+        if (!self::validateDatabaseCredentials($db_user, $db_password, $Serverip)) return self::sendResponse(200, ['response' => 'wrong info']);
 
-        self::CreatDatabase($db_user, $db_password, $db_name, $Serverip);
+        if (self::isDatabaseAccessible($db_user, $db_password, $Serverip, $db_name)) return self::sendResponse(200, ['response' => 'database exists']);
+
+        self::createDatabase($db_user, $db_password, $db_name, $Serverip);
         $file_content = preg_replace('/^\s+/', '', "
         <?php
         \rtrait database{
@@ -132,14 +133,14 @@ class install
 
             \r\tprivate  static \$database = '" . $db_name . "';
 
-            \r\tprivate  static \$secret = '" . self::generateRandomString(random_int(250, 500)) . "';
+            \r\tprivate  static \$secret = '" . self::generateRandomString(random_int(450, 900)) . "';
         \r\t}
         
         ");
         if (!file_put_contents('db.php', $file_content)) {
-            return self::Response(500, ['error' => 'Failed to create database file']);
+            return self::sendResponse(500, ['debug' => 'Failed to create database file']);
         }
-        return self::Response(200, ['success' => 'ok']);
+        return self::sendResponse(200, ['success' => 'ok']);
     }
 }
 $PostData = file_get_contents('php://input');

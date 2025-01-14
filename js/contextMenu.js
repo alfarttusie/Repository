@@ -11,11 +11,18 @@ class ContextMenuHandler {
     const menu = document.createElement("div");
     menu.classList.add("context-menu");
 
-    const items = ["View", "Refresh", "Copy", "Customize", "Save As"];
-    items.forEach((text) => {
+    const items = {
+      "اظافة بيانات": ContextMenuHandler.insertData,
+      Refresh: "",
+      Copy: "",
+      Customize: "",
+      "Save As": "",
+    };
+    Object.keys(items).forEach((text) => {
       const item = document.createElement("div");
       item.classList.add("item");
       item.innerText = text;
+      item.onclick = items[text];
       item.addEventListener("click", () => menu.remove());
       menu.appendChild(item);
     });
@@ -29,9 +36,10 @@ class ContextMenuHandler {
     return menu;
   }
 
-  static Start(e) {
+  static Start(e, button) {
     e.preventDefault();
     const menu = this.createContextMenu();
+    menu.dataset.invoker = button.innerText;
 
     let mouseX = e.clientX || e.touches?.[0]?.clientX || 0;
     let mouseY = e.clientY || e.touches?.[0]?.clientY || 0;
@@ -64,5 +72,21 @@ class ContextMenuHandler {
     if (menu && !menu.contains(e.target)) {
       menu.remove();
     }
+  }
+  static insertData() {
+    const menu = document.querySelector(".context-menu");
+    const ButtonName = menu.dataset.invoker;
+    console.log(ButtonName);
+    sendRequest({
+      type: "queries",
+      job: "Get Columns",
+      button: ButtonName,
+    }).then((callback) => {
+      if (callback.status == "successful") {
+        callback.columns.forEach((item) => {
+          console.log(item);
+        });
+      }
+    });
   }
 }

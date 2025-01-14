@@ -183,4 +183,8 @@ class AddButton {
       }
     });
   }
+  constructor() {
+    document.querySelector("#addButton").onclick = AddButton.start;
+  }
 }
+new AddButton();

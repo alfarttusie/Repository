@@ -1,7 +1,7 @@
 class home {
   constructor() {
     document.addEventListener("DOMContentLoaded", () => {
-      console.log(localStorage.barrier);
+      console.log(localStorage.Barrier);
       indicatorRemover();
       Key.checker();
       /** Event Listener */
@@ -9,8 +9,6 @@ class home {
         document.querySelector("#logout").onclick = this.logOut;
         document.querySelector("#home").onclick = () =>
           (window.location = "home.php");
-        document.querySelector("#addButton").onclick = AddButton.start;
-        document.querySelector("#key").onclick = Key.Start;
       }
     });
   }
@@ -29,19 +27,19 @@ class home {
         HolderDiv.innerHTML = "لا توجد ازرا";
       } else if (callback.response == "ok") {
         HolderDiv.innerHTML = "";
-        callback.buttons.forEach((button) =>
-          elementCreator({
+        callback.buttons.forEach((button) => {
+          const buttonElement = elementCreator({
             parent: HolderDiv,
             type: "button",
             params: {
               innerText: button,
               onclick: home.ShowButton,
-              oncontextmenu: (e) => ContextMenuHandler.Start(e),
-              ontouchstart: (e) => ContextMenuHandler.Start(e),
+              oncontextmenu: (e) => ContextMenuHandler.Start(e, buttonElement),
+              ontouchstart: (e) => ContextMenuHandler.Start(e, buttonElement),
               ontouchend: (e) => ContextMenuHandler.HandleTouchEnd?.(e),
             },
-          })
-        );
+          });
+        });
       }
     });
   }

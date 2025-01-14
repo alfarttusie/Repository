@@ -99,4 +99,8 @@ class Key {
       document.querySelector(".Key-holder").remove();
     }, 900);
   }
+  constructor() {
+    document.querySelector("#key").onclick = Key.Start;
+  }
 }
+new Key();

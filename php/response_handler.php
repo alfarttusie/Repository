@@ -74,7 +74,7 @@ class Response
         http_response_code(200);
         $response['status'] = 'successful';
         self::additional_data($response);
-        print_r(json_encode($response));
+        echo json_encode($response);
         return;
     }
     private static function BadRequest()

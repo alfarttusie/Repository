@@ -25,62 +25,60 @@ class Index
 
     private static function View()
     {
-?>
-<!DOCTYPE html>
-<html lang="en">
+        print('
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>المستودع</title>
+            <link rel="stylesheet" href="css/main.css">
+            <link rel="stylesheet" href="css/index.css">
+            <link rel="stylesheet" href="css/animation.css">
+            <link rel="stylesheet" href="css/elements.css">
+        </head>
+        <body>
+            <div class="indicator">
+                <p></p>
+            </div>
+            <div class="login-holder">
+                <input type="text" class="username" placeholder="User name">
+                <input type="password" class="password" placeholder="Password">
+                <button class="view-password">🙈</button>
+                <button class="login-btn">Login</button>
+            </div>
+            <script src="js/index.js"></script>
+            <script src="js/assistant.js"></script>
+        </body>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المستودع</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/animation.css">
-    <link rel="stylesheet" href="css/elements.css">
-</head>
-
-<body>
-    <div class="indicator">
-        <p></p>
-    </div>
-    <div class="login-holder">
-        <input type="text" class="username" placeholder="User name">
-        <input type="password" class="password" placeholder="Password">
-        <button class="view-password">🙈</button>
-        <button class="login-btn">Login</button>
-    </div>
-    <script src="js/index.js"></script>
-    <script src="js/assistant.js"></script>
-</body>
-
-</html>
-<?php
+        </html>
+        ');
+        return;
     }
 
     private static function Msg($error)
     {
-    ?>
-<!DOCTYPE html>
-<html lang="en">
+        print('
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>System Error</title>
+                    <link rel="stylesheet" href="css/main.css">
+                    <link rel="stylesheet" href="css/error.css">
+                </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Error</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/error.css">
-</head>
-
-<body>
-    <div class="error-holder">
-        <div class="error-text">
-            <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
-        </div>
-    </div>
-</body>
-
-</html>
-<?php
+                <body>
+                    <div class="error-holder">
+                            <div class="error-text">
+                            ' . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . '
+                        </div>
+                    </div>
+                </body>
+                </html>'
+        );
+        return;
     }
 }
 
