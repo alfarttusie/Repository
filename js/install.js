@@ -50,6 +50,8 @@ class Install {
       let db_username = document.querySelector(".db_username").value.trim();
       let db_password = document.querySelector(".db_password").value.trim();
       let db_name = document.querySelector(".db_name").value.trim();
+      let username = document.querySelector(".username").value.trim();
+      let Password = document.querySelector(".Password").value.trim();
 
       if (!db_username || !db_name) {
         alert("Please fill in all required fields!");
@@ -62,6 +64,8 @@ class Install {
         db_username,
         db_password,
         db_name,
+        username,
+        Password,
       }).then((callback) => {
         installButton.disabled = false;
         installButton.textContent = "Install";

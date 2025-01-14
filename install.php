@@ -28,6 +28,14 @@ if (file_exists('php/db.php')) exit(header('Location: index.php'));
             <label for="db_name">Database Name:</label>
             <input type="text" id="db_name" class="db_name" placeholder="Enter Database Name" required />
         </div>
+        <div class="input-group">
+            <label for="username">Administration :</label>
+            <input type="text" id="username" class="username" placeholder="Enter login Username" required>
+        </div>
+        <div class="input-group">
+            <label for="Password">Administration Password:</label>
+            <input type="text" id="Password" class="Password" placeholder="Enter Administration Password" required>
+        </div>
         <button type="submit" class="install-button">Install</button>
     </form>
     <script src="js/install.js"></script>

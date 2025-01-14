@@ -1,7 +1,8 @@
 <?php
-
+// error_reporting(0);
 class install
 {
+    private static $dbConnection = null;
     private static function sendResponse($statusCode, $data)
     {
         header('Content-Type: application/json');
@@ -22,7 +23,7 @@ class install
     {
         try {
             $dbConnection = @new mysqli($Serverip, $user, $password);
-            $dbConnection->close();
+            self::$dbConnection = $dbConnection;
             return !$dbConnection->connect_error;
         } catch (Exception $error) {
             return false;
@@ -37,7 +38,7 @@ class install
             return false;
         }
     }
-    private static function createDatabase($user, $password, $database, $Serverip)
+    private static function createDatabase($user, $password, $database, $Serverip, $loginUSer, $loginPassword)
     {
         $link = new mysqli($Serverip, $user, $password);
 
@@ -45,7 +46,7 @@ class install
         $link->query("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
 
         $link->select_db($database);
-
+        $loginPassword = password_hash($loginPassword, PASSWORD_DEFAULT);
         $createTables = "
                 SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
                 SET time_zone = '+00:00';
@@ -60,7 +61,7 @@ class install
                 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
     
                 INSERT IGNORE INTO `admin_info` (`username`, `password`, `Token`, `enckey`) VALUES
-                ('admin', '\$2y\$10\$dxdmygPf/jnCYuzXv7PRg.XO.5qfKhXOGsV.XETb046Sg/.ewO4re', '', '');
+                ('" . $loginUSer . "', '" . $loginPassword . "', '', '');
     
                 CREATE TABLE IF NOT EXISTS `buttons` (
                     `id` int NOT NULL AUTO_INCREMENT,
@@ -110,18 +111,26 @@ class install
         $db_password = $Post['db_password'] ?? "";
         $db_name = $Post['db_name'] ?? null;
         $Serverip = $_SERVER['HTTP_HOST'] ?? '127.0.0.1';
+        $loginUSer = $Post['username'] ?? null;
+        $loginPassword = $Post['Password'] ?? null;
 
 
-        if (empty($db_user) || empty($db_name)) return self::sendResponse(400, ['debug' => 'missing info']);
+        if (empty($db_user) || empty($db_name))         return self::sendResponse(400, ['debug' => 'missing info']);
+        if (empty($loginUSer) || empty($loginPassword)) return self::sendResponse(400, ['debug' => 'missing info']);
 
         if (!self::checkDatabaseConnection($Serverip)) return self::sendResponse(200, ['response' => 'mysql services off']);
 
 
         if (!self::validateDatabaseCredentials($db_user, $db_password, $Serverip)) return self::sendResponse(200, ['response' => 'wrong info']);
 
+        $link = self::$dbConnection;
+        $loginUSer = mysqli_real_escape_string($link, $loginUSer);
+        $loginPassword = mysqli_real_escape_string($link, $loginPassword);
+        $link->close();
+
         if (self::isDatabaseAccessible($db_user, $db_password, $Serverip, $db_name)) return self::sendResponse(200, ['response' => 'database exists']);
 
-        self::createDatabase($db_user, $db_password, $db_name, $Serverip);
+        self::createDatabase($db_user, $db_password, $db_name, $Serverip, $loginUSer, $loginPassword);
         $file_content = preg_replace('/^\s+/', '', "
         <?php
         \rtrait database{
