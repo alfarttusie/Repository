@@ -44,12 +44,74 @@ class home {
     });
   }
   static ShowButton(event) {
-    const ButtonName = event.target.innerText;
+    const ButtonName = event?.target?.innerText ?? event;
+
     sendRequest({
       type: "queries",
       job: "show Button",
       button: ButtonName,
-    }).then((callback) => console.log(callback));
+    }).then((callback) => {
+      const leftDiv = document.querySelector(".left");
+      leftDiv.innerHTML = "";
+      const HolderDiv = elementCreator({
+        parent: leftDiv,
+        type: "div",
+        params: { className: "HolderDiv" },
+      });
+      callback.data.forEach((data) => {
+        console.log(data);
+        const line = elementCreator({
+          parent: HolderDiv,
+          type: "div",
+          params: { className: "line", id: data.id },
+        });
+        const main = elementCreator({ parent: line, type: "p", parent: line });
+        Object.keys(data.main).forEach((b) => {
+          const label = b;
+          const value = data.main[b];
+          elementCreator({
+            parent: main,
+            type: "span",
+            params: { innerText: label },
+          });
+          elementCreator({
+            parent: main,
+            type: "span",
+            params: { innerText: value },
+          });
+        });
+        const passwords = elementCreator({
+          parent: line,
+          type: "p",
+          parent: line,
+        });
+        Object.keys(data.passwords).forEach((b) => {
+          const label = b;
+          const value = data.passwords[b];
+          elementCreator({
+            parent: passwords,
+            type: "span",
+            params: { innerText: label },
+          });
+          elementCreator({
+            parent: passwords,
+            type: "span",
+            params: { innerText: value },
+          });
+        });
+        elementCreator({
+          parent: line,
+          type: "button",
+          params: {
+            innerText: "نفاصيل",
+            id: data.id,
+            onclick: () => {
+              alert(data.id);
+            },
+          },
+        });
+      });
+    });
   }
 }
 

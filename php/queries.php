@@ -189,7 +189,7 @@ class queries
         $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
         if (count($columns) > 0) {
             return new Response(200, ['columns' => $columns]);
-        } else return new Response(200, ['response' => 'no columns']);
+        } else return new Response(200, ['columns' => 'no columns']);
     }
     private static function insertData($data, $button, $link)
     {

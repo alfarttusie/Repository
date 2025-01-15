@@ -19,8 +19,8 @@ class index {
       if (username.value.length === 0) throw new Error(".username");
       if (password.value.length === 0) throw new Error(".password");
       try {
-        const encodedUsername = btoa(username.value);
-        const encodedPassword = btoa(password.value);
+        const encodedUsername = username.value;
+        const encodedPassword = password.value;
         Button.classList.add("disabled");
         sendRequest({
           type: "sign in",

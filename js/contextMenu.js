@@ -76,15 +76,61 @@ class ContextMenuHandler {
   static insertData() {
     const menu = document.querySelector(".context-menu");
     const ButtonName = menu.dataset.invoker;
-    console.log(ButtonName);
     sendRequest({
       type: "queries",
       job: "Get Columns",
       button: ButtonName,
     }).then((callback) => {
-      if (callback.status == "successful") {
+      if (callback.columns == "no columns") {
+        return console.log(`no columns`);
+      } else {
+        const leftDiv = document.querySelector(".left");
+        leftDiv.innerHTML = "";
+        const HolderDiv = elementCreator({
+          parent: leftDiv,
+          params: { className: "HolderDiv" },
+        });
         callback.columns.forEach((item) => {
-          console.log(item);
+          elementCreator({
+            parent: HolderDiv,
+            params: {
+              className: "line",
+            },
+            Children: [
+              elementCreator({
+                type: "label",
+                params: {
+                  className: "label",
+                  innerText: item,
+                },
+              }),
+              elementCreator({ type: "input" }),
+            ],
+          });
+        });
+        elementCreator({
+          parent: HolderDiv,
+          type: "button",
+          params: {
+            className: "save-buuton",
+            innerText: "حفظ",
+            onclick: () => {
+              const HolderDiv = document.querySelector(".HolderDiv");
+              const data = {};
+              HolderDiv.querySelectorAll(".line").forEach((line) => {
+                const label = line.querySelector("label").innerText;
+                const value = line.querySelector("input").value;
+                data[label] = value;
+              });
+              console.log(data);
+              sendRequest({
+                type: "queries",
+                job: "insert Data",
+                button: ButtonName,
+                info: data,
+              }).then(() => home.ShowButton(ButtonName));
+            },
+          },
         });
       }
     });

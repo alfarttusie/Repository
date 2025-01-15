@@ -61,7 +61,6 @@ function sendRequest(data) {
         localStorage.bearer = http.getResponseHeader("Bearer");
         try {
           const response = JSON.parse(http.responseText);
-          console.log(response);
           resolve(response);
         } catch (error) {
           resolve("Invalid response");

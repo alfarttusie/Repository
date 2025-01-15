@@ -2,7 +2,7 @@
 require 'db.php';
 trait Jwt
 {
-    use database;
+    use DatabaseConfig;
     private static $header = ['alg' => 'HS256', 'typ' => 'JWT'];
 
     private static function base64UrlEncode($plainText)
