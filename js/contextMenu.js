@@ -83,6 +83,7 @@ class ContextMenuHandler {
     }).then((callback) => {
       showNotification(`تم حذف الزر`);
       home.GetButtons();
+      home.WorkDiv;
     });
   }
 }

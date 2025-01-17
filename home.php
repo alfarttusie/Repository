@@ -1,4 +1,6 @@
 <?php
+if (!file_exists('php/db.php')) exit(header('Location: install.php'));
+
 require 'php/tools.php';
 class Home
 {
