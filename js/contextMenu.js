@@ -12,11 +12,11 @@ class ContextMenuHandler {
     menu.classList.add("context-menu");
 
     const items = {
-      "اظافة بيانات": ContextMenuHandler.insertData,
+      "اظافة بيانات": () => new InsertData(),
       Refresh: "",
       Copy: "",
       Customize: "",
-      "Save As": "",
+      "حذف الزر": this.DeleteButton,
     };
     Object.keys(items).forEach((text) => {
       const item = document.createElement("div");
@@ -73,66 +73,16 @@ class ContextMenuHandler {
       menu.remove();
     }
   }
-  static insertData(name = null) {
+  static DeleteButton() {
     const menu = document.querySelector(".context-menu");
-    const ButtonName = name ? name : menu.dataset.invoker;
+    const buttonName = name ? name : menu.dataset.invoker;
     sendRequest({
       type: "queries",
-      job: "Get Columns",
-      button: ButtonName,
+      job: "delete button",
+      button: buttonName,
     }).then((callback) => {
-      if (callback.columns == "no columns") {
-        return console.log(`no columns`);
-      } else {
-        const leftDiv = document.querySelector(".left");
-        leftDiv.innerHTML = "";
-        const HolderDiv = elementCreator({
-          parent: leftDiv,
-          params: { className: "HolderDiv" },
-        });
-        callback.columns.forEach((item) => {
-          elementCreator({
-            parent: HolderDiv,
-            params: {
-              className: "line",
-            },
-            Children: [
-              elementCreator({
-                type: "label",
-                params: {
-                  className: "label",
-                  innerText: item,
-                },
-              }),
-              elementCreator({ type: "input" }),
-            ],
-          });
-        });
-        elementCreator({
-          parent: HolderDiv,
-          type: "button",
-          params: {
-            className: "save-buuton",
-            innerText: "حفظ",
-            onclick: () => {
-              const HolderDiv = document.querySelector(".HolderDiv");
-              const data = {};
-              HolderDiv.querySelectorAll(".line").forEach((line) => {
-                const label = line.querySelector("label").innerText;
-                const value = line.querySelector("input").value;
-                data[label] = value;
-              });
-              console.log(data);
-              sendRequest({
-                type: "queries",
-                job: "insert Data",
-                button: ButtonName,
-                info: data,
-              }).then(() => home.ShowButton(ButtonName));
-            },
-          },
-        });
-      }
+      showNotification(`تم حذف الزر`);
+      home.GetButtons();
     });
   }
 }

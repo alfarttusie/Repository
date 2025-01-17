@@ -126,7 +126,7 @@ class ButtonCreator {
 
     const inputField = document.createElement("input");
     if (index !== null && this.storedValues[index]) {
-      inputField.value = this.storedValues[index]; 
+      inputField.value = this.storedValues[index];
     }
     line.appendChild(inputField);
 
@@ -188,7 +188,7 @@ class ButtonCreator {
       } else if (callback.response === "successful") {
         showNotification("تم الإضافة بنجاح");
         home.GetButtons();
-        ContextMenuHandler.insertData(name.value);
+        new InsertData(name.value);
       }
     });
   }
