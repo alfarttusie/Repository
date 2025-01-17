@@ -1,68 +1,40 @@
 class Key {
-  static Start() {
-    let old;
-    try {
-      old = document.querySelector(".Key-holder");
-      old = old ? true : false;
-    } catch (error) {
-      old = false;
+  KeyViewer() {
+    const WorkDiv = home.WorkDiv;
+    let old = document.querySelector(".Key-holder");
+    if (old) {
+      this.hide();
+      return;
     }
-    if (!old) {
-      const Holder = document.querySelector(".left");
-      Holder.innerHTML = "";
-      elementCreator(
-        /* Key-holder*/ {
-          parent: Holder,
-          params: {
-            className: "Key-holder",
-          },
-          Children: [
-            elementCreator(
-              /* line */ {
-                params: { className: "line key-line" },
-                Children: [
-                  elementCreator(
-                    /* button save*/ {
-                      type: "button",
-                      params: {
-                        innerText: "حفظ",
-                        onclick: Key.save,
-                      },
-                    }
-                  ),
-                  elementCreator(
-                    /*input*/ {
-                      type: "input",
-                      params: {
-                        type: "password",
-                        value: "test_key",
-                        onkeydown: (event) => {
-                          if (event.key === "Enter")
-                            event.target.previousSibling.click();
-                        },
-                      },
-                    }
-                  ),
-                  elementCreator(
-                    /* button cancel */ {
-                      type: "button",
-                      params: {
-                        innerText: "الفاء",
-                        onclick: Key.hide,
-                      },
-                    }
-                  ),
-                ],
-              }
-            ),
-          ],
-        }
-      );
-    } else {
-      Key.hide();
-    }
+    const Holder = document.createElement("div");
+    Holder.classList.add("Key-holder");
+
+    const line = document.createElement("div");
+    line.classList.add("line");
+    line.classList.add("key-line");
+    Holder.appendChild(line);
+
+    const SaveButton = document.createElement("button");
+    SaveButton.onclick = this.save;
+    SaveButton.innerText = "حفظ";
+    line.appendChild(SaveButton);
+
+    const KeyValue = document.createElement("input");
+    KeyValue.type = "password";
+    KeyValue.value = "test_key";
+    line.appendChild(KeyValue);
+
+    const cancelButton = document.createElement("button");
+    cancelButton.innerText = "الفاء";
+    cancelButton.onclick = this.hide;
+    line.appendChild(cancelButton);
+
+    WorkDiv.appendChild(Holder);
+
+    return WorkDiv;
   }
-  static save() {
+
+  save() {
     const KeyValue = document.querySelector(".key-line > input");
     if (KeyValue.value.length > 0) {
       sendRequest({ type: "Set Key", key: KeyValue.value }).then((callback) => {
@@ -73,7 +45,7 @@ class Key {
             callback.response === "update" ? "تم التحديث" : "تم الحفظ"
           );
           document.querySelector("#key").style.backgroundColor = "transparent";
-          Key.hide();
+          this.hide();
         } else {
           responseHandler(callback.status);
         }
@@ -82,7 +54,8 @@ class Key {
       ShowMsg(`لا يمكن ترك المفتاح فارغ`);
     }
   }
-  static checker() {
+  checker() {
+    alert(`from check`);
     sendRequest({ type: "Key checker", key: localStorage.encKey }).then(
       (response) => {
         if (response.status != "successful") {
@@ -93,14 +66,14 @@ class Key {
       }
     );
   }
-  static hide() {
+  hide() {
     document.querySelector(".key-line").style.animationName = "close";
     setTimeout(() => {
       document.querySelector(".Key-holder").remove();
     }, 900);
   }
   constructor() {
-    document.querySelector("#key").onclick = Key.Start;
+    this.checker();
+    document.querySelector("#key").onclick = this.KeyViewer;
   }
 }
-new Key();

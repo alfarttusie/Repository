@@ -1,9 +1,18 @@
 class home {
+  static get WorkDiv() {
+    const Holder = document.querySelector(".left");
+    Holder.innerHTML = "";
+    let Work = document.createElement("div");
+    Work.classList.add("WorkDiv");
+    Holder.appendChild(Work);
+    return Work;
+  }
   constructor() {
     document.addEventListener("DOMContentLoaded", () => {
-      console.log(localStorage.Barrier);
       indicatorRemover();
-      Key.checker();
+      new Key();
+      // new AddButton();
+      // Key.checker();
       /** Event Listener */
       {
         document.querySelector("#logout").onclick = this.logOut;

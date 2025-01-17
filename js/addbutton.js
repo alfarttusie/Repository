@@ -180,6 +180,7 @@ class AddButton {
       } else if (callback.response == "successful") {
         showNotification(`تم اظافة بنجاح`);
         home.GetButtons();
+        ContextMenuHandler.insertData(name.value);
       }
     });
   }
@@ -187,4 +188,3 @@ class AddButton {
     document.querySelector("#addButton").onclick = AddButton.start;
   }
 }
-new AddButton();

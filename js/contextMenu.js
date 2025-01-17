@@ -73,9 +73,9 @@ class ContextMenuHandler {
       menu.remove();
     }
   }
-  static insertData() {
+  static insertData(name = null) {
     const menu = document.querySelector(".context-menu");
-    const ButtonName = menu.dataset.invoker;
+    const ButtonName = name ? name : menu.dataset.invoker;
     sendRequest({
       type: "queries",
       job: "Get Columns",

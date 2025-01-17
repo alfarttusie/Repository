@@ -69,3 +69,8 @@ body {
   grid-column: 1/84;
   grid-row: 10/100;
 }
+.WorkDiv {
+  border: 1px solid white;
+  width: 100%;
+  height: 100%;
+}
