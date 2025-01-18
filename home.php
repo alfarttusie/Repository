@@ -56,6 +56,7 @@ class Home
                     <script src='js/key.js'></script>
                     <script src='js/db.js'></script>
                     <script src='js/insertData.js'></script>
+                    <script src='js/ButtonSettings.js'></script>
                     <script src='js/ShowButton.js'></script>
                     <script src='js/home.js'></script>
                 </body>
