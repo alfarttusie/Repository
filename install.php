@@ -1,6 +1,4 @@
-<?php
-if (file_exists('php/db.php')) exit(header('Location: index.php'));
-?>
+<?php if (file_exists('php/db.php')) exit(header('Location: index.php')); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,6 +37,7 @@ if (file_exists('php/db.php')) exit(header('Location: index.php'));
         <button type="submit" class="install-button">Install</button>
     </form>
     <script src="js/install.js"></script>
+    <script src='js/assistant.js'></script>
 </body>
 
 </html>

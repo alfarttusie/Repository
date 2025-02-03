@@ -40,7 +40,7 @@ class Install
             return false;
         }
     }
-
+    
     /**
      * Checks if the specified database exists.
      */

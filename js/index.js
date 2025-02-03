@@ -11,6 +11,7 @@ class index {
       this.initializeSession();
     });
   }
+
   handleLogin() {
     const Button = document.querySelector(".login-btn");
     const username = document.querySelector(".username");

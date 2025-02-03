@@ -59,7 +59,7 @@ class Install {
       }
       let installButton = document.querySelector(".install-button");
       installButton.disabled = true;
-      installButton.textContent = "Installing..."; // Change text
+      installButton.textContent = "Installing...";
       this.sendRequest({
         db_username,
         db_password,
@@ -73,7 +73,7 @@ class Install {
           alert("Installation completed successfully!");
           window.location.href = callback.redirect || "index.php";
         } else {
-          this.ShowMsg(callback.response);
+          ShowMsg(callback.error);
         }
       });
     };

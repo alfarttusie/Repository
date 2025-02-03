@@ -23,10 +23,12 @@ class Key {
     KeyValue.value = "test_key";
     KeyValue.onkeydown = (event) =>
       event.key == "Enter" ? SaveButton.click() : null;
+    KeyValue.addEventListener("mouseenter", () => (KeyValue.type = "text"));
+    KeyValue.addEventListener("mouseleave", () => (KeyValue.type = "password"));
     line.appendChild(KeyValue);
 
     const cancelButton = document.createElement("button");
-    cancelButton.innerText = "الفاء";
+    cancelButton.innerText = "الغاء";
     cancelButton.onclick = Key.hide;
     line.appendChild(cancelButton);
 

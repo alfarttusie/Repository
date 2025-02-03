@@ -2,6 +2,7 @@
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require 'php/tools.php';
+
 class Home
 {
     use Tools;
@@ -9,11 +10,10 @@ class Home
     {
         session_start();
         $Token = @$_SESSION['session_token'] ?? null;
-        if ($Token && self::loginChecker($Token)) {
+        if ($Token && self::loginChecker($Token))
             self::View();
-        } else {
+        else
             exit(header('Location: index.php'));
-        }
     }
     private static function View()
     {
@@ -48,13 +48,12 @@ class Home
                         </div>
                     
                         <div class='right'>
-
                         </div>
+                        
                     <script src='js/assistant.js'></script>
                     <script src='js/addbutton.js'></script>
                     <script src='js/contextMenu.js'></script>
                     <script src='js/key.js'></script>
-                    <script src='js/db.js'></script>
                     <script src='js/insertData.js'></script>
                     <script src='js/ButtonSettings.js'></script>
                     <script src='js/ShowButton.js'></script>
