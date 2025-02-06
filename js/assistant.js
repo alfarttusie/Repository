@@ -42,13 +42,6 @@ function ShowMsg(Text) {
   document.body.appendChild(Msg);
   Msg.textContent = Text;
 }
-function ShowPassword() {
-  let emoje = this.textContent == "🙉" ? "🙈" : "🙉";
-  this.textContent = emoje;
-  const PasswordField = this.previousElementSibling;
-  let type = PasswordField.type == "text" ? "password" : "text";
-  PasswordField.type = type;
-}
 function sendRequest(data) {
   return new Promise((resolve, reject) => {
     const http = new XMLHttpRequest();
@@ -155,4 +148,71 @@ function elementCreator({
   } catch (err) {
     console.log(err);
   }
+}
+function HolderDiv(CssClass = null) {
+  const Holder = document.querySelector(".left");
+  Holder.innerHTML = "";
+  let Work = document.createElement("div");
+  if (CssClass) {
+    Work.classList.add(CssClass);
+  } else Work.classList.add("WorkDiv");
+  Holder.appendChild(Work);
+  return Work;
+}
+function lineCreator(CssClass = null) {
+  const line = document.createElement("div");
+  line.classList.add("line");
+  if (CssClass) line.classList.add(CssClass);
+  return line;
+}
+function Button(element) {
+  const Button = document.createElement("button");
+  Object.entries(element).forEach(([key, value]) => {
+    if (key in Button) Button[key] = value;
+    else Button.setAttribute(key, value);
+  });
+  return Button;
+}
+function ShowPassword(event) {
+  const button = event.currentTarget;
+  let emoji = button.textContent == "🙉" ? "🙈" : "🙉";
+  button.textContent = emoji;
+
+  const PasswordField = button.previousElementSibling;
+  let type = PasswordField.type == "text" ? "password" : "text";
+  PasswordField.type = type;
+
+  if (type == "text") {
+    setTimeout(() => {
+      PasswordField.type = "password";
+      button.textContent = "🙈";
+    }, 1500);
+  }
+}
+function PasswordField(element) {
+  const Holder = document.createElement("p");
+  Holder.classList.add("PasswordField");
+
+  const viewButton = document.createElement("button");
+  viewButton.innerText = "🙈";
+  viewButton.onclick = ShowPassword;
+  viewButton.addEventListener(
+    "mouseenter",
+    (event) => (viewButton.innerText = "🙊")
+  );
+  viewButton.addEventListener("mouseleave", (event) => {
+    const input = viewButton.previousElementSibling;
+    if (input.type == "text") viewButton.innerText = "🙉";
+    else viewButton.innerText = "🙈";
+  });
+
+  const input = document.createElement("input");
+
+  Object.entries(element).forEach(([key, value]) => {
+    if (key in input) input[key] = value;
+    else input.setAttribute(key, value);
+  });
+  Holder.appendChild(input);
+  Holder.appendChild(viewButton);
+  return Holder;
 }

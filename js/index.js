@@ -23,11 +23,13 @@ class index {
         const encodedUsername = username.value;
         const encodedPassword = password.value;
         Button.classList.add("disabled");
+        Showindicator(document.querySelector(".login-holder"));
         sendRequest({
           type: "sign in",
           username: encodedUsername,
           password: encodedPassword,
         }).then((response) => {
+          indicatorRemover();
           Button.classList.remove("disabled");
           switch (response.response) {
             case "blocked":
@@ -38,7 +40,9 @@ class index {
               window.location = "home.php";
               break;
             case "wrong":
-              ShowMsg(`المعلومات غير صحيحة`);
+              const attemptsLeft =
+                response.attemptsLeft == "none" ? 0 : response.attemptsLeft;
+              ShowMsg(`المعلومات غير صحيحة محاولات متبقية ${attemptsLeft}`);
               break;
             default:
               ShowMsg(`لا يمكن تسجيل الدخول`);

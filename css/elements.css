@@ -1,3 +1,42 @@
+label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(10px, 3vw, 24px);
+  font-weight: bolder;
+}
+.HolderDiv {
+  border: 1px solid wheat;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+}
+.PasswordField {
+  display: flex;
+  justify-content: space-evenly;
+  align-content: center;
+  align-items: center;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.308);
+  & button {
+    cursor: pointer;
+    padding: 1.5%;
+    max-height: 60px;
+    max-width: 60px;
+    background-color: transparent;
+  }
+  & input {
+    color: whitesmoke;
+    text-align: center;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+  }
+}
+
 submit {
   display: flex;
   justify-content: center;
@@ -10,15 +49,24 @@ input {
   margin: auto;
   direction: rtl;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-  height: 50px;
 }
 .line label {
   font-size: 20px;
   color: whitesmoke;
 }
 button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(10px, 3vw, 24px);
+  font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
+}
+input {
+  font-size: clamp(10px, 3vw, 24px);
+}
+button2 {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,11 +79,11 @@ button {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
-button:hover {
+button2:hover {
   transform: scale(1.1);
 }
 
-button:active {
+button2:active {
   transform: scale(0.98);
   background-color: rgb(73, 44, 44);
 }
@@ -43,10 +91,4 @@ button:active {
 button:disabled {
   background-color: #b5b5b5;
   cursor: not-allowed;
-}
-.HolderDiv {
-  border: 1px solid wheat;
-  margin: auto;
-  width: 100%;
-  height: 100%;
 }

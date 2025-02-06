@@ -1,43 +1,44 @@
 class Key {
   static KeyViewer() {
-    let old = document.querySelector(".Key-holder");
+    let old = document.querySelector(".encryption-key");
     if (old) return Key.hide();
 
-    const WorkDiv = home.WorkDiv;
+    const WorkDiv = HolderDiv("encryption-key");
 
-    const Holder = document.createElement("div");
-    Holder.classList.add("Key-holder");
+    const line = lineCreator("key-line");
+    WorkDiv.appendChild(line);
 
-    const line = document.createElement("div");
-    line.classList.add("line");
-    line.classList.add("key-line");
-    Holder.appendChild(line);
+    /** Save Button */
+    line.appendChild(
+      Button({
+        innerText: "حفظ",
+        onclick: Key.save,
+        class: "key-buttons",
+      })
+    );
 
-    const SaveButton = document.createElement("button");
-    SaveButton.onclick = Key.save;
-    SaveButton.innerText = "حفظ";
-    line.appendChild(SaveButton);
+    /** value input */
+    line.appendChild(
+      PasswordField({
+        value: "test_key",
+        placeholder: "Enter encryption key",
+        type: "password",
+        onkeydown: (event) =>
+          event.key == "Enter" ? SaveButton.click() : null,
+      })
+    );
 
-    const KeyValue = document.createElement("input");
-    KeyValue.type = "password";
-    KeyValue.value = "test_key";
-    KeyValue.onkeydown = (event) =>
-      event.key == "Enter" ? SaveButton.click() : null;
-    KeyValue.addEventListener("mouseenter", () => (KeyValue.type = "text"));
-    KeyValue.addEventListener("mouseleave", () => (KeyValue.type = "password"));
-    line.appendChild(KeyValue);
-
-    const cancelButton = document.createElement("button");
-    cancelButton.innerText = "الغاء";
-    cancelButton.onclick = Key.hide;
-    line.appendChild(cancelButton);
-
-    WorkDiv.appendChild(Holder);
-
-    return WorkDiv;
+    /** cancel button */
+    line.appendChild(
+      Button({
+        innerText: "الغاء",
+        class: "key-buttons",
+        onclick: Key.hide,
+      })
+    );
   }
   static save() {
-    const KeyValue = document.querySelector(".key-line > input");
+    const KeyValue = document.querySelector(".PasswordField > input");
     if (KeyValue.value.length > 0) {
       sendRequest({ type: "Set Key", key: KeyValue.value }).then((callback) => {
         if (callback.status == "successful") {
@@ -68,7 +69,7 @@ class Key {
   static hide() {
     document.querySelector(".key-line").style.animationName = "close";
     setTimeout(() => {
-      document.querySelector(".Key-holder").remove();
+      document.querySelector(".encryption-key").remove();
     }, 900);
   }
   constructor() {

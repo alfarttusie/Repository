@@ -11,7 +11,6 @@ class home {
     document.addEventListener("DOMContentLoaded", () => {
       indicatorRemover();
       new Key();
-      new ButtonCreator();
       /** Event Listener */
       {
         document.querySelector("#logout").onclick = this.logOut;
@@ -33,7 +32,10 @@ class home {
     const HolderDiv = document.querySelector(".right");
     sendRequest({ type: "queries", job: "buttons list" }).then((callback) => {
       if (callback.response == "empty") {
-        HolderDiv.innerHTML = "لا توجد ازرا";
+        const p = document.createElement("p");
+        p.classList.add("empty");
+        p.innerText = "لا توجد معلومات";
+        HolderDiv.appendChild(p);
       } else if (callback.response == "ok") {
         HolderDiv.innerHTML = "";
         callback.buttons.forEach((button) => {

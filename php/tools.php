@@ -19,7 +19,7 @@ trait Tools
 
         return $randomStr;
     }
-    private static function isMySqlServerReachable()
+    private static function isMySqlServerReachable(): bool
     {
         try {
             $socket = @fsockopen(self::$Serverip, 3306, $errno, $errstr, 4);

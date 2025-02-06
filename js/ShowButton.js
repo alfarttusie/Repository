@@ -95,7 +95,7 @@ class ShowButton {
     const holderDiv = home.WorkDiv;
     holderDiv.innerHTML = "";
 
-    const msg = this.createElementWithClass("div", "empty");
+    const msg = this.createElementWithClass("div", "empty-info");
     const span = this.createElementWithClass("span");
     span.innerText = message;
 

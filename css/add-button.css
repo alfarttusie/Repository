@@ -1,60 +1,99 @@
-.addbutton-holder {
-  border: 1px solid white;
+.addbutton {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 .addbutton-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 1%;
   direction: rtl;
-  border: 1px solid yellow;
+  border-bottom: 1px solid yellow;
   width: 100%;
   height: 10%;
+  & input[type="text"] {
+    text-align: center;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    outline: none;
+    background-color: transparent;
+  }
 }
 .addbutton-header label {
-  font-size: 24px;
+  font-size: clamp(10px, 3vw, 22px);
   color: whitesmoke;
+  width: 10%;
+  max-width: 200px;
 }
 input[type="number"] {
-  width: 150px;
-  height: 40px;
-  font-size: 16px;
-  border: 2px solid #4caf50;
-  border-radius: 8px;
-  padding: 5px;
+  font-size: clamp(10px, 3vw, 24px);
+  font-weight: bold;
+  width: clamp(10px, 4vw, 170px);
+  height: 100%;
+  border-bottom: 1px solid wheat;
   text-align: center;
   outline: none;
-
   -webkit-appearance: none;
   -moz-appearance: textfield !important;
   appearance: none;
+  background-color: transparent;
 }
-.line {
-  margin: 1% auto;
+.linseHolder {
+  padding: 1%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
 }
-.arrow {
-  width: 40px;
-  height: 40px;
-  background: #4caf50;
-  color: white;
-  font-size: 16px;
-  border: none;
+.addbuttonline {
+  margin: 4% auto;
+  padding: 1%;
+  max-height: 35px;
+  border-bottom: 1px solid skyblue;
+}
+select {
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 120px;
+  color: rgb(255, 255, 255);
+  background-color: #4b9e89;
+  border-left: 1px solid rgba(200, 238, 225, 0.8);
+  border-right: 1px solid rgba(200, 238, 225, 0.8);
+  border-radius: 6px;
+  padding: 0.1%;
+  font-size: clamp(10px, 70%, 20px);
+  line-height: 1.7;
+  width: 100%;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+select::-ms-expand {
+  display: none;
+}
+select:hover {
+  background-color: #04251d5d;
+}
+
+select:focus {
   outline: none;
+  box-shadow: 0 0 5px rgba(200, 238, 225, 0.8);
+  border-color: rgba(255, 255, 255, 0.8);
 }
-
-.arrow.up {
-  border-radius: 0 5px 0 0;
+option {
+  border: none;
+  color: rgba(31, 4, 4, 0.596);
+  padding: 10px;
+  background-color: rgba(31, 4, 4, 0.596);
 }
-
-.arrow.down {
-  border-radius: 0 0 5px 0;
-}
-
-.arrow:hover {
-  background: #3e8e41;
+.addbuttonline input {
+  border-right: 1px solid wheat;
+  border-left: 1px solid wheat;
+  outline: none;
+  width: 40%;
+  text-align: center;
+  background-color: transparent;
+  background-color: #4b9e898a;
 }

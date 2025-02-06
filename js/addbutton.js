@@ -8,7 +8,7 @@ class ButtonCreator {
     leftDiv.innerHTML = "";
 
     const buttonHolder = document.createElement("div");
-    buttonHolder.className = "addbutton-holder";
+    buttonHolder.className = "addbutton";
     leftDiv.appendChild(buttonHolder);
 
     const header = this.createHeader(buttonHolder);
@@ -20,8 +20,12 @@ class ButtonCreator {
       this.handleWheelEvent(event, inputCounter);
     inputCounter.oninput = () => this.handleManualInput(inputCounter);
 
+    const linseHolder = document.createElement("div");
+    linseHolder.classList.add("linseHolder");
+    buttonHolder.appendChild(linseHolder);
+
     const line = this.createLine();
-    buttonHolder.appendChild(line);
+    linseHolder.appendChild(line);
   }
 
   static createHeader(parent) {
@@ -34,6 +38,7 @@ class ButtonCreator {
     const inputName = document.createElement("input");
     inputName.className = "button-name";
     inputName.id = "button-name";
+    inputName.type = "text";
     header.appendChild(inputName);
 
     header.appendChild(this.createLabel(" عدد الجداول : "));
@@ -45,10 +50,13 @@ class ButtonCreator {
     inputCounter.min = this.DEFAULT_MIN_COUNT;
     header.appendChild(inputCounter);
 
-    const saveButton = document.createElement("button");
-    saveButton.innerText = "حفظ";
-    saveButton.onclick = this.handleSaveButton;
-    header.appendChild(saveButton);
+    header.appendChild(
+      Button({
+        innerText: "حفظ",
+        class: "key-buttons",
+        onclick: this.handleSaveButton,
+      })
+    );
 
     return header;
   }
@@ -94,10 +102,11 @@ class ButtonCreator {
   }
 
   static updateLines(number) {
-    const holder = document.querySelector(".addbutton-holder");
-    let allLines = document.querySelectorAll(".button-line");
+    const holder = document.querySelector(".linseHolder");
+    let allLines = document.querySelectorAll(".addbuttonline");
 
     if (number > allLines.length) {
+      console.log(`it's fine`);
       for (let i = allLines.length; i < number; i++) {
         const line = this.createLine(i);
         holder.appendChild(line);
@@ -114,9 +123,9 @@ class ButtonCreator {
 
   static createLine(index = null) {
     const line = document.createElement("div");
-    line.className = "line button-line";
+    line.className = "line addbuttonline";
 
-    const fieldTypeLabel = this.createLabel("نوع الحقل");
+    const fieldTypeLabel = this.createLabel("نوع الحقل : ");
     line.appendChild(fieldTypeLabel);
 
     const fieldTypeSelect = document.createElement("select");
@@ -130,13 +139,13 @@ class ButtonCreator {
     }
     line.appendChild(inputField);
 
-    const fieldPositionLabel = this.createLabel("مكانه الحقل");
+    const fieldPositionLabel = this.createLabel("مكانه الحقل : ");
     line.appendChild(fieldPositionLabel);
 
     const fieldPositionSelect = document.createElement("select");
+    fieldPositionSelect.appendChild(this.createOption("normal", "عادي"));
     fieldPositionSelect.appendChild(this.createOption("main", "رئيسي"));
     fieldPositionSelect.appendChild(this.createOption("password", "باسورد"));
-    fieldPositionSelect.appendChild(this.createOption("normal", "عادي"));
     line.appendChild(fieldPositionSelect);
 
     return line;
@@ -157,7 +166,7 @@ class ButtonCreator {
       return;
     }
 
-    const allLines = document.querySelectorAll(".button-line");
+    const allLines = document.querySelectorAll(".addbuttonline");
     const main = [];
     const passwords = [];
     const others = [];
@@ -198,3 +207,4 @@ class ButtonCreator {
       ButtonCreator.initializeUI.bind(ButtonCreator);
   }
 }
+new ButtonCreator();

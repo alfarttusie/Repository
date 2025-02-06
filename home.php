@@ -13,7 +13,8 @@ class Home
         if ($Token && self::loginChecker($Token))
             self::View();
         else
-            exit(header('Location: index.php'));
+            header('Location: index.php');
+        exit;
     }
     private static function View()
     {
