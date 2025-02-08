@@ -39,12 +39,13 @@ class InsertData {
     leftDiv.innerHTML = "";
 
     const holderDiv = document.createElement("div");
-    holderDiv.className = "holder-div";
+    holderDiv.className = "InsertData-div";
     leftDiv.appendChild(holderDiv);
 
+    const linesHolder = document.createElement("div");
+    linesHolder.classList.add("insertdata-linesHolder");
     columns.forEach((item) => {
-      const line = document.createElement("div");
-      line.className = "line";
+      const line = lineCreator("insertdata-line");
 
       const label = document.createElement("label");
       label.className = "label";
@@ -54,15 +55,21 @@ class InsertData {
 
       line.appendChild(label);
       line.appendChild(input);
-      holderDiv.appendChild(line);
+      linesHolder.appendChild(line);
+    });
+    const footer = document.createElement("div");
+    footer.classList.add("footer");
+
+    holderDiv.appendChild(linesHolder);
+    holderDiv.appendChild(footer);
+    const saveButton = Button({
+      class: "save-button",
+      innerText: "حفظ",
+      class: "key-buttons",
+      onclick: () => this.saveData(buttonName, linesHolder),
     });
 
-    const saveButton = document.createElement("button");
-    saveButton.className = "save-button";
-    saveButton.innerText = "حفظ";
-    saveButton.onclick = () => this.saveData(buttonName, holderDiv);
-
-    holderDiv.appendChild(saveButton);
+    footer.appendChild(saveButton);
     holderDiv.onkeydown = (event) => {
       if (event.key == "Enter") saveButton.click();
     };
@@ -75,8 +82,6 @@ class InsertData {
       const value = line.querySelector("input").value;
       data[label] = value;
     });
-
-    console.log(data);
 
     sendRequest({
       type: "queries",

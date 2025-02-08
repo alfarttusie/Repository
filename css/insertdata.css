@@ -1,0 +1,30 @@
+.insertdata-div {
+  border: 1px solid wheat;
+  width: 100%;
+  height: 100%;
+}
+.insertdata-line {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 4% auto;
+  padding: 1%;
+  max-height: 35px;
+  border-bottom: 1px solid skyblue;
+}
+.insertdata-line label {
+  width: 30%;
+}
+.insertdata-line input {
+  border-right: 1px solid wheat;
+  border-left: 1px solid wheat;
+  outline: none;
+  text-align: center;
+  background-color: transparent;
+  background-color: #4b9e898a;
+  width: 50%;
+}
+.footer {
+  width: 100%;
+  height: 20%;
+  max-height: 45px;
+}

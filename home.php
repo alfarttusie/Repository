@@ -32,6 +32,7 @@ class Home
                         <link rel='stylesheet' href='css/notification.css'>
                         <link rel='stylesheet' href='css/add-button.css'>
                         <link rel='stylesheet' href='css/contextMenu.css'>
+                        <link rel='stylesheet' href='css/insertdata.css'>
                         <title>المستودع</title>
                     </head>
                 <body>
