@@ -207,6 +207,7 @@ function PasswordField(element) {
   });
 
   const input = document.createElement("input");
+  input.ondblclick = copyToClipboard;
 
   Object.entries(element).forEach(([key, value]) => {
     if (key in input) input[key] = value;
@@ -215,4 +216,34 @@ function PasswordField(element) {
   Holder.appendChild(input);
   Holder.appendChild(viewButton);
   return Holder;
+}
+function copyToClipboard(event) {
+  const data =
+    event.srcElement.textContent.length > 0
+      ? event.srcElement.textContent
+      : event.srcElement.value;
+  navigator.clipboard.writeText(data);
+  showNotification(`تم النسخ`);
+}
+function cleanWorkDiv(element = null) {
+  const DivClass = element ? element : "WorkDiv";
+  const Holder = document.querySelector(".left");
+  Holder.innerHTML = "";
+  const NewDiv = document.createElement("div");
+  NewDiv.classList.add(DivClass);
+  Holder.appendChild(NewDiv);
+  return NewDiv;
+}
+function element(type = null, element) {
+  type = Object.entries(element).forEach((key, value) =>
+    console.log(`${key} ==> ${value}`)
+  );
+}
+function displayEmptyMessage(Text) {
+  const MainDiv = document.querySelector(".left");
+  const div = cleanWorkDiv("empty-info");
+  const span = document.createElement("span");
+  span.innerText = Text;
+  div.appendChild(span);
+  MainDiv.appendChild(div);
 }

@@ -29,8 +29,10 @@ class home {
     }
   }
   static GetButtons() {
+    Showindicator(document.querySelector(".right"));
     const HolderDiv = document.querySelector(".right");
     sendRequest({ type: "queries", job: "buttons list" }).then((callback) => {
+      indicatorRemover();
       if (callback.response == "empty") {
         const p = document.createElement("p");
         p.classList.add("empty");
@@ -44,7 +46,7 @@ class home {
             type: "button",
             params: {
               innerText: button,
-              onclick: (event) => new ShowButton(event.target.innerText),
+              onclick: (event) => new ShowButton(event),
               oncontextmenu: (e) => ContextMenuHandler.Start(e, buttonElement),
               ontouchstart: (e) => ContextMenuHandler.Start(e, buttonElement),
               ontouchend: (e) => ContextMenuHandler.HandleTouchEnd?.(e),

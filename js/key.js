@@ -3,7 +3,7 @@ class Key {
     let old = document.querySelector(".encryption-key");
     if (old) return Key.hide();
 
-    const WorkDiv = HolderDiv("encryption-key");
+    const WorkDiv = cleanWorkDiv("encryption-key");
 
     const line = lineCreator("key-line");
     WorkDiv.appendChild(line);
@@ -38,9 +38,12 @@ class Key {
     );
   }
   static save() {
+    const line = document.querySelector(".PasswordField");
     const KeyValue = document.querySelector(".PasswordField > input");
+    Showindicator(line);
     if (KeyValue.value.length > 0) {
       sendRequest({ type: "Set Key", key: KeyValue.value }).then((callback) => {
+        indicatorRemover();
         if (callback.status == "successful") {
           home.GetButtons();
           showNotification(
@@ -55,8 +58,11 @@ class Key {
     }
   }
   static checker() {
+    const KeyButton = document.querySelector("#key");
+    Showindicator(KeyButton);
     sendRequest({ type: "Key checker", key: localStorage.encKey }).then(
       (response) => {
+        indicatorRemover();
         if (response.status != "successful") {
           Key.KeyViewer();
           document.querySelector("#key").style.backgroundColor = "red";

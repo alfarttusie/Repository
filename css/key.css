@@ -4,7 +4,9 @@
   height: 100%;
   overflow: hidden;
 }
-
+#key {
+  position: relative;
+}
 .key-line {
   border-radius: 8px;
   margin: auto;

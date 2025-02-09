@@ -30,7 +30,7 @@ class Index
 
 
         $token = $_SESSION['session_token'] ?? null;
-        // if ($token && self::loginChecker($token)) return header('Location: home.php');
+        if ($token && self::loginChecker($token)) return header('Location: home.php');
 
 
         self::View();

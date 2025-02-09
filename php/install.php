@@ -143,6 +143,31 @@ class Install
             INSERT INTO `admin_info` (`username`, `password`, `token`, `enckey`) 
             VALUES ('$adminUser', '$adminPassword', '', '') 
             ON DUPLICATE KEY UPDATE username=username;
+            
+            CREATE TABLE IF NOT EXISTS `buttons` (
+                    `id` int NOT NULL AUTO_INCREMENT,
+                    `button` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                    `main` text NOT NULL,
+                    `password` text NOT NULL,
+                    `unique_id` text NOT NULL,
+                    `columns` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                    PRIMARY KEY (`id`)
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                 
+            CREATE TABLE IF NOT EXISTS `setting` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `times` INT NOT NULL DEFAULT 6,
+                `time` INT NOT NULL DEFAULT 1
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            INSERT IGNORE INTO `setting` (`times`, `time`) VALUES (6, 1);
+            
+            CREATE TABLE IF NOT EXISTS `visitors` (
+                    `id` int NOT NULL AUTO_INCREMENT,
+                    `times` int NOT NULL,
+                    `ip` text NOT NULL,
+                    `time` int NOT NULL,
+                    PRIMARY KEY (`id`)
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4
         ";
 
         if (!$conn->multi_query($queries)) {

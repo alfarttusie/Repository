@@ -1,5 +1,7 @@
 class ShowButton {
-  constructor(buttonName) {
+  constructor(event) {
+    const buttonName = event.target.innerText;
+    Showindicator(event.target);
     this.loadData(buttonName);
   }
 
@@ -10,17 +12,15 @@ class ShowButton {
         job: "show Button",
         button: buttonName,
       });
-
+      indicatorRemover();
       if (callback.response === "no data")
-        return this.displayEmptyMessage("لا توجد معلومات");
+        return displayEmptyMessage("لا توجد معلومات");
       if (callback.response === "no columns")
-        return this.displayEmptyMessage("لا توجد أعمدة في هذا الزر");
+        return displayEmptyMessage("لا توجد أعمدة في هذا الزر");
 
-      const holderDiv = home.WorkDiv;
-      holderDiv.innerHTML = "";
+      const holderDiv = cleanWorkDiv("showButton");
 
       callback.data.forEach((data) => {
-        console.log(data);
         const line = lineCreator("ShowButton-line");
 
         const mainContent = this.createMainContent(data.main || "empty");
@@ -58,6 +58,7 @@ class ShowButton {
       label.innerText = `${key} : `;
       const mainValue = this.createElementWithClass("span");
       mainValue.innerText = value;
+      mainValue.ondblclick = copyToClipboard;
 
       wrapper.appendChild(label);
       wrapper.appendChild(mainValue);
@@ -89,18 +90,6 @@ class ShowButton {
     });
 
     return passwordHolder;
-  }
-
-  displayEmptyMessage(message) {
-    const holderDiv = home.WorkDiv;
-    holderDiv.innerHTML = "";
-
-    const msg = this.createElementWithClass("div", "empty-info");
-    const span = this.createElementWithClass("span");
-    span.innerText = message;
-
-    msg.appendChild(span);
-    holderDiv.appendChild(msg);
   }
 
   async showId(id, buttonName) {

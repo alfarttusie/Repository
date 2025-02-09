@@ -180,3 +180,6 @@
     grid-row: 40 / 45;
   }
 }
+.view-password {
+  background-color: transparent;
+}
