@@ -1,8 +1,0 @@
-<?php
-trait DatabaseConfig {
-    private static string $Serverip = 'repository.iq';
-    private static string $ServerUser = 'root';
-    private static string $ServerPassword = '';
-    private static string $database = 'test';
-    private static string $secret = 'c9fad198188daa536f640203b5d1ae3a74ea364807b07e0c4bca392636b12152fe80f123db7ef8b34e735df8215f8e8c40e602f26c6deb45d0c18d9c3b34d0f49c4e24546f2646b86c75c2213bb7ab171ee8451aa0adb19c0103dc8d0f3234afd84462f09788b28326026eb489aa1bad2545ff4b26a90f1aab76fbf8d8bccbe54392bc909c0fdf8acb3a0a4564290bee131f637126dabfad25b0c672a2891aec03a1c95e54fdefcd7366de1da9b598ad4dcb11b5001db4e8094dc9575796713bf1fe442d1cd9ea21e7ecf020553613f2bf9f36669e44a9d6c0b8269b8a125d050dbb0d51170f87f52aa9152f515c356ecf567e45f5670d1fbe853f67efb9d349df4829651cfbf5c99409ce0c3104833a5f46961f7dba52f910a69f714a7fd3a1588742bcce49d07f32e7d8104d1d';
-}

@@ -40,7 +40,7 @@ class Install
             return false;
         }
     }
-    
+
     /**
      * Checks if the specified database exists.
      */
@@ -50,61 +50,6 @@ class Install
         $query = "SHOW DATABASES LIKE '$database'";
         $result = self::$dbConnection->query($query);
         return $result && $result->num_rows > 0;
-    }
-
-    /**
-     * Creates the database and essential tables.
-     */
-    private static function dbCreate(string $database, string $adminUser, string $adminPassword): void
-    {
-        $conn = self::$dbConnection;
-        $database = $conn->real_escape_string($database);
-        $conn->query("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $conn->select_db($database);
-        $adminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
-
-        $queries = "
-            CREATE TABLE IF NOT EXISTS `admin_info` (
-                `id` INT AUTO_INCREMENT PRIMARY KEY,
-                `username` VARCHAR(255) NOT NULL UNIQUE,
-                `password` TEXT NOT NULL,
-                `token` TEXT NOT NULL,
-                `enckey` VARCHAR(20) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-            INSERT INTO `admin_info` (`username`, `password`, `token`, `enckey`) 
-            VALUES ('$adminUser', '$adminPassword', '', '') 
-            ON DUPLICATE KEY UPDATE username=username;
-            
-            CREATE TABLE IF NOT EXISTS `buttons` (
-                    `id` int NOT NULL AUTO_INCREMENT,
-                    `button` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-                    `main` text NOT NULL,
-                    `password` text NOT NULL,
-                    `unique_id` text NOT NULL,
-                    `columns` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-                 
-            CREATE TABLE IF NOT EXISTS `setting` (
-                `id` INT AUTO_INCREMENT PRIMARY KEY,
-                `times` INT NOT NULL DEFAULT 6,
-                `time` INT NOT NULL DEFAULT 1
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-            INSERT IGNORE INTO `setting` (`times`, `time`) VALUES (6, 1);
-            
-            CREATE TABLE IF NOT EXISTS `visitors` (
-                    `id` int NOT NULL AUTO_INCREMENT,
-                    `times` int NOT NULL,
-                    `ip` text NOT NULL,
-                    `time` int NOT NULL,
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4
-        ";
-
-        if (!$conn->multi_query($queries)) {
-            self::resJson(500, ['error' => 'Database creation failed: ' . $conn->error]);
-        }
     }
 
     /**
@@ -148,6 +93,7 @@ class Install
         $post = json_decode($postData, true);
         if (!is_array($post)) self::resJson(400, ['error' => 'Invalid JSON data']);
 
+        $type = $post['type'] ?? 'install';
         $dbUser = $post['db_username'] ?? null;
         $dbPassword = $post['db_password'] ?? '';
         $dbName = $post['db_name'] ?? null;
@@ -155,14 +101,53 @@ class Install
         $loginUser = $post['username'] ?? null;
         $loginPassword = $post['Password'] ?? null;
 
-        if (!$dbUser || !$dbName || !$loginUser || !$loginPassword) self::resJson(400, ['error' => 'Missing required fields']);
+        if (!$dbUser || !$dbName) self::resJson(400, ['error' => 'Missing required fields']);
         if (!self::dbCheck($serverIp)) self::resJson(503, ['error' => 'MySQL service unavailable']);
         if (!self::dbAuth($dbUser, $dbPassword, $serverIp)) self::resJson(401, ['error' => 'Invalid database credentials']);
-        if (self::dbExists($dbName)) self::resJson(200, ['error' => 'Database already exists']);
 
-        self::dbCreate($dbName, $loginUser, $loginPassword);
+        if ($type === 'install') {
+            if (!$loginUser || !$loginPassword) self::resJson(400, ['error' => 'Missing admin credentials for installation']);
+            if (self::dbExists($dbName)) self::resJson(200, ['error' => 'Database already exists']);
+
+            self::dbCreate($dbName, $loginUser, $loginPassword);
+        } elseif ($type === 'backup') {
+            if (!self::dbExists($dbName)) self::resJson(404, ['error' => 'Database not found']);
+        } else {
+            self::resJson(400, ['error' => 'Invalid type specified']);
+        }
+
         self::saveDbConfig($dbUser, $dbPassword, $dbName, $serverIp);
-        self::resJson(201, ['success' => 'Database created successfully, configuration saved in db.php']);
+        self::resJson(201, ['success' => 'Configuration saved in db.php']);
+    }
+
+    /**
+     * Creates the database and essential tables.
+     */
+    private static function dbCreate(string $database, string $adminUser, string $adminPassword): void
+    {
+        $conn = self::$dbConnection;
+        $database = $conn->real_escape_string($database);
+        $conn->query("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        $conn->select_db($database);
+        $adminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
+        $queries = "
+            CREATE TABLE IF NOT EXISTS `admin_info` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `username` VARCHAR(255) NOT NULL UNIQUE,
+                `password` TEXT NOT NULL,
+                `token` TEXT NOT NULL,
+                `enckey` VARCHAR(20) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+            INSERT INTO `admin_info` (`username`, `password`, `token`, `enckey`) 
+            VALUES ('$adminUser', '$adminPassword', '', '') 
+            ON DUPLICATE KEY UPDATE username=username;
+        ";
+
+        if (!$conn->multi_query($queries)) {
+            self::resJson(500, ['error' => 'Database creation failed: ' . $conn->error]);
+        }
     }
 }
 

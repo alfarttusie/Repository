@@ -34,7 +34,8 @@
             <label for="Password">Administration Password:</label>
             <input type="text" id="Password" class="Password" placeholder="Enter Administration Password" required>
         </div>
-        <button type="submit" class="install-button">Install</button>
+        <button type="submit" class="install-button" value="install">Install</button>
+        <button type="submit" class="install-button" value="backup">backup</button>
     </form>
     <script src="js/install.js"></script>
     <script src='js/assistant.js'></script>
