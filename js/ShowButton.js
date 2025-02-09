@@ -20,7 +20,8 @@ class ShowButton {
       holderDiv.innerHTML = "";
 
       callback.data.forEach((data) => {
-        const line = this.createElementWithClass("div", "line");
+        console.log(data);
+        const line = lineCreator("ShowButton-line");
 
         const mainContent = this.createMainContent(data.main || "empty");
         line.appendChild(mainContent);
@@ -32,6 +33,7 @@ class ShowButton {
 
         const detailsButton = this.createElementWithClass("button");
         detailsButton.innerText = "تفاصيل";
+        detailsButton.classList.add("detailsButton");
         detailsButton.onclick = () => this.showId(data.id, buttonName);
         line.appendChild(detailsButton);
 
@@ -79,9 +81,7 @@ class ShowButton {
       const wrapper = this.createElementWithClass("div", "password-item");
       const label = this.createElementWithClass("label");
       label.innerText = `${key} : `;
-      const passwordValue = this.createElementWithClass("input");
-      passwordValue.type = "password";
-      passwordValue.value = value;
+      const passwordValue = PasswordField({ type: "password", value: value });
 
       wrapper.appendChild(label);
       wrapper.appendChild(passwordValue);
@@ -118,7 +118,7 @@ class ShowButton {
       Object.entries(callback.data).forEach(([key, value]) => {
         if (key === "id") return;
 
-        const line = this.createElementWithClass("div", "line");
+        const line = lineCreator("ShowButton-details");
         const label = this.createElementWithClass("label");
         label.innerText = `${key} : `;
         const valueSpan = this.createElementWithClass("span");
