@@ -15,14 +15,6 @@ function changeDirection(input) {
     input.style.direction = "ltr";
     input.style.textAlign = "left";
   }
-  try {
-    const viewBtn = document.querySelector(".view");
-    if (input.style.direction == "ltr") {
-      viewBtn.style.gridColumn = "70 / 74";
-    } else {
-      viewBtn.style.gridColumn = "26 / 31";
-    }
-  } catch (err) {}
 }
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -159,20 +151,6 @@ function HolderDiv(CssClass = null) {
   Holder.appendChild(Work);
   return Work;
 }
-function lineCreator(CssClass = null) {
-  const line = document.createElement("div");
-  line.classList.add("line");
-  if (CssClass) line.classList.add(CssClass);
-  return line;
-}
-function Button(element) {
-  const Button = document.createElement("button");
-  Object.entries(element).forEach(([key, value]) => {
-    if (key in Button) Button[key] = value;
-    else Button.setAttribute(key, value);
-  });
-  return Button;
-}
 function ShowPassword(event) {
   const button = event.currentTarget;
   let emoji = button.textContent == "🙉" ? "🙈" : "🙉";
@@ -226,11 +204,10 @@ function copyToClipboard(event) {
   showNotification(`تم النسخ`);
 }
 function cleanWorkDiv(element = null) {
-  const DivClass = element ? element : "WorkDiv";
   const Holder = document.querySelector(".left");
   Holder.innerHTML = "";
   const NewDiv = document.createElement("div");
-  NewDiv.classList.add(DivClass);
+  if (element) NewDiv.classList.add(element);
   Holder.appendChild(NewDiv);
   return NewDiv;
 }
@@ -246,4 +223,69 @@ function displayEmptyMessage(Text) {
   span.innerText = Text;
   div.appendChild(span);
   MainDiv.appendChild(div);
+}
+function SetStyle(element, style) {
+  Object.entries(style).forEach(
+    ([property, value]) => (element.style[property] = value)
+  );
+}
+function findButtonByText(text) {
+  const button = Array.from(document.querySelectorAll("button")).find((btn) =>
+    btn.innerHTML.includes(text)
+  );
+  return button;
+}
+/** creates elements */
+{
+  function Button(element) {
+    const Button = document.createElement("button");
+    Object.entries(element).forEach(([key, value]) => {
+      if (key in Button) Button[key] = value;
+      else Button.setAttribute(key, value);
+    });
+    return Button;
+  }
+  function Input(element = null) {
+    const input = document.createElement("input");
+    if (element) {
+      Object.entries(element).forEach(([key, value]) => {
+        if (key in input) input[key] = value;
+        else input.setAttribute(key, value);
+      });
+    }
+    input.oninput = (event) => {
+      changeDirection(event.target);
+    };
+    input.onmouseleave = () => {
+      if (input.value < 1) input.style.textAlign = "center";
+    };
+
+    return input;
+  }
+  function Label(text, htmlFor = "") {
+    const label = document.createElement("label");
+    label.innerText = text;
+    if (htmlFor) label.htmlFor = htmlFor;
+    return label;
+  }
+  function lineCreator(CssClass = null) {
+    const line = document.createElement("div");
+    line.classList.add("line");
+    if (CssClass) line.classList.add(CssClass);
+    return line;
+  }
+  function createOption(value, innerText) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.innerText = innerText;
+    return option;
+  }
+  function Span(element) {
+    const span = document.createElement("span");
+    Object.entries(element).forEach(([key, value]) => {
+      if (key in span) span[key] = value;
+      else span.setAttribute(key, value);
+    });
+    return span;
+  }
 }

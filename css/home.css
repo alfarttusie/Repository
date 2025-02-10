@@ -91,3 +91,45 @@ body {
   width: 100%;
   height: 100%;
 }
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield !important;
+  appearance: none;
+}
+select {
+  cursor: pointer;
+  max-width: 120px;
+  color: rgb(255, 255, 255);
+  background-color: #4b9e89;
+  border-left: 1px solid rgba(200, 238, 225, 0.8);
+  border-right: 1px solid rgba(200, 238, 225, 0.8);
+  border-radius: 6px;
+  padding: 0.1%;
+  font-size: clamp(10px, 70%, 20px);
+  line-height: 1.7;
+  width: 100%;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+select::-ms-expand {
+  display: none;
+}
+select:hover {
+  background-color: #04251d5d;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(200, 238, 225, 0.8);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+option {
+  border: none;
+  color: rgba(31, 4, 4, 0.596);
+  padding: 10px;
+  background-color: rgba(31, 4, 4, 0.596);
+}

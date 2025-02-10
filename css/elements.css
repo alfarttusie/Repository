@@ -1,5 +1,6 @@
 label {
   display: flex;
+  color: white;
   justify-content: center;
   align-items: center;
   font-size: clamp(10px, 3vw, 24px);

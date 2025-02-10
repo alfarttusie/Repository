@@ -30,10 +30,10 @@ class Home
                         <link rel='stylesheet' href='css/elements.css'>
                         <link rel='stylesheet' href='css/key.css'>
                         <link rel='stylesheet' href='css/notification.css'>
-                        <link rel='stylesheet' href='css/add-button.css'>
                         <link rel='stylesheet' href='css/contextMenu.css'>
                         <link rel='stylesheet' href='css/insertdata.css'>
                         <link rel='stylesheet' href='css/showButton.css'>
+                        <script src='js/assistant.js'></script>
                         <title>المستودع</title>
                     </head>
                 <body>
@@ -53,7 +53,7 @@ class Home
                         <div class='right'>
                         </div>
                         
-                    <script src='js/assistant.js'></script>
+                    
                     <script src='js/addbutton.js'></script>
                     <script src='js/contextMenu.js'></script>
                     <script src='js/key.js'></script>

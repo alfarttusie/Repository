@@ -1,7 +1,82 @@
 class ShowButton {
+  static get Styel() {
+    return {
+      mainDiv: {
+        padding: "1%",
+        width: "100%",
+        height: "100%",
+        overflow: "auto",
+      },
+      line: {
+        margin: "1.5% auto",
+        "border-radius": "8px",
+        "background-color": "rgba(0, 0, 0, 0.521)",
+      },
+      mainHolder: {
+        padding: "1%",
+        display: "flex",
+        "justify-content": "center",
+        "align-items": "center",
+        "flex-wrap": "wrap",
+        width: "50%",
+        height: "100%",
+        overflow: "hidden",
+      },
+      mainItem: {
+        padding: "1%",
+        display: "flex",
+        "justify-content": "center",
+        "align-items": "center",
+        "flex-wrap": "wrap",
+        width: "100%",
+        height: "100%",
+      },
+      mainItemSpan: {
+        "text-align": "center",
+        contain: "content",
+        color: "wheat",
+        width: "80%",
+      },
+      label: {
+        width: "20%",
+      },
+      passwordsHolder: {
+        width: "50%",
+        height: "100%",
+      },
+      passwordItem: {
+        display: "flex",
+        "justify-content": "center",
+        "align-items": "center",
+        width: "100%",
+        height: "100%",
+      },
+      PasswordField: {
+        backgroundColor: "transparent",
+      },
+      detailsButton: {
+        cursor: "pointer",
+        color: "wheat",
+        width: "15%",
+        height: "100%",
+        backgroundColor: "transparent",
+      },
+      ShowButtonDetails: {
+        cursor: "pointer",
+        color: "wheat",
+        width: "15%",
+        height: "100%",
+        backgroundColor: "transparent",
+      },
+      ShowButtonDetailsLabel: {
+        width: "50%",
+        color: "wheat",
+      },
+    };
+  }
   constructor(event) {
-    const buttonName = event.target.innerText;
-    Showindicator(event.target);
+    const buttonName = event.target ? event.target.innerText : event;
+    Showindicator(findButtonByText(buttonName));
     this.loadData(buttonName);
   }
 
@@ -18,10 +93,12 @@ class ShowButton {
       if (callback.response === "no columns")
         return displayEmptyMessage("لا توجد أعمدة في هذا الزر");
 
-      const holderDiv = cleanWorkDiv("showButton");
+      const holderDiv = cleanWorkDiv();
+      SetStyle(holderDiv, ShowButton.Styel.mainDiv);
 
       callback.data.forEach((data) => {
-        const line = lineCreator("ShowButton-line");
+        const line = lineCreator();
+        SetStyle(line, ShowButton.Styel.line);
 
         const mainContent = this.createMainContent(data.main || "empty");
         line.appendChild(mainContent);
@@ -31,10 +108,12 @@ class ShowButton {
         );
         line.appendChild(passwordContent);
 
-        const detailsButton = this.createElementWithClass("button");
-        detailsButton.innerText = "تفاصيل";
-        detailsButton.classList.add("detailsButton");
-        detailsButton.onclick = () => this.showId(data.id, buttonName);
+        const detailsButton = Button({
+          innerText: "تفاصيل",
+          onclick: () => this.showId(data.id, buttonName),
+        });
+        SetStyle(detailsButton, ShowButton.Styel.detailsButton);
+
         line.appendChild(detailsButton);
 
         holderDiv.appendChild(line);
@@ -50,17 +129,18 @@ class ShowButton {
       return this.createMessageElement("لا يتواجد أعمدة");
     }
 
-    const mainHolder = this.createElementWithClass("div", "main-holder");
+    const mainHolder = document.createElement("div");
+    SetStyle(mainHolder, ShowButton.Styel.mainHolder);
 
     Object.entries(mains).forEach(([key, value]) => {
-      const wrapper = this.createElementWithClass("div", "main-item");
-      const label = this.createElementWithClass("label");
-      label.innerText = `${key} : `;
-      const mainValue = this.createElementWithClass("span");
-      mainValue.innerText = value;
-      mainValue.ondblclick = copyToClipboard;
+      const wrapper = document.createElement("div");
+      SetStyle(wrapper, ShowButton.Styel.mainItem);
 
-      wrapper.appendChild(label);
+      wrapper.appendChild(Label(key));
+
+      const mainValue = Span({ innerText: value, ondblclick: copyToClipboard });
+      SetStyle(mainValue, ShowButton.Styel.mainItemSpan);
+
       wrapper.appendChild(mainValue);
       mainHolder.appendChild(wrapper);
     });
@@ -73,18 +153,18 @@ class ShowButton {
       return this.createMessageElement("لا يتوجد أعمدة");
     }
 
-    const passwordHolder = this.createElementWithClass(
-      "div",
-      "passwords-holder"
-    );
+    const passwordHolder = document.createElement("div");
+    SetStyle(passwordHolder, ShowButton.Styel.passwordsHolder);
 
     Object.entries(passwords).forEach(([key, value]) => {
-      const wrapper = this.createElementWithClass("div", "password-item");
-      const label = this.createElementWithClass("label");
-      label.innerText = `${key} : `;
-      const passwordValue = PasswordField({ type: "password", value: value });
+      const wrapper = document.createElement("div");
+      SetStyle(wrapper, ShowButton.Styel.passwordItem);
 
-      wrapper.appendChild(label);
+      wrapper.appendChild(Label(key));
+
+      const passwordValue = PasswordField({ type: "password", value: value });
+      SetStyle(passwordValue, ShowButton.Styel.PasswordField);
+
       wrapper.appendChild(passwordValue);
       passwordHolder.appendChild(wrapper);
     });
@@ -108,12 +188,12 @@ class ShowButton {
         if (key === "id") return;
 
         const line = lineCreator("ShowButton-details");
-        const label = this.createElementWithClass("label");
-        label.innerText = `${key} : `;
-        const valueSpan = this.createElementWithClass("span");
-        valueSpan.innerText = value;
+        SetStyle(line, ShowButton.Styel.ShowButtonDetails);
 
-        line.appendChild(label);
+        line.appendChild(Label(key));
+
+        const valueSpan = Span({ innerText: value });
+
         line.appendChild(valueSpan);
         holderDiv.appendChild(line);
       });
@@ -124,14 +204,9 @@ class ShowButton {
   }
 
   createMessageElement(message) {
-    const messageDiv = this.createElementWithClass("div", "empty-message");
+    const messageDiv = document.createElement("div");
     messageDiv.innerText = message;
+    messageDiv.classList.add("empty-message");
     return messageDiv;
-  }
-
-  createElementWithClass(tag, className = "") {
-    const element = document.createElement(tag);
-    if (className) element.classList.add(className);
-    return element;
   }
 }
