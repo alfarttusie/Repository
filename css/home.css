@@ -75,8 +75,9 @@ body {
 }
 
 .left {
-  grid-column: 1/84;
-  grid-row: 10/100;
+  border-radius: 8px;
+  grid-column: 1/86;
+  grid-row: 11/100;
 }
 .WorkDiv {
   width: 100%;
@@ -85,11 +86,19 @@ body {
 .empty-info {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   color: wheat;
-  font-size: clamp(10px, 2.3vw, 24px);
   width: 100%;
   height: 100%;
+  & span {
+    margin: 3% auto;
+    font-weight: bold;
+    padding: 1%;
+    text-align: center;
+    width: 70%;
+    font-size: clamp(10px, 3vw, 26px);
+    border-bottom: 1px solid black;
+  }
 }
 input[type="number"] {
   -webkit-appearance: none;

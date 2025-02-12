@@ -167,34 +167,6 @@ function ShowPassword(event) {
     }, 1500);
   }
 }
-function PasswordField(element) {
-  const Holder = document.createElement("p");
-  Holder.classList.add("PasswordField");
-
-  const viewButton = document.createElement("button");
-  viewButton.innerText = "🙈";
-  viewButton.onclick = ShowPassword;
-  viewButton.addEventListener(
-    "mouseenter",
-    (event) => (viewButton.innerText = "🙊")
-  );
-  viewButton.addEventListener("mouseleave", (event) => {
-    const input = viewButton.previousElementSibling;
-    if (input.type == "text") viewButton.innerText = "🙉";
-    else viewButton.innerText = "🙈";
-  });
-
-  const input = document.createElement("input");
-  input.ondblclick = copyToClipboard;
-
-  Object.entries(element).forEach(([key, value]) => {
-    if (key in input) input[key] = value;
-    else input.setAttribute(key, value);
-  });
-  Holder.appendChild(input);
-  Holder.appendChild(viewButton);
-  return Holder;
-}
 function copyToClipboard(event) {
   const data =
     event.srcElement.textContent.length > 0
@@ -206,12 +178,16 @@ function copyToClipboard(event) {
 function cleanWorkDiv(element = null) {
   const Holder = document.querySelector(".left");
   Holder.innerHTML = "";
-  const NewDiv = document.createElement("div");
-  if (element) NewDiv.classList.add(element);
-  Holder.appendChild(NewDiv);
-  return NewDiv;
+  if (element) {
+    const NewDiv = document.createElement("div");
+    if (element) NewDiv.classList.add(element);
+    Holder.appendChild(NewDiv);
+    return NewDiv;
+  } else {
+    return Holder;
+  }
 }
-function element(type = null, element) {
+function element_old(type = null, element) {
   type = Object.entries(element).forEach((key, value) =>
     console.log(`${key} ==> ${value}`)
   );
@@ -245,6 +221,35 @@ function findButtonByText(text) {
     });
     return Button;
   }
+  function PasswordField(element) {
+    const Holder = document.createElement("p");
+    Holder.classList.add("PasswordField");
+
+    const viewButton = document.createElement("button");
+    viewButton.innerText = "🙈";
+    viewButton.onclick = ShowPassword;
+    viewButton.addEventListener(
+      "mouseenter",
+      (event) => (viewButton.innerText = "🙊")
+    );
+    viewButton.addEventListener("mouseleave", (event) => {
+      const input = viewButton.previousElementSibling;
+      if (input.type == "text") viewButton.innerText = "🙉";
+      else viewButton.innerText = "🙈";
+    });
+
+    const input = document.createElement("input");
+    input.ondblclick = copyToClipboard;
+    input.type = "password";
+
+    Object.entries(element).forEach(([key, value]) => {
+      if (key in input) input[key] = value;
+      else input.setAttribute(key, value);
+    });
+    Holder.appendChild(input);
+    Holder.appendChild(viewButton);
+    return Holder;
+  }
   function Input(element = null) {
     const input = document.createElement("input");
     if (element) {
@@ -274,12 +279,7 @@ function findButtonByText(text) {
     if (CssClass) line.classList.add(CssClass);
     return line;
   }
-  function createOption(value, innerText) {
-    const option = document.createElement("option");
-    option.value = value;
-    option.innerText = innerText;
-    return option;
-  }
+
   function Span(element) {
     const span = document.createElement("span");
     Object.entries(element).forEach(([key, value]) => {
@@ -287,5 +287,38 @@ function findButtonByText(text) {
       else span.setAttribute(key, value);
     });
     return span;
+  }
+  function Element(Parameters = null) {
+    try {
+      const elementType = Parameters["type"] ? Parameters["type"] : "div";
+      const element = document.createElement(elementType);
+
+      if (Parameters) {
+        if (Parameters["style"]) {
+          Object.entries(Parameters["style"]).forEach(
+            ([property, value]) => (element.style[property] = value)
+          );
+        }
+        if (Parameters["Parrent"]) {
+          Parameters["Parrent"].appendChild(element);
+        }
+        if (Parameters["probtype"]) {
+          Object.entries(Parameters["probtype"]).forEach(([key, value]) => {
+            if (key in element) element[key] = value;
+            else element.setAttribute(key, value);
+          });
+        }
+      }
+      return element;
+    } catch (error) {
+      console.log(`Element ==> ${error}`);
+      return null;
+    }
+  }
+  function createOption(value, innerText) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.innerText = innerText;
+    return option;
   }
 }

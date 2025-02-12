@@ -34,6 +34,7 @@ class Home
                         <link rel='stylesheet' href='css/insertdata.css'>
                         <link rel='stylesheet' href='css/showButton.css'>
                         <script src='js/assistant.js'></script>
+                        <script src='js/style.js'></script>
                         <title>المستودع</title>
                     </head>
                 <body>

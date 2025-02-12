@@ -54,6 +54,7 @@ class Requests
     public function __construct($data)
     {
         try {
+            // sleep(1);
             $headers = @getallheaders();
             $bearerToken = $headers['Bearer'] ?? null;
             $data = json_decode($data, true);

@@ -1,5 +1,5 @@
 class ShowButton {
-  static get Styel() {
+  get Style() {
     return {
       mainDiv: {
         padding: "1%",
@@ -7,10 +7,39 @@ class ShowButton {
         height: "100%",
         overflow: "auto",
       },
+
+      /** header style */
+      header: {
+        padding: "0.7%",
+        display: "flex",
+        justifyContent: "space-evenly",
+        alignItems: "start",
+        width: "100%",
+        height: "100%;",
+        borderBottom: "1px solid wheat",
+      },
+      headerLabel: {
+        width: "70%",
+        height: "100%;",
+      },
+      SearchInput: {
+        padding: "0.5%",
+      },
+
+      /** element style */
       line: {
         margin: "1.5% auto",
         "border-radius": "8px",
         "background-color": "rgba(0, 0, 0, 0.521)",
+      },
+      Input: {
+        borderRight: "1px solid wheat",
+        borderLeft: "1px solid wheat",
+        outline: "none",
+        textAlign: "center",
+        backgroundColor: "transparent",
+        backgroundColor: "#4b9e898a",
+        width: "50%",
       },
       mainHolder: {
         padding: "1%",
@@ -87,44 +116,71 @@ class ShowButton {
         job: "show Button",
         button: buttonName,
       });
+
       indicatorRemover();
+
       if (callback.response === "no data")
         return displayEmptyMessage("لا توجد معلومات");
       if (callback.response === "no columns")
         return displayEmptyMessage("لا توجد أعمدة في هذا الزر");
 
-      const holderDiv = cleanWorkDiv();
-      SetStyle(holderDiv, ShowButton.Styel.mainDiv);
+      const holderDiv = cleanWorkDiv("show-button");
+      SetStyle(holderDiv, Style.MainDiv);
 
-      callback.data.forEach((data) => {
-        const line = lineCreator();
-        SetStyle(line, ShowButton.Styel.line);
+      /** header  */
+      const Header = this.createHeader(buttonName);
+      holderDiv.appendChild(Header);
 
-        const mainContent = this.createMainContent(data.main || "empty");
-        line.appendChild(mainContent);
+      // callback.data.forEach((data) => {
+      //   const line = Element({
+      //     parent: holderDiv,
+      //     style: this.Styel.line,
+      //     probtype: { class: "line" },
+      //   });
 
-        const passwordContent = this.createPasswordFields(
-          data.passwords || "empty"
-        );
-        line.appendChild(passwordContent);
-
-        const detailsButton = Button({
-          innerText: "تفاصيل",
-          onclick: () => this.showId(data.id, buttonName),
-        });
-        SetStyle(detailsButton, ShowButton.Styel.detailsButton);
-
-        line.appendChild(detailsButton);
-
-        holderDiv.appendChild(line);
-      });
+      //   const mainContent = this.createMainContent(data.main || "empty");
+      //   line.appendChild(mainContent);
+      //   const passwordContent = this.createPasswordFields(
+      //     data.passwords || "empty"
+      //   );
+      //   //   line.appendChild(passwordContent);
+      //   //   const detailsButton = Button({
+      //   //     innerText: "تفاصيل",
+      //   //     onclick: () => this.showId(data.id, buttonName),
+      //   //   });
+      //   //   SetStyle(detailsButton, ShowButton.Styel.detailsButton);
+      //   //   line.appendChild(detailsButton);
+      //   holderDiv.appendChild(line);
+      // });
     } catch (error) {
       console.error("Error loading button data:", error);
-      this.displayEmptyMessage("حدث خطأ أثناء تحميل البيانات");
+      // this.displayEmptyMessage("حدث خطأ أثناء تحميل البيانات");
     }
   }
+  createHeader(buttonName) {
+    const Header = Element({ type: "header", style: this.Style.header });
 
+    /** Search input */
+    const SearchInput = Input({ type: "text", placeholder: "ابحث" });
+    SetStyle(SearchInput, Style.Input);
+    SetStyle(SearchInput, this.Style.SearchInput);
+    // SetStyle(SearchInput, Style.Input);
+    Header.appendChild(SearchInput);
+
+    /** NameLabel */
+    Element({
+      Parrent: Header,
+      type: "label",
+      style: this.Style.headerLabel,
+      probtype: {
+        innerText: buttonName,
+      },
+    });
+
+    return Header;
+  }
   createMainContent(mains) {
+    console.log(mains);
     if (mains === "empty") {
       return this.createMessageElement("لا يتواجد أعمدة");
     }
@@ -149,12 +205,11 @@ class ShowButton {
   }
 
   createPasswordFields(passwords) {
-    if (passwords === "empty") {
+    if (passwords === "empty")
       return this.createMessageElement("لا يتوجد أعمدة");
-    }
 
-    const passwordHolder = document.createElement("div");
-    SetStyle(passwordHolder, ShowButton.Styel.passwordsHolder);
+    // const passwordHolder = document.createElement("div");
+    // SetStyle(passwordHolder, ShowButton.Styel.passwordsHolder);
 
     Object.entries(passwords).forEach(([key, value]) => {
       const wrapper = document.createElement("div");
@@ -204,9 +259,11 @@ class ShowButton {
   }
 
   createMessageElement(message) {
-    const messageDiv = document.createElement("div");
-    messageDiv.innerText = message;
-    messageDiv.classList.add("empty-message");
-    return messageDiv;
+    return Element({
+      probtype: {
+        class: "empty-message",
+        innerText: message,
+      },
+    });
   }
 }

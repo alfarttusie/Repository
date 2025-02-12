@@ -22,7 +22,6 @@ class Key {
       PasswordField({
         value: "test_key",
         placeholder: "Enter encryption key",
-        type: "password",
         onkeydown: (event) =>
           event.key == "Enter" ? SaveButton.click() : null,
       })
