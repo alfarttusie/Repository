@@ -34,30 +34,6 @@ function ShowMsg(Text) {
   document.body.appendChild(Msg);
   Msg.textContent = Text;
 }
-function sendRequest(data) {
-  return new Promise((resolve, reject) => {
-    const http = new XMLHttpRequest();
-    http.open("POST", "php/requests.php", true);
-    http.setRequestHeader("Content-type", "application/json");
-    if (localStorage.bearer)
-      http.setRequestHeader("Bearer", localStorage.bearer);
-    http.onload = () => {
-      try {
-        localStorage.bearer = http.getResponseHeader("Bearer");
-        try {
-          const response = JSON.parse(http.responseText);
-          resolve(response);
-        } catch (error) {
-          resolve("Invalid response");
-        }
-      } catch (error) {
-        resolve("Bad response");
-      }
-    };
-    http.onerror = () => resolve("Server is unreachable");
-    http.send(JSON.stringify(data));
-  });
-}
 function responseHandler(response) {
   switch (response) {
     case "mysql off":
@@ -321,4 +297,31 @@ function findButtonByText(text) {
     option.innerText = innerText;
     return option;
   }
+}
+
+/** after upgrade */
+
+function sendRequest(data) {
+  return new Promise((resolve, reject) => {
+    const http = new XMLHttpRequest();
+    http.open("POST", "php/requests.php", true);
+    http.setRequestHeader("Content-type", "application/json");
+    if (localStorage.bearer)
+      http.setRequestHeader("Bearer", localStorage.bearer);
+    http.onload = () => {
+      try {
+        localStorage.bearer = http.getResponseHeader("Bearer");
+        try {
+          const response = JSON.parse(http.responseText);
+          resolve(response);
+        } catch (error) {
+          resolve("Invalid response");
+        }
+      } catch (error) {
+        resolve("Bad response");
+      }
+    };
+    http.onerror = () => resolve("Server is unreachable");
+    http.send(JSON.stringify(data));
+  });
 }
