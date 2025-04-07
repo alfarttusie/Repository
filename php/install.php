@@ -88,10 +88,10 @@ class Install
      */
     public function __construct(string $postData)
     {
-        if (file_exists('db.php')) self::resJson(400, ['debug' => 'Repository already installed']);
+        if (file_exists('db.php')) self::resJson(400, ['error' => 'installed']);
 
         $post = json_decode($postData, true);
-        if (!is_array($post)) self::resJson(400, ['error' => 'Invalid JSON data']);
+        if (!is_array($post)) self::resJson(400, ['error' => 'JSON']);
 
         $type = $post['type'] ?? 'install';
         $dbUser = $post['db_username'] ?? null;
@@ -102,12 +102,12 @@ class Install
         $loginPassword = $post['Password'] ?? null;
 
         if (!$dbUser || !$dbName) self::resJson(400, ['error' => 'Missing required fields']);
-        if (!self::dbCheck($serverIp)) self::resJson(503, ['error' => 'MySQL service unavailable']);
-        if (!self::dbAuth($dbUser, $dbPassword, $serverIp)) self::resJson(401, ['error' => 'Invalid database credentials']);
+        if (!self::dbCheck($serverIp)) self::resJson(503, ['error' => 'db_error']);
+        if (!self::dbAuth($dbUser, $dbPassword, $serverIp)) self::resJson(401, ['error' => 'credentials']);
 
         if ($type === 'install') {
             if (!$loginUser || !$loginPassword) self::resJson(400, ['error' => 'Missing admin credentials for installation']);
-            if (self::dbExists($dbName)) self::resJson(200, ['error' => 'Database already exists']);
+            if (self::dbExists($dbName)) self::resJson(200, ['error' => 'exists']);
 
             self::dbCreate($dbName, $loginUser, $loginPassword);
         } elseif ($type === 'backup') {

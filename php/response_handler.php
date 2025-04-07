@@ -36,7 +36,7 @@ class Response
         }
         return self::createJwt($payload);
     }
-    public function __construct(int $code, array $data = null, $debug = false, array $payload = null, $link = null)
+    public function __construct(int $code, $data = null, $debug = false,  $payload = null, $link = null)
     {
         self::$data = $data;
         self::$debug = ($debug) ? true : self::$debug;

@@ -1,4 +1,28 @@
 class Install {
+  Msgs = {
+    en: {
+      start: "Install class initialized",
+      success: "Installation completed successfully!",
+      error: "An error occurred during installation!",
+      JSON: "Invalid JSON data",
+      installed: "Repository already installed",
+      db_error: "Database connection error!",
+      credentials: "Invalid database credentials",
+      exists: "Database already exists",
+      success: "Configuration saved in db.php",
+    },
+    ar: {
+      start: "ابدأ التثبيت",
+      success: "تمت عملية التثبيت بنجاح!",
+      error: "حدث خطأ أثناء التثبيت!",
+      JSON: "بيانات JSON غير صالحة",
+      installed: "تم تثبيت المستودع بالفعل",
+      db_error: "خطأ في اتصال قاعدة البيانات!",
+      credentials: "معلومات الاتصال بقاعدة البيانات غير صحيحة",
+      exists: "قاعدة البيانات موجودة بالفعل",
+      success: "تم حفظ المعلومات في db.php",
+    },
+  };
   sendRequest(data) {
     return new Promise((resolve, reject) => {
       const http = new XMLHttpRequest();
@@ -41,12 +65,21 @@ class Install {
     document.body.appendChild(Msg);
     Msg.textContent = Text;
   }
+  get lang() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentLang = urlParams.get("lang") || "en";
+    return currentLang === "ar" ? "ar" : "en";
+  }
+  getMessage(text) {
+    return this.Msgs[this.lang][text];
+  }
   constructor() {
+    console.log();
+    console.log(this.getMessage("start"));
     let form = document.querySelector("form");
 
     form.onsubmit = (event) => {
       event.preventDefault();
-      console.log();
 
       let db_username = document.querySelector(".db_username").value.trim();
       let db_password = document.querySelector(".db_password").value.trim();
@@ -54,7 +87,6 @@ class Install {
       let username = document.querySelector(".username").value.trim();
       let Password = document.querySelector(".Password").value.trim();
       const type = event.submitter.value;
-
       if (!db_username || !db_name) {
         alert("Please fill in all required fields!");
         return;
@@ -76,11 +108,17 @@ class Install {
           alert("Installation completed successfully!");
           window.location.href = callback.redirect || "index.php";
         } else {
-          ShowMsg(callback.error);
+          const errorMsg =
+            this.getMessage(callback.error) ?? this.getMessage("error");
+          console.log(callback.error);
+          showAnimatedMessage(errorMsg);
+          console.log(errorMsg);
         }
       });
     };
   }
 }
 
-new Install();
+document.addEventListener("DOMContentLoaded", () => {
+  new Install();
+});

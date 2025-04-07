@@ -300,6 +300,9 @@ function findButtonByText(text) {
 }
 
 /** after upgrade */
+function Test() {
+  alert("test");
+}
 
 function sendRequest(data) {
   return new Promise((resolve, reject) => {
@@ -324,4 +327,60 @@ function sendRequest(data) {
     http.onerror = () => resolve("Server is unreachable");
     http.send(JSON.stringify(data));
   });
+}
+
+function showAnimatedMessage(message) {
+  const existingMsg = document.querySelector(".animated-message");
+  if (existingMsg) {
+    existingMsg.remove();
+  }
+
+  const msgDiv = document.createElement("div");
+  msgDiv.className = "animated-message";
+  msgDiv.innerText = message;
+
+  msgDiv.style.position = "fixed";
+  msgDiv.style.top = "-100px";
+  msgDiv.style.left = "50%";
+  msgDiv.style.transform = "translateX(-50%)";
+  msgDiv.style.width = "80%";
+  msgDiv.style.height = "40px";
+  msgDiv.style.maxWidth = "500px";
+  msgDiv.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  msgDiv.style.color = "#fff";
+  msgDiv.style.padding = "10px 20px";
+  msgDiv.style.textAlign = "center";
+  msgDiv.style.borderLeft = "2px solid #fff";
+  msgDiv.style.borderRight = "2px solid #fff";
+  msgDiv.style.zIndex = "1000";
+  msgDiv.style.boxSizing = "border-box";
+
+  msgDiv.style.transition =
+    "top 0.5s ease, width 0.5s ease, opacity 0.5s ease, padding 0.5s ease";
+
+  document.body.appendChild(msgDiv);
+
+  setTimeout(() => {
+    msgDiv.style.top = "30%";
+    msgDiv.style.transform = "translateX(-50%)";
+  }, 100);
+
+  setTimeout(() => {
+    msgDiv.style.width = "0px";
+    msgDiv.style.paddingLeft = "0px";
+    msgDiv.style.paddingRight = "0px";
+    msgDiv.textContent = "";
+    msgDiv.style.overflow = "hidden";
+  }, 2000);
+
+  setTimeout(() => {
+    msgDiv.style.top = "-100px";
+    msgDiv.style.opacity = "0";
+  }, 2600);
+
+  setTimeout(() => {
+    if (msgDiv.parentNode) {
+      msgDiv.parentNode.removeChild(msgDiv);
+    }
+  }, 3000);
 }
