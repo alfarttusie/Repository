@@ -54,6 +54,7 @@ class Requests
     public function __construct($data)
     {
         try {
+            sleep(1);
             $headers = @getallheaders();
             $bearerToken = $headers['Bearer'] ?? null;
             $data = json_decode($data, true);
@@ -61,7 +62,7 @@ class Requests
 
             $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries'];
 
-            if ($type == 'empty' || $type == '') return new Response(200, ['debug' => 'Type not Set']);
+            if ($type == 'empty' || $type == '') return new Response(400, ['debug' => 'Type not Set']);
             if (!in_array($type, $commands)) return new Response(400, ['debug' => 'Type not match']);
 
             /** System check */

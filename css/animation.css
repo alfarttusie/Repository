@@ -54,18 +54,28 @@
   }
 }
 @keyframes MoveDown {
-  1% {
+  0% {
     top: -150vh;
     width: 0;
+    opacity: 0;
   }
-  5% {
-    width: 0%;
+  40% {
+    top: 1%;
+    width: 0;
+    opacity: 0;
+  }
+  60% {
+    top: 1%;
+    width: 10%;
+    opacity: 0.5;
   }
   100% {
     top: 1%;
     width: 50%;
+    opacity: 1;
   }
 }
+
 @keyframes dance {
   0% {
     transform: rotate(-5deg);

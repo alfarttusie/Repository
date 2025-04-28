@@ -1,21 +1,3 @@
-function indicatorRemover({ element, type } = {}) {
-  const indicator = document.querySelector(".indicator");
-  if (indicator) indicator.remove();
-  if (element) {
-    const elementHolder = document.querySelector(element);
-    elementHolder.style.display = type ? type : "flex";
-  }
-}
-function changeDirection(input) {
-  const value = input.value;
-  if (/^[\u0600-\u06FF]/.test(value)) {
-    input.style.direction = "rtl";
-    input.style.textAlign = "right";
-  } else {
-    input.style.direction = "ltr";
-    input.style.textAlign = "left";
-  }
-}
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -34,7 +16,8 @@ function ShowMsg(Text) {
   document.body.appendChild(Msg);
   Msg.textContent = Text;
 }
-function responseHandler(response) {
+function responseHandler({ response, element }) {
+  if (element) document.querySelector(element).remove();
   switch (response) {
     case "mysql off":
       ShowError(`مشكلة في قواعد البيانات`);
@@ -75,9 +58,19 @@ function Showindicator(element) {
 function ShowError(Msg) {
   const holder = document.createElement("div");
   holder.classList.add("Showerror");
-  holder.textContent = Msg;
+
+  const textHolder = document.createElement("div");
+  textHolder.classList.add("Showerror-text");
+  textHolder.textContent = Msg;
+
+  holder.appendChild(textHolder);
   document.body.appendChild(holder);
+
+  setTimeout(() => {
+    holder.classList.add("active");
+  }, 900);
 }
+
 function showNotification(Text) {
   const Holder = document.createElement("div");
   Holder.classList.add("Notify");
@@ -303,7 +296,24 @@ function findButtonByText(text) {
 function Test() {
   alert("test");
 }
-
+function indicatorRemover({ element, type } = {}) {
+  const indicator = document.querySelector(".indicator");
+  if (indicator) indicator.remove();
+  if (element) {
+    const elementHolder = document.querySelector(element);
+    elementHolder.style.display = type ? type : "flex";
+  }
+}
+function changeDirection(input) {
+  const value = input.value;
+  if (/^[\u0600-\u06FF]/.test(value)) {
+    input.style.direction = "rtl";
+    input.style.textAlign = "right";
+  } else {
+    input.style.direction = "ltr";
+    input.style.textAlign = "left";
+  }
+}
 function sendRequest(data) {
   return new Promise((resolve, reject) => {
     const http = new XMLHttpRequest();
@@ -328,7 +338,6 @@ function sendRequest(data) {
     http.send(JSON.stringify(data));
   });
 }
-
 function showAnimatedMessage(message) {
   const existingMsg = document.querySelector(".animated-message");
   if (existingMsg) {

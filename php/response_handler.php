@@ -1,49 +1,38 @@
 <?php
-error_reporting(0);
+
+// اضبط عرض الأخطاء بناءً على البيئة (تعطيل الأخطاء في الإنتاج)
+if (getenv('APP_ENV') === 'production') {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
+
 class Response
 {
     use Tools;
-    private static $debug = true;
-    private static $payload = null;
-    private static $data = null;
-    private static function additional_data(&$response)
+
+    private $debug;
+    private $payload;
+    private $data;
+
+    public function __construct(int $code, $data = null, bool $debug = false, $payload = null)
     {
-        $data = self::$data;
-        header("Bearer:" . self::Header());
-        if ($data !== null) {
-            foreach ($data as $key => &$value) {
-                $value = empty($value) ? 'empty' : $value;
-                $response[$key] = $value;
-            }
-        }
+        $this->data = $data;
+        $this->debug = $debug;
+        $this->payload = $payload;
+
+        $this->setHeaders();
+        $this->handleResponse($code);
     }
-    private static function Header()
+
+    private function setHeaders(): void
     {
-        $payload = ['ip' => $_SERVER['REMOTE_ADDR'], 'browser' => $_SERVER['HTTP_USER_AGENT'], 'exp' => time() + 3600];
-        if (self::loginChecker()) {
-            $Bearer = self::Headers();
-            $payload['user'] = $Bearer['user'];
-            $payload['token'] = $Bearer['token'];
-            if (isset($Bearer['key'])) {
-                $payload['key'] = $Bearer['key'];
-            }
-        }
-        if (self::$payload != null) {
-            foreach (self::$payload as $key => &$value) {
-                $value = empty($value) ? 'empty' : $value;
-                $payload[$key] = $value;
-            }
-        }
-        return self::createJwt($payload);
-    }
-    public function __construct(int $code, $data = null, $debug = false,  $payload = null, $link = null)
-    {
-        self::$data = $data;
-        self::$debug = ($debug) ? true : self::$debug;
-        self::$payload = $payload;
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: POST');
+        header('Access-Control-Allow-Methods: POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('X-Frame-Options: SAMEORIGIN');
         header("Content-Security-Policy: default-src 'self';");
         header('X-XSS-Protection: 1; mode=block');
@@ -51,62 +40,73 @@ class Response
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Connection: keep-alive');
+
+        // اضافة الهيدر الخاص بالتوكن
+        $token = $this->generateToken();
+        header('Authorization: Bearer ' . $token);
+    }
+
+    private function generateToken(): string
+    {
+        $payload = [
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'exp' => time() + 3600,
+        ];
+
+        if ($this->loginChecker()) {
+            $bearer = $this->Headers();
+            $payload['user'] = $bearer['user'] ?? null;
+            $payload['token'] = $bearer['token'] ?? null;
+            if (isset($bearer['key'])) {
+                $payload['key'] = $bearer['key'];
+            }
+        }
+
+        if (!empty($this->payload)) {
+            foreach ($this->payload as $key => $value) {
+                $payload[$key] = ($value === null) ? 'null' : $value;
+            }
+        }
+
+        return $this->createJwt($payload);
+    }
+
+    private function handleResponse(int $code): void
+    {
         switch ($code) {
             case 200:
-                self::successful();
-                return;
+                $this->sendResponse(200, 'successful');
+                break;
             case 400:
-                self::BadRequest();
-                return;
+                $this->sendResponse(400, 'Bad Request');
+                break;
             case 403:
-                self::forbidden();
-                return;
+                $this->sendResponse(403, 'Forbidden');
+                break;
             case 500:
-                self::ServerError();
-                return;
             default:
-                self::ServerError();
-                return;
+                $this->sendResponse(500, 'Server Error');
+                break;
         }
     }
-    private static function successful()
+
+    private function sendResponse(int $httpCode, string $status): void
     {
-        http_response_code(200);
-        $response['status'] = 'successful';
-        self::additional_data($response);
-        echo json_encode($response);
-        return;
-    }
-    private static function BadRequest()
-    {
-        http_response_code(400);
-        $response['status'] = 'Bad Request';
-        self::additional_data($response);
-        if (!self::$debug) {
+        http_response_code($httpCode);
+
+        $response = ['status' => $status];
+
+        if (!empty($this->data)) {
+            foreach ($this->data as $key => $value) {
+                $response[$key] = ($value === null) ? 'null' : $value;
+            }
+        }
+
+        if (!$this->debug) {
             unset($response['debug']);
         }
 
-        print_r(json_encode($response));
-        return;
-    }
-    private static function forbidden()
-    {
-        http_response_code(403);
-        $response['status'] = 'Forbidden';
-        self::additional_data($response);
-        if (!self::$debug) {
-            unset($response['debug']);
-        }
-
-        print_r(json_encode($response));
-        return;
-    }
-    private static function ServerError()
-    {
-        http_response_code(500);
-        $response['status'] = 'error';
-        self::additional_data($response);
-        print_r(json_encode($response));
-        return;
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }
