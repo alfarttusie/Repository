@@ -1,15 +1,13 @@
 class index {
   constructor() {
-    document.addEventListener("DOMContentLoaded", () => {
-      indicatorRemover();
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.addEventListener("input", (event) => {
-          changeDirection(event.target);
-        });
+    indicatorRemover();
+    const inputs = document.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.addEventListener("input", (event) => {
+        changeDirection(event.target);
       });
-      this.initializeSession();
     });
+    this.initializeSession();
   }
 
   handleLogin() {
@@ -58,9 +56,9 @@ class index {
     }
   }
   initializeSession() {
-    Showindicator(document.body);
+    Showindicator(document.querySelector(".login-holder"));
     sendRequest({ type: "init session" }).then((response) => {
-      indicatorRemover({ element: ".login-holder", type: "grid" });
+      indicatorRemover({ element: ".login-holder" });
       if (response.status == "successful") {
         const loginBtn = document.querySelector(".login-btn");
         loginBtn.addEventListener("click", () => this.handleLogin());
@@ -72,8 +70,11 @@ class index {
           .querySelector(".view-password")
           .addEventListener("click", ShowPassword);
       } else if (response.status === "logedin") window.location = "home.php";
-      else responseHandler(response.status);
+      else responseHandler({ response: response.status ,element: ".login-holder"});
     });
   }
 }
-new index();
+
+document.addEventListener("DOMContentLoaded", () => {
+  new index();
+});

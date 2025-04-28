@@ -1,49 +1,51 @@
 <?php
-error_reporting(0);
+
+// اضبط عرض الأخطاء بناءً على البيئة (تعطيل الأخطاء في الإنتاج)
+if (getenv('APP_ENV') === 'production') {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
+
 class Response
 {
     use Tools;
-    private static $debug = true;
-    private static $payload = null;
-    private static $data = null;
-    private static function additional_data(&$response)
+
+    public function __construct(int $code, $data = null, bool $debug = false, $payload = null)
     {
-        $data = self::$data;
-        header("Bearer:" . self::Header());
-        if ($data !== null) {
-            foreach ($data as $key => &$value) {
-                $value = empty($value) ? 'empty' : $value;
-                $response[$key] = $value;
-            }
+        self::setHeaders();
+
+        $response = [];
+
+        $status_map = [
+            200 => 'successful',
+            400 => 'Bad Request',
+            401 => 'unauthorized request',
+            403 => 'Forbidden',
+            503 => 'Service Unavailable',
+            500 => 'Server Error'
+        ];
+
+        $response['status'] = $status_map[$code] ?? 'error';
+
+        if ($data) {
+            self::additional_data($data, $response);
         }
+
+        if (!$debug)
+            unset($response['debug']);
+
+        echo json_encode($response);
     }
-    private static function Header()
+
+    private static function setHeaders(): void
     {
-        $payload = ['ip' => $_SERVER['REMOTE_ADDR'], 'browser' => $_SERVER['HTTP_USER_AGENT'], 'exp' => time() + 3600];
-        if (self::loginChecker()) {
-            $Bearer = self::Headers();
-            $payload['user'] = $Bearer['user'];
-            $payload['token'] = $Bearer['token'];
-            if (isset($Bearer['key'])) {
-                $payload['key'] = $Bearer['key'];
-            }
-        }
-        if (self::$payload != null) {
-            foreach (self::$payload as $key => &$value) {
-                $value = empty($value) ? 'empty' : $value;
-                $payload[$key] = $value;
-            }
-        }
-        return self::createJwt($payload);
-    }
-    public function __construct(int $code, $data = null, $debug = false,  $payload = null, $link = null)
-    {
-        self::$data = $data;
-        self::$debug = ($debug) ? true : self::$debug;
-        self::$payload = $payload;
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: POST');
+        header('Access-Control-Allow-Methods: POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('X-Frame-Options: SAMEORIGIN');
         header("Content-Security-Policy: default-src 'self';");
         header('X-XSS-Protection: 1; mode=block');
@@ -51,62 +53,41 @@ class Response
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Connection: keep-alive');
-        switch ($code) {
-            case 200:
-                self::successful();
-                return;
-            case 400:
-                self::BadRequest();
-                return;
-            case 403:
-                self::forbidden();
-                return;
-            case 500:
-                self::ServerError();
-                return;
-            default:
-                self::ServerError();
-                return;
-        }
-    }
-    private static function successful()
-    {
-        http_response_code(200);
-        $response['status'] = 'successful';
-        self::additional_data($response);
-        echo json_encode($response);
-        return;
-    }
-    private static function BadRequest()
-    {
-        http_response_code(400);
-        $response['status'] = 'Bad Request';
-        self::additional_data($response);
-        if (!self::$debug) {
-            unset($response['debug']);
-        }
 
-        print_r(json_encode($response));
-        return;
+        $token = self::generateToken();
+        header('Authorization: Bearer ' . $token);
     }
-    private static function forbidden()
-    {
-        http_response_code(403);
-        $response['status'] = 'Forbidden';
-        self::additional_data($response);
-        if (!self::$debug) {
-            unset($response['debug']);
-        }
 
-        print_r(json_encode($response));
-        return;
-    }
-    private static function ServerError()
+    private static function additional_data(array $data, array &$response): void
     {
-        http_response_code(500);
-        $response['status'] = 'error';
-        self::additional_data($response);
-        print_r(json_encode($response));
-        return;
+        foreach ($data as $key => $value) {
+            $response[$key] = $value;
+        }
+    }
+    private static function generateToken(): string
+    {
+        // $payload = [
+        //     'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        //     'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+        //     'exp' => time() + 3600,
+        // ];
+
+        // if ($this->loginChecker()) {
+        //     $bearer = $this->Headers();
+        //     $payload['user'] = $bearer['user'] ?? null;
+        //     $payload['token'] = $bearer['token'] ?? null;
+        //     if (isset($bearer['key'])) {
+        //         $payload['key'] = $bearer['key'];
+        //     }
+        // }
+
+        // if (!empty($this->payload)) {
+        //     foreach ($this->payload as $key => $value) {
+        //         $payload[$key] = ($value === null) ? 'null' : $value;
+        //     }
+        // }
+
+        // return $this->createJwt($payload);
+        return "sample_token";
     }
 }

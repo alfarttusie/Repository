@@ -10,6 +10,7 @@ class Install {
       credentials: "Invalid database credentials",
       exists: "Database already exists",
       success: "Configuration saved in db.php",
+      permission : "i can't create db.php permission denied"
     },
     ar: {
       start: "ابدأ التثبيت",
@@ -21,6 +22,7 @@ class Install {
       credentials: "معلومات الاتصال بقاعدة البيانات غير صحيحة",
       exists: "قاعدة البيانات موجودة بالفعل",
       success: "تم حفظ المعلومات في db.php",
+      permission : 'ﻻ امتلك صلاحية لانشاء ملف قاعدة البيانات'
     },
   };
   sendRequest(data) {

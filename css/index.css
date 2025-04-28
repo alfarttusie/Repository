@@ -1,89 +1,31 @@
-.loading-indicator {
-  position: fixed;
+body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
 }
-
-.loading-indicator .loader {
-  width: 120px;
-  height: 20px;
-  mask-image: radial-gradient(circle closest-side, #b80e0e 94%, transparent);
-  mask-position: left;
-  mask-size: 20% 100%;
-  background: linear-gradient(#000 0 0) left/0% 100% no-repeat #ddd;
-  animation: l17 2s infinite steps(6);
-  background-color: white;
-}
-
 .login-holder {
-  display: none;
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-content: space-evenly;
+  flex-wrap: wrap;
   border-radius: 8px;
-  grid-column: 15/85;
-  grid-row: 10/90;
-  max-width: 400px;
-  max-height: 400px;
-  grid-template-columns: repeat(99, 1fr);
-  grid-template-rows: repeat(99, 1fr);
+  width: clamp(200px, 70vw, 600px);
+  height: clamp(200px, 70vh, 800px);
   backdrop-filter: blur(6px);
   overflow: hidden;
 }
 .login-holder input {
-  grid-column: 5 / 95;
-}
-.login-holder .username {
-  grid-row: 40/55;
-  height: clamp(30px, 100%, 40px);
-}
-.login-holder .password {
-  grid-row: 60/68;
-  height: clamp(30px, 100%, 35px);
-}
-.login-holder .view-password {
-  grid-column: 92;
-  grid-row: 61;
-}
-.login-holder input {
   outline: none;
-  padding: 3%;
+  padding: 1%;
   color: white;
   text-align: left;
   font-size: clamp(10px, 3vw, 24px);
+  width: clamp(200px, 90%, 600px);
+  height: clamp(20px, 100%, 40px);
   border-bottom: 1px solid whitesmoke;
   background-color: transparent;
 }
-.login-holder input:focus {
-  border: 1px solid whitesmoke;
-  border-radius: 10px;
-}
-.login-holder button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-  font-size: clamp(10px, 3vw, 24px);
-}
-.login-holder .login-btn {
-  grid-column: 35 / 65;
-  grid-row: 80 / 90;
-}
-.view {
-  grid-column: 80 / 84;
-  grid-row: 60 / 65;
-  overflow: hidden;
-  background-color: transparent;
-}
-.view img {
-  width: 100%;
-}
-.login-btn.disabled {
-  pointer-events: none;
-  opacity: 0.5;
-}
+
 .login-btn {
   appearance: button;
   background-color: #1899d6;
@@ -95,8 +37,8 @@
   cursor: pointer;
   display: inline-block;
   font-family: din-round, sans-serif;
-  font-size: 15px;
   font-weight: 700;
+  font-size: clamp(10px, 2.9vw, 24px);
   letter-spacing: 0.8px;
   line-height: 20px;
   margin: 0;
@@ -113,9 +55,18 @@
   vertical-align: middle;
   white-space: nowrap;
   width: 100%;
-  appearance: button;
   box-shadow: 0 0 5px #03e9f4, 0 0 10px #03e9f4, 0 0 15px #03e9f4,
     0 0 50px #03e9f4;
+}
+.login-btn {
+  width: clamp(200px, 90%, 400px);
+  height: clamp(20px, 100%, 45px);
+}
+
+.login-btn:active {
+  border-width: 4px 0 0;
+  transform: scale(0.98);
+  filter: brightness(0.9);
 }
 .login-btn:after {
   background-clip: padding-box;
@@ -126,15 +77,9 @@
   bottom: -4px;
   content: "";
   left: 0;
-  position: absolute;
   right: 0;
   top: 0;
   z-index: -1;
-}
-
-.login-btn,
-.login-btn:focus {
-  user-select: auto;
 }
 
 .login-btn:hover:not(:disabled) {
@@ -146,40 +91,39 @@
   cursor: auto;
 }
 
-.login-btn:active {
-  border-width: 4px 0 0;
-  background: none;
+.error-holder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  width: clamp(200px, 90%, 700px);
+  height: clamp(20px, 100%, 700px);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
 }
-
-@media only screen and (min-width: 768px) {
-  .login-holder {
-    min-width: 350px;
-    min-height: 400px;
-  }
+.error-text {
+  font-size: clamp(10px, 3vw, 28px);
+  font-weight: bolder;
+  color: cyan;
+  width: 80%;
+  height: 70%;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
-/**  mobile  **/
+/**  mobile **/
 @media only screen and (max-width: 767px) {
   .login-holder {
-    grid-column: 1 /100;
-    grid-row: 1/100;
+    width: 100%;
+    height: 100%;
   }
-  .login-holder .username {
-    grid-row: 30 / 35;
+  .login-btn {
+    width: clamp(100px, 90%, 280px);
   }
-  .login-holder .password {
-    grid-row: 40 / 45;
+  .error-holder {
+    width: 100%;
+    height: 100%;
   }
-  .login-holder .view-password {
-    grid-column: 93;
-    grid-row: 43;
-  }
-  .login-holder .login-btn {
-    grid-row: 65;
-  }
-  .login-holder .view {
-    grid-row: 40 / 45;
-  }
-}
-.view-password {
-  background-color: transparent;
 }

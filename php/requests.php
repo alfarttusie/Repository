@@ -3,7 +3,7 @@ error_reporting(0);
 
 require 'tools.php';
 require 'response_handler.php';
-require 'Signin.php';
+require 'signin.php';
 require 'queries.php';
 class Requests
 {
@@ -54,6 +54,10 @@ class Requests
     public function __construct($data)
     {
         try {
+
+
+
+
             $headers = @getallheaders();
             $bearerToken = $headers['Bearer'] ?? null;
             $data = json_decode($data, true);
@@ -61,12 +65,13 @@ class Requests
 
             $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries'];
 
-            if ($type == 'empty' || $type == '') return new Response(200, ['debug' => 'Type not Set']);
+            if ($type == 'empty' || $type == '') return new Response(400, ['debug' => 'Type not Set']);
             if (!in_array($type, $commands)) return new Response(400, ['debug' => 'Type not match']);
 
             /** System check */
             if (!self::SysTemCheck($response)) return new Response(500, ['debug' => $response]);
 
+            return new Response(200, payload: ['key' => 'sdsd']);
             /** Before login */
             if ($type == 'init session')
                 return self::loginChecker() ? new Response(200, ['status' => 'logedin']) :  new Response(200);

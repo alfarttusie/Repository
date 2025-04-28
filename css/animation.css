@@ -53,19 +53,21 @@
     background-position: 100% 0, 100% 100%, 0 100%, 0 0;
   }
 }
-@keyframes MoveDown {
-  1% {
+@keyframes DropAndExpand {
+  0% {
     top: -150vh;
-    width: 0;
+    width: 0%;
   }
-  5% {
+  50% {
+    top: 10%;
     width: 0%;
   }
   100% {
-    top: 1%;
-    width: 50%;
+    top: 10%;
+    width: 60%;
   }
 }
+
 @keyframes dance {
   0% {
     transform: rotate(-5deg);

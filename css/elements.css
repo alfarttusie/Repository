@@ -1,3 +1,25 @@
+.password-field {
+  direction: rtl !important;
+  position: relative;
+  display: flex;
+  width: clamp(200px, 90%, 500px);
+  & input {
+    width: 100%;
+  }
+  & button {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    padding: 0 10px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: transparent;
+  }
+}
+
+/** before **/
 label {
   display: flex;
   color: white;

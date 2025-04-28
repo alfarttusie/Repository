@@ -1,16 +1,7 @@
 <?php
 
-/**
- * RepositoryInstaller class handles the installation of the repository.
- * It checks for the existence of a database file and displays an installation form in either English or Arabic.
- */
 class RepositoryInstaller
 {
-    /**
-     * Returns the HTML form view in English.
-     *
-     * @return string
-     */
     private function getEnglishView()
     {
         return '
@@ -40,11 +31,6 @@ class RepositoryInstaller
             </form>';
     }
 
-    /**
-     * Returns the HTML form view in Arabic.
-     *
-     * @return string
-     */
     private function getArabicView()
     {
         return '
@@ -74,11 +60,6 @@ class RepositoryInstaller
             </form>';
     }
 
-    /**
-     * Returns the complete HTML view.
-     *
-     * @return string
-     */
     private function view()
     {
         $language = isset($_GET['lang']) ? $_GET['lang'] : 'en';
@@ -105,9 +86,6 @@ class RepositoryInstaller
         </html>';
     }
 
-    /**
-     * Constructor checks for the existence of the database file and displays the appropriate language view.
-     */
     public function __construct()
     {
         if (file_exists('php/db.php')) {

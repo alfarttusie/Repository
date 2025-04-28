@@ -89,7 +89,7 @@ class Install
     public function __construct(string $postData)
     {
         if (file_exists('db.php')) self::resJson(400, ['error' => 'installed']);
-
+        if(!is_writable(__DIR__)) return self::resJson(200,['error'=>'permission']);
         $post = json_decode($postData, true);
         if (!is_array($post)) self::resJson(400, ['error' => 'JSON']);
 
