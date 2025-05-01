@@ -2,16 +2,23 @@ class ContextMenuHandler {
   static timeout;
   static lastTap = 0;
 
-  // إنشاء قائمة السياق
+  static createMenuItem(label, action, parent) {
+    const item = document.createElement("div");
+    item.classList.add("item");
+    item.innerText = label;
+    item.onclick = () => {
+      action();
+      parent.remove();
+    };
+    return item;
+  }
+
   static createContextMenu() {
-    // إزالة أي قائمة سياق موجودة
-    const existingMenu = document.querySelector(".context-menu");
-    if (existingMenu) {
-      existingMenu.remove();
-    }
+    const existing = document.querySelector(".context-menu");
+    if (existing) existing.remove();
 
     const menu = document.createElement("div");
-    menu.classList.add("context-menu");
+    menu.className = "context-menu";
 
     const items = {
       "إضافة بيانات": () => new InsertData(),
@@ -21,21 +28,13 @@ class ContextMenuHandler {
       "حذف الزر": ContextMenuHandler.DeleteButton,
     };
 
-    // إنشاء عناصر القائمة وإضافتها
-    Object.keys(items).forEach((text) => {
-      const item = document.createElement("div");
-      item.classList.add("item");
-      item.innerText = text;
-      item.onclick = items[text];
-      item.addEventListener("click", () => menu.remove());
+    Object.entries(items).forEach(([label, action]) => {
+      const item = this.createMenuItem(label, action, menu);
       menu.appendChild(item);
     });
 
     document.body.appendChild(menu);
-
-    document.addEventListener("click", ContextMenuHandler.HandleClick, {
-      once: true,
-    });
+    document.addEventListener("click", this.HandleClick, { once: true });
 
     return menu;
   }
@@ -86,59 +85,56 @@ class ContextMenuHandler {
 
   static DeleteButton() {
     const menu = document.querySelector(".context-menu");
-    const buttonName = menu?.dataset?.invoker || "غير معروف";
+    const buttonName = menu?.dataset?.invoker;
+
+    if (!confirm(`هل تريد حذف الزر "${buttonName}"؟`)) return;
 
     sendRequest({
       type: "queries",
       job: "delete button",
       button: buttonName,
-    }).then((callback) => {
-      showNotification("تم حذف الزر بنجاح!");
+    }).then(() => {
+      showNotification("تم حذف الزر!");
       home.GetButtons();
     });
   }
 
   static RenameButton() {
     const menu = document.querySelector(".context-menu");
-    const buttonName = menu?.dataset?.invoker || "غير معروف";
+    const buttonName = menu?.dataset?.invoker;
 
     const workDiv = home.WorkDiv;
-    const line = document.createElement("div");
-    line.onkeydown = (event) => {
-      if (event.key == "Enter") {
-        renameButton.click();
-      }
-    };
-    line.classList.add("line");
+    workDiv.innerHTML = "";
 
-    const inputField = document.createElement("input");
-    inputField.placeholder = "أدخل الاسم الجديد";
+    const line = lineCreator("rename-line");
 
-    line.appendChild(inputField);
+    const input = Input({
+      placeholder: "أدخل الاسم الجديد",
+    });
+    line.appendChild(Label("اسم جديد"));
+    line.appendChild(input);
 
-    const renameButton = document.createElement("button");
-    renameButton.innerText = "تغيير";
-    renameButton.onclick = () => {
-      const newName = inputField.value.trim();
-      if (!newName) {
-        showNotification("يرجى إدخال اسم جديد صالح.");
-        return;
-      }
+    const btn = Button({
+      innerText: "تغيير",
+      onclick: () => {
+        const newName = input.value.trim();
+        if (!newName) return showNotification("يرجى إدخال اسم جديد صالح.");
 
-      sendRequest({
-        type: "queries",
-        job: "rename button",
-        button: buttonName,
-        new: newName,
-      }).then((callback) => {
-        if (callback.response == "ok") {
-          showNotification("تم تغيير الاسم بنجاح!");
-          home.GetButtons();
-        }
-      });
-    };
+        sendRequest({
+          type: "queries",
+          job: "rename button",
+          button: buttonName,
+          new: newName,
+        }).then((res) => {
+          if (res.response === "ok") {
+            showNotification("تم تغيير الاسم!");
+            home.GetButtons();
+          }
+        });
+      },
+    });
 
-    line.appendChild(renameButton);
+    line.appendChild(btn);
     workDiv.appendChild(line);
   }
 }
