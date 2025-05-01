@@ -35,7 +35,8 @@ class Home
                         <link rel='stylesheet' href='css/notification.css'>
                         <link rel='stylesheet' href='css/contextMenu.css'>
                         <link rel='stylesheet' href='css/insertdata.css'>
-                        <link rel='stylesheet' href='css/showButton.css'>
+                        <link rel='stylesheet' href='css/showbutton.css'>
+                        <link rel='stylesheet' href='css/addbutton.css'>
                         <script src='js/assistant.js'></script>
                         <script src='js/style.js'></script>
                         <title>المستودع</title>

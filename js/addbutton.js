@@ -1,149 +1,99 @@
 class ButtonCreator {
   static DEFAULT_MIN_COUNT = 1;
 
-  static storedValues = [];
-
-  static get Style() {
-    return {
-      mainDiv: {
-        color: "whear",
-        padding: "1%",
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-      },
-      header: {
-        display: "flex",
-        "justify-content": "space-between",
-        "align-items": "center",
-        padding: "1%",
-        direction: "rtl",
-        "border-bottom": "1px solid yellow",
-        width: "100%",
-        height: "10%",
-        "border-radius": "8px",
-        "background-color": "rgba(0, 0, 0, 0.384)",
-      },
-      headerLabel: {
-        cursor: "pointer",
-        "font-size": "clamp(10px, 3vw, 22px)",
-        color: "whitesmoke",
-        width: "10%",
-        "max-width": "200px",
-      },
-      headerInput: {
-        color: "white",
-        padding: "0.3%",
-        "border-left": "2px solid wheat",
-        "border-right": "2px solid wheat",
-        outline: "none",
-        "background-color": "transparent",
-        width: "40%",
-      },
-      counterLabel: { "font-size": "clamp(10px, 3vw, 22px)", color: "white" },
-      counterinput: {
-        color: "white",
-        padding: "0.5%",
-        "font-size": "clamp(10px, 3vw, 24px)",
-        "font-weight": "bold",
-        width: "clamp(10px, 4vw, 170px)",
-        height: "100%",
-        "border-bottom": "1px solid wheat",
-        "text-align": "center",
-        outline: "none",
-        "-webkit-appearance": "none",
-        "-moz-appearance": "textfield !important",
-        appearance: "none",
-        "background-color": "transparent",
-      },
-      linseHolder: {
-        padding: "1%",
-        "overflow-x": "hidden",
-        "overflow-y": "auto",
-        height: "100%",
-      },
-      line: {
-        margin: "3% auto",
-        padding: "1%",
-        "max-height": "35px",
-        "border-bottom": "1px solid skyblue",
-      },
-      inputField: {
-        padding: "0.3%",
-        color: "skyblue",
-        "border-right": "1px solid wheat",
-        "border-left": "1px solid wheat",
-        outline: "none",
-        width: "40%",
-        "text-align": "center",
-        "background-color": "#4b9e898a",
-      },
-    };
-  }
   static initializeUI() {
     const HolderDiv = cleanWorkDiv("add-button");
-    SetStyle(HolderDiv, ButtonCreator.Style["mainDiv"]);
-    const buttonHolder = document.createElement("div");
-    HolderDiv.appendChild(buttonHolder);
 
-    const header = this.createHeader(buttonHolder);
-    const inputCounter = header.querySelector(".counter-input");
+    const container = elementCreator({
+      parent: HolderDiv,
+      type: "div",
+      params: { className: "buttonCreatorContainer" },
+    });
 
-    inputCounter.onkeydown = (event) =>
-      this.handleArrowKeys(event, inputCounter);
-    inputCounter.onwheel = (event) =>
-      this.handleWheelEvent(event, inputCounter);
-    inputCounter.oninput = () => this.handleManualInput(inputCounter);
-
-    const linseHolder = document.createElement("div");
-    linseHolder.classList.add("linseHolder");
-    SetStyle(linseHolder, ButtonCreator.Style.linseHolder);
-    buttonHolder.appendChild(linseHolder);
-
-    const line = this.createLine();
-    linseHolder.appendChild(line);
+    ButtonCreator.createHeader(container);
+    ButtonCreator.createLinesHolder(container);
+    ButtonCreator.updateLines(ButtonCreator.DEFAULT_MIN_COUNT);
   }
+
   static createHeader(parent) {
-    const header = document.createElement("div");
-    SetStyle(header, ButtonCreator.Style.header);
-    parent.appendChild(header);
-
-    const label = Label(" الاسم : ", "button-name");
-    SetStyle(label, ButtonCreator.Style.headerLabel);
-    header.appendChild(label);
-
-    const inputName = Input({
-      type: "text",
-      class: "button-name",
-      id: "button-name",
+    const header = elementCreator({
+      parent,
+      type: "div",
+      params: { className: "add-button-header" },
     });
-    SetStyle(inputName, ButtonCreator.Style.headerInput);
-    header.appendChild(inputName);
 
-    const counterLabel = Label(" عدد الجداول : ");
-    counterLabel.classList.add("label-test");
-    SetStyle(counterLabel, ButtonCreator.Style.counterLabel);
-    header.appendChild(counterLabel);
-
-    const inputCounter = Input({
-      type: "number",
-      class: "counter-input",
-      value: this.DEFAULT_MIN_COUNT,
-      min: this.DEFAULT_MIN_COUNT,
+    // Label
+    elementCreator({
+      parent: header,
+      type: "label",
+      params: {
+        htmlFor: "button-name",
+        innerText: " الاسم : ",
+        className: "header-label",
+      },
     });
-    SetStyle(inputCounter, ButtonCreator.Style.counterinput);
-    header.appendChild(inputCounter);
 
-    header.appendChild(
-      Button({
-        innerText: "حفظ",
-        class: "key-buttons",
-        onclick: this.handleSaveButton,
-      })
+    // Input
+    elementCreator({
+      parent: header,
+      type: "input",
+      params: {
+        type: "text",
+        id: "button-name",
+        className: "button-name header-input",
+      },
+    });
+
+    // Counter label
+    elementCreator({
+      parent: header,
+      type: "label",
+      params: {
+        innerText: " عدد الجداول : ",
+        className: "header-label",
+      },
+    });
+
+    // Counter input
+    const counter = elementCreator({
+      parent: header,
+      type: "input",
+      params: {
+        type: "number",
+        min: this.DEFAULT_MIN_COUNT,
+        value: this.DEFAULT_MIN_COUNT,
+        className: "counter-input",
+      },
+    });
+
+    counter.addEventListener("keydown", (e) =>
+      this.handleArrowKeys(e, counter)
     );
+    counter.addEventListener("wheel", (e) => this.handleWheelEvent(e, counter));
+    counter.addEventListener("input", () => this.handleManualInput(counter));
 
-    return header;
+    // Save button
+    elementCreator({
+      parent: header,
+      type: "button",
+      params: {
+        innerText: "حفظ",
+        className: "key-buttons",
+        onclick: this.handleSaveButton.bind(this),
+      },
+    });
   }
+
+  static createLinesHolder(parent) {
+    elementCreator({
+      parent,
+      type: "div",
+      params: {
+        className: "linseHolder",
+      },
+    });
+  }
+
   static handleArrowKeys(event, inputCounter) {
     let value = parseInt(inputCounter.value);
     if (event.key === "ArrowUp") {
@@ -156,117 +106,141 @@ class ButtonCreator {
       this.updateLines(value - 1);
     }
   }
+
   static handleWheelEvent(event, inputCounter) {
     let value = parseInt(inputCounter.value);
-    if (event.deltaY < 0) {
-      value += 1;
-    } else if (event.deltaY > 0 && value > this.DEFAULT_MIN_COUNT) {
-      value -= 1;
-    }
+    if (event.deltaY < 0) value++;
+    else if (event.deltaY > 0 && value > this.DEFAULT_MIN_COUNT) value--;
+
     inputCounter.value = value;
     this.updateLines(value);
   }
+
   static handleManualInput(inputCounter) {
     let value = parseInt(inputCounter.value);
-    if (isNaN(value) || value < this.DEFAULT_MIN_COUNT) {
+    if (isNaN(value) || value < this.DEFAULT_MIN_COUNT)
       value = this.DEFAULT_MIN_COUNT;
-    }
+
     inputCounter.value = value;
     this.updateLines(value);
   }
-  static updateLines(number) {
-    const holder = document.querySelector(".linseHolder");
-    let allLines = document.querySelectorAll(".addbuttonline");
 
-    if (number > allLines.length) {
-      console.log(`it's fine`);
-      for (let i = allLines.length; i < number; i++) {
-        const line = this.createLine(i);
+  static updateLines(count) {
+    const holder = document.querySelector(".linseHolder");
+    const allLines = document.querySelectorAll(".addbuttonline");
+
+    if (count > allLines.length) {
+      for (let i = allLines.length; i < count; i++) {
+        const line = this.createLine();
         holder.appendChild(line);
       }
-    } else if (number < allLines.length) {
-      for (let i = allLines.length; i > number; i--) {
-        const lineIndex = i - 1;
-        const inputField = allLines[lineIndex].querySelector("input");
-        this.storedValues[lineIndex] = inputField.value;
-        allLines[lineIndex].remove();
+    } else {
+      for (let i = allLines.length - 1; i >= count; i--) {
+        allLines[i].remove();
       }
     }
   }
-  static createLine(index = null) {
-    const line = lineCreator("addbuttonline");
-    SetStyle(line, ButtonCreator.Style.line);
 
-    line.appendChild(Label("نوع الحقل : "));
+  static createLine() {
+    const line = elementCreator({
+      type: "div",
+      parent: null,
+      params: { className: "addbuttonline line" },
+    });
 
-    const fieldTypeSelect = document.createElement("select");
-    fieldTypeSelect.appendChild(createOption("small", "حقل عادي"));
-    fieldTypeSelect.appendChild(createOption("big", "حقل كبير"));
-    line.appendChild(fieldTypeSelect);
+    elementCreator({
+      parent: line,
+      type: "label",
+      params: { innerText: "نوع الحقل : " },
+    });
 
-    const inputField = Input();
-    if (index !== null && this.storedValues[index]) {
-      inputField.value = this.storedValues[index];
-    }
-    SetStyle(inputField, ButtonCreator.Style.inputField);
-    line.appendChild(inputField);
+    const typeSelect = elementCreator({
+      parent: line,
+      type: "select",
+      params: { className: "field-type" },
+    });
+    ["small", "big"].forEach((type) => {
+      typeSelect.appendChild(
+        createOption(type, type === "small" ? "حقل عادي" : "حقل كبير")
+      );
+    });
 
-    line.appendChild(Label("مكانه الحقل : "));
+    elementCreator({
+      parent: line,
+      type: "input",
+      params: {
+        type: "text",
+        className: "line-input",
+      },
+    });
 
-    const fieldPositionSelect = document.createElement("select");
-    fieldPositionSelect.appendChild(createOption("normal", "عادي"));
-    fieldPositionSelect.appendChild(createOption("main", "رئيسي"));
-    fieldPositionSelect.appendChild(createOption("password", "باسورد"));
-    line.appendChild(fieldPositionSelect);
+    elementCreator({
+      parent: line,
+      type: "label",
+      params: { innerText: "مكان الحقل : " },
+    });
+
+    const posSelect = elementCreator({
+      parent: line,
+      type: "select",
+      params: { className: "field-position" },
+    });
+    posSelect.appendChild(createOption("normal", "عادي"));
+    posSelect.appendChild(createOption("main", "رئيسي"));
+    posSelect.appendChild(createOption("password", "باسورد"));
 
     return line;
   }
+
   static handleSaveButton() {
-    const name = document.querySelector(".button-name");
-    if (name.value.length < 1) {
-      ShowMsg("اكتب اسم للزر");
+    const name = document.querySelector(".button-name").value.trim();
+
+    if (name.length === 0) {
+      showNotification("اكتب اسم للزر");
       Shake(".button-name");
       return;
     }
 
-    const allLines = document.querySelectorAll(".addbuttonline");
-    const main = [];
-    const passwords = [];
-    const others = [];
+    const lines = document.querySelectorAll(".addbuttonline");
+    const main = [],
+      passwords = [],
+      others = [];
 
-    allLines.forEach((line) => {
-      const column = line.children[2].value;
-      const type = line.children[4].value;
+    lines.forEach((line) => {
+      const input = line.querySelector(".line-input")?.value.trim();
+      const type = line.querySelector(".field-position").value;
+      if (!input) return;
 
-      if (column.length > 0) {
-        if (type === "main") main.push(column);
-        else if (type === "password") passwords.push(column);
-        else others.push(column);
-      }
+      if (type === "main") main.push(input);
+      else if (type === "password") passwords.push(input);
+      else others.push(input);
     });
-
+    Showindicator(document.querySelector(".add-button-header"));
     sendRequest({
       type: "queries",
       job: "new button",
-      button: name.value,
+      button: name,
       main,
       password: passwords,
       columns: [...main, ...passwords, ...others],
-    }).then((callback) => {
-      if (callback.response === "invalid key") {
+    }).then((res) => {
+      indicatorRemover();
+      if (res.response === "invalid key") {
         showNotification("لا يوجد مفتاح تشفير");
-      } else if (callback.response === "Button exist") {
+      } else if (res.response === "Button exist") {
         showNotification("الاسم موجود مسبقا");
-      } else if (callback.response === "successful") {
+      } else if (res.response === "successful") {
         showNotification("تم الإضافة بنجاح");
         home.GetButtons();
-        new InsertData(name.value);
+        new InsertData(name);
       }
     });
   }
+
   constructor() {
-    document.querySelector("#addButton").onclick =
-      ButtonCreator.initializeUI.bind(ButtonCreator);
+    const trigger = document.querySelector("#addButton");
+    if (trigger) trigger.onclick = ButtonCreator.initializeUI.bind(this);
   }
 }
+
 new ButtonCreator();

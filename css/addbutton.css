@@ -1,0 +1,87 @@
+.add-button {
+  color: wheat;
+  padding: 1%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.add-button-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1%;
+  direction: rtl;
+  border-bottom: 1px solid yellow;
+  width: 100%;
+  height: 10%;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.384);
+  overflow: hidden;
+}
+
+.add-button-header label {
+  cursor: pointer;
+  font-size: clamp(10px, 3vw, 22px);
+  color: whitesmoke;
+  width: 10%;
+  max-width: 200px;
+}
+
+.add-button-header input.button-name {
+  color: white;
+  padding: 0.3%;
+  border-left: 2px solid wheat;
+  border-right: 2px solid wheat;
+  outline: none;
+  background-color: transparent;
+  width: 40%;
+}
+
+.add-button-header .label-test {
+  font-size: clamp(10px, 3vw, 22px);
+  color: white;
+}
+
+.add-button .header input.counter-input {
+  color: white;
+  padding: 0.5%;
+  font-size: clamp(10px, 3vw, 24px);
+  font-weight: bold;
+  width: clamp(10px, 4vw, 170px);
+  height: 100%;
+  border-bottom: 1px solid wheat;
+  text-align: center;
+  outline: none;
+  appearance: none;
+  background-color: transparent;
+}
+
+.linseHolder {
+  padding: 1%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.addbuttonline {
+  margin: 3% auto;
+  padding: 1%;
+  max-height: 35px;
+  border-bottom: 1px solid skyblue;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.addbuttonline input[type="text"] {
+  padding: 0.3%;
+  color: skyblue;
+  border-right: 1px solid wheat;
+  border-left: 1px solid wheat;
+  outline: none;
+  width: 40%;
+  text-align: center;
+  background-color: #4b9e898a;
+}

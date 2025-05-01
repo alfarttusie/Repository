@@ -2,23 +2,6 @@ async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function Shake(selector) {
-  const element = document.querySelector(selector);
-  if (!element) return;
-  element.classList.add("shake");
-  setTimeout(() => {
-    element.classList.remove("shake");
-  }, 500);
-}
-
-function ShowMsg(Text) {
-  const oldMsg = document.querySelector(".Msg");
-  if (oldMsg) oldMsg.remove();
-  const Msg = document.createElement("div");
-  Msg.classList.add("Msg");
-  document.body.appendChild(Msg);
-  Msg.textContent = Text;
-}
 function responseHandler({ response, element }) {
   if (element) document.querySelector(element).remove();
   switch (response) {
@@ -72,45 +55,6 @@ function ShowError(Msg) {
   setTimeout(() => {
     holder.classList.add("active");
   }, 900);
-}
-function showNotification(Text) {
-  const Holder = document.createElement("div");
-  Holder.classList.add("Notify");
-  const Secondary = document.createElement("div");
-  Secondary.classList.add("secondary");
-  const span = document.createElement("span");
-  span.classList.add("Text");
-  Holder.appendChild(Secondary);
-  Secondary.appendChild(span);
-  document.body.appendChild(Holder);
-  Holder.classList.add("active");
-  span.innerText = Text;
-  setTimeout(() => {
-    Holder.classList.remove("active");
-    Holder.remove();
-  }, 2500);
-}
-function elementCreator({
-  type,
-  parent = null,
-  params = [],
-  Children = [],
-} = {}) {
-  try {
-    type = type ? type : "div";
-
-    const element = document.createElement(type);
-
-    if (params)
-      Object.entries(params).forEach(([key, value]) => (element[key] = value));
-
-    if (Children) Children.forEach((Child) => element.appendChild(Child));
-    if (parent) parent.appendChild(element);
-
-    return element;
-  } catch (err) {
-    console.log(err);
-  }
 }
 function HolderDiv(CssClass = null) {
   const Holder = document.querySelector(".left");
@@ -293,11 +237,9 @@ function findButtonByText(text) {
     return option;
   }
 }
-/** after upgrade */
 
-function Test() {
-  alert("test");
-}
+/** after update */
+
 function indicatorRemover({ element, type } = {}) {
   const indicator = document.querySelector(".indicator");
   if (indicator) indicator.remove();
@@ -400,4 +342,52 @@ function Message(message) {
       msgDiv.parentNode.removeChild(msgDiv);
     }
   }, 3100);
+}
+function elementCreator({
+  type = "div",
+  parent = null,
+  params = {},
+  Children = [],
+} = {}) {
+  try {
+    const element = document.createElement(type);
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (key in element) element[key] = value;
+      else element.setAttribute(key, value);
+    });
+
+    Children.forEach((child) => element.appendChild(child));
+    if (parent) parent.appendChild(element);
+
+    return element;
+  } catch (err) {
+    console.error("elementCreator error:", err);
+    return null;
+  }
+}
+function showNotification(Text) {
+  const Holder = document.createElement("div");
+  Holder.classList.add("Notify");
+  const Secondary = document.createElement("div");
+  Secondary.classList.add("secondary");
+  const span = document.createElement("span");
+  span.classList.add("Text");
+  Holder.appendChild(Secondary);
+  Secondary.appendChild(span);
+  document.body.appendChild(Holder);
+  Holder.classList.add("active");
+  span.innerText = Text;
+  setTimeout(() => {
+    Holder.classList.remove("active");
+    Holder.remove();
+  }, 2500);
+}
+function Shake(selector) {
+  const element = document.querySelector(selector);
+  if (!element) return;
+  element.classList.add("shake");
+  setTimeout(() => {
+    element.classList.remove("shake");
+  }, 500);
 }
