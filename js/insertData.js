@@ -1,9 +1,10 @@
 class InsertData {
   constructor(name = null) {
     const menu = document.querySelector(".context-menu");
-    const buttonName = name ? name : menu.dataset.invoker;
+    const buttonName = name || (menu ? menu.dataset.invoker : null);
 
-    this.initialize(buttonName);
+    if (buttonName) this.initialize(buttonName);
+    else displayEmptyMessage("لا يوجد زر محدد لإدخال البيانات");
   }
 
   async initialize(buttonName) {
@@ -14,70 +15,79 @@ class InsertData {
     });
 
     if (response.columns === "no columns") {
-      this.showEmptyMessage("لاتوجد أعمدة في هذا الزر");
+      this.showEmptyMessage("لا توجد أعمدة في هذا الزر");
     } else {
-      this.renderColumns(response.columns, buttonName);
+      this.renderForm(response.columns, buttonName);
     }
   }
 
   showEmptyMessage(message) {
-    const holderDiv = home.WorkDiv;
-    holderDiv.innerHTML = "";
+    const holder = home.WorkDiv;
+    holder.innerHTML = "";
 
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("empty");
-
-    const span = document.createElement("span");
-    span.innerText = message;
-
-    msgDiv.appendChild(span);
-    holderDiv.appendChild(msgDiv);
+    elementCreator({
+      type: "div",
+      parent: holder,
+      params: { className: "empty-message" },
+      Children: [
+        elementCreator({
+          type: "span",
+          params: { innerText: message },
+        }),
+      ],
+    });
   }
 
-  renderColumns(columns, buttonName) {
-    const leftDiv = document.querySelector(".left");
-    leftDiv.innerHTML = "";
+  renderForm(columns, buttonName) {
+    const holder = home.WorkDiv;
+    holder.innerHTML = "";
 
-    const holderDiv = document.createElement("div");
-    holderDiv.className = "InsertData-div";
-    leftDiv.appendChild(holderDiv);
-
-    const linesHolder = document.createElement("div");
-    linesHolder.classList.add("insertdata-linesHolder");
-    columns.forEach((item) => {
-      const line = lineCreator("insertdata-line");
-
-      const label = document.createElement("label");
-      label.className = "label";
-      label.innerText = item;
-
-      const input = document.createElement("input");
-
-      line.appendChild(label);
-      line.appendChild(input);
-      linesHolder.appendChild(line);
+    const container = elementCreator({
+      type: "div",
+      parent: holder,
+      params: { className: "insertdata-container" },
     });
-    const footer = document.createElement("div");
-    footer.classList.add("footer");
 
-    holderDiv.appendChild(linesHolder);
-    holderDiv.appendChild(footer);
+    const form = elementCreator({
+      type: "form",
+      parent: container,
+      params: { className: "insertdata-form" },
+    });
+
+    columns.forEach((column) => {
+      const line = elementCreator({
+        type: "div",
+        parent: form,
+        params: { className: "insertdata-line" },
+      });
+
+      line.appendChild(Label(column));
+      line.appendChild(Input({ name: column }));
+    });
+
+    const footer = elementCreator({
+      type: "div",
+      parent: container,
+      params: { className: "insertdata-footer" },
+    });
+
     const saveButton = Button({
-      class: "save-button",
+      class: "save-button key-buttons",
       innerText: "حفظ",
-      class: "key-buttons",
-      onclick: () => this.saveData(buttonName, linesHolder),
+      onclick: () => this.saveData(buttonName, form),
     });
 
     footer.appendChild(saveButton);
-    holderDiv.onkeydown = (event) => {
-      if (event.key == "Enter") saveButton.click();
+
+    container.onkeydown = (event) => {
+      if (event.key === "Enter") saveButton.click();
     };
   }
 
-  saveData(buttonName, holderDiv) {
+  saveData(buttonName, form) {
     const data = {};
-    holderDiv.querySelectorAll(".line").forEach((line) => {
+
+    form.querySelectorAll(".insertdata-line").forEach((line) => {
       const label = line.querySelector("label").innerText;
       const value = line.querySelector("input").value;
       data[label] = value;

@@ -1,0 +1,8 @@
+<?php
+trait DatabaseConfig {
+    private static string $Serverip = '127.0.0.1';
+    private static string $ServerUser = 'root';
+    private static string $ServerPassword = '';
+    private static string $database = 'test';
+    private static string $secret = 'bb9e86b1879f6243e8f4df6b323addd5f73428c8de52c2a4c74a4329e6d0d8ba0df615da9e68bf7d66e4c09357a88ac0a156f739b276b355e45ca2dcf57d59f81912ba54486f71b0e0e5337ccc41b9527b7ef2c3942d950feea3f2cfa9e8d22e5ab50dab239a0df02381fcbc95554394dfcfe4841864a028bbc7a1274946ee61282d4fe5e20f02d5507ae4bada2af1076e83686377578a837f4ff104bb7c841fc32b465ad9ffe39f0728b10e099030474b66defe05703c593ebd07f3a78e8c01c2ca7f427ff78d9be168df3ab5e4ea4712ff5a43132ed33c27397d67485ef75eb258b6a54d7046545df18a1ef60abf6b251abab0bb41ce1aa8cafa4decb1ed92235f740ba012874ea315f73499d39b945b87d47527f0e50c886e7cab7b035fc246279a7fa079c514124cdf2e1da473fbe51ae76d397133b7500131fcf64e382fc61d213eac1b9364814aeb2a4dd45971e0e0c58d73261de80a228858b972ad3bdb92c9f7';
+}
