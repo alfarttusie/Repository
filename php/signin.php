@@ -13,6 +13,9 @@ class Signin
             if (session_status() === PHP_SESSION_NONE) session_start();
             session_regenerate_id(true);
 
+            self::$link = $link;
+            self::$userIp = $_SERVER['REMOTE_ADDR'];
+
             $username = $Post['username'] ?? null;
             $password = $Post['password'] ?? null;
 
@@ -20,50 +23,49 @@ class Signin
                 return new Response(400, ['debug' => 'empty']);
             }
 
-            self::$userIp = $_SERVER['REMOTE_ADDR'];
             $time = null;
-
-            if (self::isUserBlocked($time, $link)) {
+            if (self::isUserBlocked($time)) {
                 return new Response(200, ['response' => 'blocked', 'time' => $time]);
             }
 
-            if (self::validateCredentials($username, $password, $link)) {
-                return new Response(200, ['response' => 'ok'], payload: ['user' => $username] + self::generateAuthToken($username, $link));
+            if (self::validateCredentials($username, $password)) {
+                self::deleteExpiredTokens($link);
+                $isRecognizedDevice = self::isRecognizedDevice($username);
+                $payload = ['user' => $username] + self::generateAuthToken($username);
+                return new Response(200, ['response' => 'ok', 'isRecognizedDevice' => $isRecognizedDevice], payload: $payload);
             } else {
-                return new Response(200, ['response' => 'wrong', 'attemptsLeft' => self::recordFailedLogin($link)]);
+                return new Response(200, ['response' => 'wrong', 'attemptsLeft' => self::recordFailedLogin()]);
             }
         } catch (Exception $exception) {
             return new Response(403, ['debug' => $exception->getMessage()]);
         }
     }
 
-    private static function isUserBlocked(&$time, $link)
+    private static function isUserBlocked(&$time): bool
     {
-        $stmtVisitor = $link->prepare("SELECT `times`, `time` FROM `visitors` WHERE `ip` = ?");
-        $stmtVisitor->bind_param("s", self::$userIp);
-        $stmtVisitor->execute();
-        $visitor = $stmtVisitor->get_result()->fetch_assoc();
+        $stmt = self::$link->prepare("SELECT `times`, `time` FROM `visitors` WHERE `ip` = ?");
+        $stmt->bind_param("s", self::$userIp);
+        $stmt->execute();
+        $visitor = $stmt->get_result()->fetch_assoc();
 
         if (!$visitor) {
-            $stmtInsert = $link->prepare("INSERT INTO `visitors` (`ip`, `times`, `time`) VALUES (?, 1, ?)");
-            $currentTime = time();
-            $stmtInsert->bind_param("si", self::$userIp, $currentTime);
-            $stmtInsert->execute();
+            $now = time();
+            $insert = self::$link->prepare("INSERT INTO `visitors` (`ip`, `times`, `time`) VALUES (?, 1, ?)");
+            $insert->bind_param("si", self::$userIp, $now);
+            $insert->execute();
             return false;
         }
 
-        $stmtSetting = $link->prepare("SELECT `times`, `time` FROM `setting` LIMIT 1");
-        $stmtSetting->execute();
-        $setting = $stmtSetting->get_result()->fetch_assoc();
+        $setting = self::$link->query("SELECT `times`, `time` FROM `setting` LIMIT 1")->fetch_assoc();
 
         if ($visitor['times'] < $setting['times']) {
             return false;
         }
 
         if ($visitor['time'] <= time()) {
-            $stmtUpdate = $link->prepare("UPDATE `visitors` SET `times` = 0, `time` = NULL WHERE `ip` = ?");
-            $stmtUpdate->bind_param("s", self::$userIp);
-            $stmtUpdate->execute();
+            $reset = self::$link->prepare("UPDATE `visitors` SET `times` = 0, `time` = NULL WHERE `ip` = ?");
+            $reset->bind_param("s", self::$userIp);
+            $reset->execute();
             return false;
         }
 
@@ -71,67 +73,76 @@ class Signin
         return true;
     }
 
-    private static function recordFailedLogin($link)
+    private static function recordFailedLogin()
     {
-        $stmtVisitor = $link->prepare("SELECT `times` FROM `visitors` WHERE `ip` = ?");
-        $stmtVisitor->bind_param("s", self::$userIp);
-        $stmtVisitor->execute();
-        $visitor = $stmtVisitor->get_result()->fetch_assoc();
+        $stmt = self::$link->prepare("SELECT `times` FROM `visitors` WHERE `ip` = ?");
+        $stmt->bind_param("s", self::$userIp);
+        $stmt->execute();
+        $visitor = $stmt->get_result()->fetch_assoc();
 
-        if (!$visitor) {
-            return 'none';
-        }
+        if (!$visitor) return 0;
 
-        $stmtSetting = $link->prepare("SELECT `times`, `time` FROM `setting` LIMIT 1");
-        $stmtSetting->execute();
-        $setting = $stmtSetting->get_result()->fetch_assoc();
+        $setting = self::$link->query("SELECT `times`, `time` FROM `setting` LIMIT 1")->fetch_assoc();
 
         $times = intval($visitor['times']) + 1;
-        $blockTime = $setting['time'] * 60;
-        $time = time() + $blockTime;
+        $blockUntil = time() + ($setting['time'] * 60);
 
-        $stmtUpdate = $link->prepare("UPDATE `visitors` SET `times` = ?, `time` = ? WHERE `ip` = ?");
-        $stmtUpdate->bind_param("iis", $times, $time, self::$userIp);
-        $stmtUpdate->execute();
+        $update = self::$link->prepare("UPDATE `visitors` SET `times` = ?, `time` = ? WHERE `ip` = ?");
+        $update->bind_param("iis", $times, $blockUntil, self::$userIp);
+        $update->execute();
 
-        $maxAttempts = $setting['times'];
-        $attemptsLeft = $maxAttempts - $times;
-
-        return $attemptsLeft <= 0 ? 'none' : $attemptsLeft;
+        $left = $setting['times'] - $times;
+        return $left <= 0 ? 'none' : $left;
     }
 
-    private static function validateCredentials($username, $password, $link)
+    private static function validateCredentials($username, $password): bool
     {
-        $username = htmlspecialchars(trim($username), ENT_QUOTES, 'UTF-8');
-        $stmt = $link->prepare("SELECT password FROM `admin_info` WHERE username = ? LIMIT 1");
+        $stmt = self::$link->prepare("SELECT password FROM `admin_info` WHERE username = ? LIMIT 1");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
 
-        if (!$result) {
-            return false;
-        }
+        if (!$result) return false;
 
         usleep(random_int(300000, 700000));
         return password_verify($password, $result['password']);
     }
 
-    private static function generateAuthToken($username, $link)
+    private static function storeSessionToken($username, $token): void
     {
-        if (!method_exists(__CLASS__, 'generateRandomString') || !method_exists(__CLASS__, 'encryptText')) {
-            throw new Exception("Missing required methods.");
-        }
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $created = date('Y-m-d H:i:s');
 
-        $encKey = self::generateRandomString(10);
-        self::$encryptionKey = hash('sha256', $encKey, true);
-        $randomToken = bin2hex(random_bytes(20));
-        $loginToken = self::encryptText($randomToken);
+        $stmt = self::$link->prepare("
+            INSERT INTO `auth_tokens` (`username`, `token`, `ip_address`, `user_agent`, `created_at`) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->bind_param("sssss", $username, $token, $ip, $agent, $created);
+        $stmt->execute();
+    }
 
-        $stmtUpdate = $link->prepare("UPDATE `admin_info` SET `Token` = ?, `enckey` = ? WHERE `username` = ?");
-        $stmtUpdate->bind_param("sss", $randomToken, $encKey, $username);
-        $stmtUpdate->execute();
+    private static function generateAuthToken($username): array
+    {
+        $token = bin2hex(random_bytes(32));
+        self::storeSessionToken($username, $token);
+        $_SESSION['session_token'] = ['user' => $username, 'token' => $token];
+        return ['token' => $token];
+    }
+    private static function isRecognizedDevice($username): bool
+    {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 
-        $_SESSION['session_token'] = ['user' => $username, 'token' => $loginToken];
-        return ['token' => $loginToken];
+        $stmt = self::$link->prepare("
+        SELECT id FROM `auth_tokens` 
+        WHERE `username` = ? AND `ip_address` = ? AND `user_agent` = ? 
+        LIMIT 1
+    ");
+        $stmt->bind_param("sss", $username, $ip, $userAgent);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->num_rows === 0;
     }
 }

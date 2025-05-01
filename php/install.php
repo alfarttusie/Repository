@@ -55,9 +55,9 @@ class Install
     /**
      * Generates a random string with a specified length.
      */
-    private static function generateRandomString(int $length = null): string
+    private static function generateRandomString(): string
     {
-        $length = $length ?? random_int(600, 900);
+        $length =  random_int(600, 900);
         return bin2hex(random_bytes(intdiv($length, 2)));
     }
 
@@ -89,8 +89,11 @@ class Install
     public function __construct(string $postData)
     {
         if (file_exists('db.php')) self::resJson(400, ['error' => 'installed']);
-        if(!is_writable(__DIR__)) return self::resJson(200,['error'=>'permission']);
+
+        if (!is_writable(__DIR__)) return self::resJson(200, ['error' => 'permission']);
+
         $post = json_decode($postData, true);
+
         if (!is_array($post)) self::resJson(400, ['error' => 'JSON']);
 
         $type = $post['type'] ?? 'install';
@@ -127,6 +130,11 @@ class Install
     {
         $conn = self::$dbConnection;
         $database = $conn->real_escape_string($database);
+        $adminUser = $conn->real_escape_string($adminUser);
+        $adminPassword = $conn->real_escape_string($adminPassword);
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $adminUser)) {
+            self::resJson(400, ['error' => 'Invalid username format']);
+        }
         $conn->query("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         $conn->select_db($database);
         $adminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
@@ -139,36 +147,46 @@ class Install
                 `token` TEXT NOT NULL,
                 `enckey` VARCHAR(20) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+        
             INSERT INTO `admin_info` (`username`, `password`, `token`, `enckey`) 
             VALUES ('$adminUser', '$adminPassword', '', '') 
             ON DUPLICATE KEY UPDATE username=username;
             
             CREATE TABLE IF NOT EXISTS `buttons` (
-                    `id` int NOT NULL AUTO_INCREMENT,
-                    `button` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-                    `main` text NOT NULL,
-                    `password` text NOT NULL,
-                    `unique_id` text NOT NULL,
-                    `columns` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-                 
+                `id` int NOT NULL AUTO_INCREMENT,
+                `button` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                `main` text NOT NULL,
+                `password` text NOT NULL,
+                `unique_id` text NOT NULL,
+                `columns` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            
             CREATE TABLE IF NOT EXISTS `setting` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `times` INT NOT NULL DEFAULT 6,
                 `time` INT NOT NULL DEFAULT 1
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            
             INSERT IGNORE INTO `setting` (`times`, `time`) VALUES (6, 1);
             
             CREATE TABLE IF NOT EXISTS `visitors` (
-                    `id` int NOT NULL AUTO_INCREMENT,
-                    `times` int NOT NULL,
-                    `ip` text NOT NULL,
-                    `time` int NOT NULL,
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4
-        ";
+                `id` int NOT NULL AUTO_INCREMENT,
+                `times` int NOT NULL,
+                `ip` text NOT NULL,
+                `time` int NOT NULL,
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            
+            CREATE TABLE IF NOT EXISTS `auth_tokens` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `username` VARCHAR(100) NOT NULL,
+                `token` VARCHAR(255) NOT NULL,
+                `ip_address` VARCHAR(45),
+                `user_agent` TEXT,
+                `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ";
 
         if (!$conn->multi_query($queries)) {
             self::resJson(500, ['error' => 'Database creation failed: ' . $conn->error]);
@@ -176,6 +194,5 @@ class Install
     }
 }
 
-// Handle POST request
 $inputData = file_get_contents('php://input');
 ($_SERVER["REQUEST_METHOD"] === "POST") ? new Install($inputData) : exit("Only POST method is allowed.");

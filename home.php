@@ -5,12 +5,15 @@ require 'php/tools.php';
 
 class Home
 {
+    private static $link;
     use Tools;
     function __construct()
     {
         session_start();
+        self::$link = self::connectToDB();
         $Token = @$_SESSION['session_token'] ?? null;
-        if ($Token && self::loginChecker($Token))
+
+        if ($Token && self::loginChecker(self::$link, $Token))
             self::View();
         else
             header('Location: index.php');
@@ -65,6 +68,12 @@ class Home
                 </body>
             </html>
         ");
+    }
+    function __destruct()
+    {
+        if (self::$link) {
+            self::$link->close();
+        }
     }
 }
 new Home();

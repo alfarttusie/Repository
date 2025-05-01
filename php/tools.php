@@ -1,10 +1,14 @@
 <?php
 require 'jwt.php';
 require 'encryption.php';
+require 'settings.php';
+require 'ArrayHelper.php';
 trait Tools
 {
     use Jwt;
     use encryption;
+    use Settings;
+    use ArrayHelper;
 
     private static $Bearer;
     private static $connection;
@@ -118,54 +122,66 @@ trait Tools
             return false;
         }
     }
-    private static function loginChecker($Bearer = null)
+    private static function loginChecker($link, $Bearer = null)
     {
         try {
             if (!$Bearer)
                 $Bearer = self::Headers();
 
-            $user   = @$Bearer['user']  ?? 'empty';
-            $token  = @$Bearer['token'] ?? 'empty';
-            if (empty($user) || empty($token)) return false;
+            $username = $Bearer['user'] ?? '';
+            $token    = $Bearer['token'] ?? '';
 
-            $link   = self::connectToDB();
+            if (empty($username) || empty($token))
+                return false;
 
-            if ($link) {
-                $stmt = $link->prepare("SELECT `Token`, `enckey` FROM `admin_info` WHERE `username` = ?");
-                $stmt->bind_param("s", $user);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $dbToken = $result->fetch_assoc();
-                if ($dbToken) {
-                    $encKey = hash('sha256', $dbToken['enckey'], true);
-                    $Token = self::decryptText($token, $encKey);
-                    $link->close();
-                    return !empty($Token) && $Token === $dbToken['Token'] ? true : false;
-                }
+            $stmt = $link->prepare("
+            SELECT `id`, `created_at` 
+            FROM `auth_tokens` 
+            WHERE `username` = ? AND `token` = ? 
+            LIMIT 1
+        ");
+            $stmt->bind_param("ss", $username, $token);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $tokenRow = $result->fetch_assoc();
+
+            if (!$tokenRow) {
+                return false;
             }
-            return false;
-        } catch (Exception $Eexception) {
+
+            $createdTime = strtotime($tokenRow['created_at']);
+            $now = time();
+            $hoursPassed = ($now - $createdTime) / 3600;
+
+            if ($hoursPassed > 24) {
+                $stmtDelete = $link->prepare("DELETE FROM `auth_tokens` WHERE `id` = ?");
+                $stmtDelete->bind_param("i", $tokenRow['id']);
+                $stmtDelete->execute();
+                return false;
+            }
+
+            return true;
+        } catch (Exception $e) {
             return false;
         }
     }
+
+
+
     private static function Headers()
     {
         $headers = @getallheaders();
-        $Bearer = $headers['Bearer'] ?? null;
-        if ($Bearer) return self::verifyJwt($Bearer) ? $Bearer : [];
-        else return [];
+        $jwt = $headers['Bearer'] ?? null;
+
+        if (!$jwt) return [];
+
+        $data = self::verifyJwt($jwt);
+
+        return is_array($data['payload'] ?? null) ? $data['payload'] : [];
     }
-    private static function Additem($array, $item)
+    private static function deleteExpiredTokens(mysqli $link): void
     {
-        array_push($array, $item);
-        $array = array_values($array);
-        return $array;
-    }
-    private static function replace_item(array $array, string $item, string $new)
-    {
-        $itemkey = array_search($item, $array);
-        unset($array[$itemkey]);
-        array_push($array, $new);
-        return array_values($array);
+        $stmt = $link->prepare("DELETE FROM `auth_tokens` WHERE `created_at` < (NOW() - INTERVAL 1 DAY)");
+        $stmt->execute();
     }
 }
