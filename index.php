@@ -2,7 +2,13 @@
 
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
-require 'php/tools.php';
+require_once  'php/tools.php';
+require_once "php/lang.php";
+
+$lang = isset($_GET['lang']) && $_GET['lang'] == 'en' ? 'en' : 'ar';
+
+
+Lang::load($_GET['lang'] ?? $lang);
 
 class Index
 {
@@ -11,7 +17,6 @@ class Index
     function __construct()
     {
         session_start();
-        session_regenerate_id(true);
         $token = $_SESSION['session_token'] ?? null;
         if ($token && self::loginChecker($token)) return header('Location: home.php');
 
@@ -34,7 +39,7 @@ class Index
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>المستودع</title>
+                <title>' . lang::get('login-title') . '</title>
                 <link rel="stylesheet" href="css/main.css">
                 <link rel="stylesheet" href="css/index.css">
                 <link rel="stylesheet" href="css/animation.css">
@@ -64,7 +69,6 @@ class Index
     private static function Msg($error)
     {
         print('
-            <body>
                 <div class="error-holder">
                     <div class="error-text">
                         ' . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . '
