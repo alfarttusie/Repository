@@ -2,6 +2,12 @@
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require 'php/tools.php';
+require_once "php/lang.php";
+
+$lang = isset($_GET['lang']) && $_GET['lang'] == 'en' ? 'en' : 'ar';
+
+
+Lang::load($lang ?? 'en');
 
 class Home
 {
@@ -39,17 +45,17 @@ class Home
                         <link rel='stylesheet' href='css/addbutton.css'>
                         <script src='js/assistant.js'></script>
                         <script src='js/style.js'></script>
-                        <title>المستودع</title>
+                        <title>" . lang::get('home-title') . "</title>
                     </head>
-                <body>
+                <body style='direction: " . (lang::get('language') == 'index.php?lang=ar' ? 'rtl' : 'ltr') . "'>
                     <div class='indicator'><p></p></div>
                         <div class='header'>
-                            <button class='header-btn' id='logout'>خروج</button>
-                            <button class='header-btn'>test</button>
-                            <button class='header-btn' id='key'>المفتاح</button>
-                            <button class='header-btn'>test</button>
-                            <button class='header-btn' id='addButton'>اظافة زر</button>
-                            <button class='header-btn' id='home'>الرئيسية</button>
+                            <button class='header-btn' id='logout'>" . lang::get('logout-btn') . "</button>
+                            <button class='header-btn' id='key'>" . lang::get('key-btn') . "</button>
+                            <button class='header-btn' id='settings'>" . lang::get('settings-btn') . "</button>
+                            <button class='header-btn' id='lang-btn'>" . lang::get('language-btn') . "</button>
+                            <button class='header-btn' id='addButton'>" . lang::get('add-btn') . "</button>
+                            <button class='header-btn' id='home'>" . lang::get('home') . "</button>
                         </div>
                     
                         <div class='left'>
@@ -58,7 +64,21 @@ class Home
                         <div class='right'>
                         </div>
                         
-                    
+                    <script>
+                    class Translator {
+                        constructor() {
+                            this.data = " . json_encode(lang::getAll(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "
+                            }   
+                            get(key) {
+                                return this.data[key] || key;
+                            }
+                            test(){
+                               console.log(`thidatadsdcvsdf`);
+                            }
+                        }
+                    const lang = new Translator();
+                    </script>
+
                     <script src='js/addbutton.js'></script>
                     <script src='js/contextMenu.js'></script>
                     <script src='js/key.js'></script>
@@ -67,8 +87,9 @@ class Home
                     <script src='js/ShowButton.js'></script>
                     <script src='js/home.js'></script>
                 </body>
-            </html>
-        ");
+
+                </html>
+");
     }
     function __destruct()
     {

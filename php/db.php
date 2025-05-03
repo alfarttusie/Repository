@@ -1,8 +1,0 @@
-<?php
-trait DatabaseConfig {
-    private static string $Serverip = '127.0.0.1';
-    private static string $ServerUser = 'root';
-    private static string $ServerPassword = '';
-    private static string $database = 'test';
-    private static string $secret = 'f25c447f0a0838c9147611d5567fa3d62f2ff6bc3d4518a6230a57a011bb5daab9fb6972845d420868803b5ce3acd367239ee746aec76adaa0aa5e8492dae3b47965140c5097ee9a8050c8381222022ac4f6bb095a3a58cd0cd4d60afb3316f5a80a07353fe8ec139ee86f2e3f0d866d94c2951b86e332ec79b1aa752a82b9290e56c224c6a032d2e3b131aee53f864e5f902b6dac571fd0695832f88e0b99d9db8df1a047424aced8215e40ddf05531d7cc1c5808e657cc0080541c0890062b1edc4179d482c4bd914fd8c1ee72da07d7734b3d3eeae42924a3e3ff6a191a86f23e7408c960ae822415f6477aed20416992cdab9da78a03ae8d7db731c8857c71095cb0cab47261283f52e9e4dd3b0374222b76cf40c2a2c29d4818ee2f6c6cd8d640246949176bfea045f0fc905d8908bc78784ccd5c9fc5f3a8c3e0e1';
-}

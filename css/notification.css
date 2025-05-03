@@ -1,7 +1,6 @@
 .Notify {
   z-index: 10000000000;
   position: absolute;
-  right: 0;
   top: 3%;
   height: 40px;
   width: 0;

@@ -11,7 +11,7 @@ class Key {
     /** Save Button */
     line.appendChild(
       Button({
-        innerText: "حفظ",
+        innerText: lang.get("save-btn"),
         onclick: Key.save,
         class: "key-buttons",
       })
@@ -20,17 +20,15 @@ class Key {
     /** value input */
     line.appendChild(
       PasswordField({
-        value: "test_key",
         placeholder: "Enter encryption key",
-        onkeydown: (event) =>
-          event.key == "Enter" ? SaveButton.click() : null,
+        onkeydown: (event) => (event.key == "Enter" ? Key.save() : null),
       })
     );
 
     /** cancel button */
     line.appendChild(
       Button({
-        innerText: "الغاء",
+        innerText: lang.get("cancel-btn"),
         class: "key-buttons",
         onclick: Key.hide,
       })
@@ -46,14 +44,17 @@ class Key {
         if (callback.status == "successful") {
           home.GetButtons();
           showNotification(
-            callback.response === "update" ? "تم التحديث" : "تم الحفظ"
+            callback.response === "update"
+              ? lang.get("notification-update")
+              : lang.get("notification-save")
           );
           document.querySelector("#key").style.backgroundColor = "transparent";
           Key.hide();
         }
       });
     } else {
-      ShowMsg(`لا يمكن ترك المفتاح فارغ`);
+      indicatorRemover();
+      showNotification(lang.get("empty-key"));
     }
   }
   static checker() {

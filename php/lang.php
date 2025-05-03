@@ -13,4 +13,8 @@ class lang
     {
         return self::$lang[$key] ?? $key;
     }
+    public static function getAll(): array
+    {
+        return self::$lang;
+    }
 }

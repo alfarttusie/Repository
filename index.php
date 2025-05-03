@@ -8,7 +8,7 @@ require_once "php/lang.php";
 $lang = isset($_GET['lang']) && $_GET['lang'] == 'en' ? 'en' : 'ar';
 
 
-Lang::load($_GET['lang'] ?? $lang);
+Lang::load($lang ?? 'en');
 
 class Index
 {
@@ -55,12 +55,13 @@ class Index
             <p></p>
         </div>
         <div class="login-holder">
-            <input type="text" class="username" placeholder="User name">
+            <input type="text" class="username" placeholder="' . lang::get('login-username') . '">
             <div class="password-field">
-                <input type="password" class="password" placeholder="Password">
+                <input type="password" class="password" placeholder="' . lang::get('login-password') . '">
                 <button class="view-password">🙈</button>
             </div>
-            <button class="login-btn">Login</button>
+            <button class="login-btn">' . lang::get('login-submit') . '</button>
+            <a class="language-btn login-btn" href=' . lang::get('language') . '>' . lang::get('language-btn') . '</a>
         </div>
         <script src="js/assistant.js"></script>
         <script src="js/index.js"></script>

@@ -165,7 +165,8 @@ class Install
             CREATE TABLE IF NOT EXISTS `setting` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `times` INT NOT NULL DEFAULT 6,
-                `time` INT NOT NULL DEFAULT 1
+                `time` INT NOT NULL DEFAULT 1,
+                `lang` text NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             
             INSERT IGNORE INTO `setting` (`times`, `time`) VALUES (6, 1);

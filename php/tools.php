@@ -32,7 +32,6 @@ trait Tools
             return false;
         }
     }
-
     private static function DataBase_Info()
     {
         try {

@@ -368,6 +368,11 @@ function elementCreator({
 }
 function showNotification(Text) {
   const Holder = document.createElement("div");
+  if (lang.get("lang") == "en") {
+    Holder.style.left = "0px";
+  } else {
+    Holder.style.right = "0px";
+  }
   Holder.classList.add("Notify");
   const Secondary = document.createElement("div");
   Secondary.classList.add("secondary");

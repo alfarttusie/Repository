@@ -19,13 +19,21 @@ class home {
   bindEvents() {
     const logoutBtn = document.querySelector("#logout");
     const homeBtn = document.querySelector("#home");
+    const settings = document.querySelector("#settings");
 
     if (logoutBtn) logoutBtn.onclick = () => this.logOut();
     if (homeBtn) homeBtn.onclick = () => (window.location = "home.php");
+    if (settings) settings.onclick = () => (window.location = "settings.php");
+    document.querySelector("#lang-btn").onclick = (e) => {
+      const lang = e.target.innerText.toLowerCase().includes("english")
+        ? "en"
+        : "ar";
+      location.href = `home.php?lang=${lang}`;
+    };
   }
 
   logOut() {
-    const confirmed = confirm("هل تريد تسجيل الخروج؟");
+    const confirmed = confirm(lang.get("logout-confirm"));
     if (!confirmed) return;
 
     sendRequest({ type: "log out" }).then(() => {
