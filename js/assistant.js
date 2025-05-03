@@ -194,7 +194,6 @@ function findButtonByText(text) {
     if (CssClass) line.classList.add(CssClass);
     return line;
   }
-
   function Span(element) {
     const span = document.createElement("span");
     Object.entries(element).forEach(([key, value]) => {
@@ -395,4 +394,41 @@ function Shake(selector) {
   setTimeout(() => {
     element.classList.remove("shake");
   }, 500);
+}
+function startCountdown(seconds, element = null) {
+  const old = document.querySelector(".countdown-timer");
+  if (old) old.remove();
+
+  const countdownElement = document.createElement("div");
+  countdownElement.className = "countdown-timer";
+  countdownElement.style.fontSize = "24px";
+  countdownElement.style.fontWeight = "bold";
+  if (element) {
+    element.appendChild(countdownElement);
+  } else {
+    document.body.appendChild(countdownElement);
+  }
+
+  function updateCountdown() {
+    if (seconds <= 0) {
+      
+      countdownElement.remove();
+      clearInterval(timer);
+      return;
+    }
+
+    let mins = Math.floor(seconds / 60);
+    let secs = seconds % 60;
+
+    let display =
+      mins > 0
+        ? `وقت الحضر ${mins} دقيقة و ${secs < 10 ? "0" : ""}${secs} ثانية`
+        : `${secs < 10 ? "0" : ""}${secs} ثانية`;
+
+    countdownElement.textContent = display;
+    seconds--;
+  }
+
+  updateCountdown();
+  const timer = setInterval(updateCountdown, 1000);
 }

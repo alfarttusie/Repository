@@ -28,7 +28,12 @@ class home {
       const lang = e.target.innerText.toLowerCase().includes("english")
         ? "en"
         : "ar";
-      location.href = `home.php?lang=${lang}`;
+      sendRequest({ type: "lang", new: lang }).then((callback) => {
+        console.log(callback);
+        if (callback.status === "successful") {
+          location.reload();
+        }
+      });
     };
   }
 

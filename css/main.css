@@ -1,7 +1,7 @@
 @font-face {
   font-family: "alfarttusie";
   src: url("fonts/Cairo.ttf") format("truetype");
-  font-family: 'Tajawal', sans-serif;
+  font-family: "Tajawal", sans-serif;
   font-display: swap;
 }
 
@@ -29,30 +29,34 @@ body {
   top: -150vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 0%; 
-  border: 2px solid #ff4444; 
-  font-size: clamp(14px, 3vw, 24px); 
+  width: 0%;
+  border: 2px solid #ff4444;
+  font-size: clamp(14px, 3vw, 24px);
   color: whitesmoke;
-  border-radius: 15px; 
+  border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 80px;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.8), rgba(255, 94, 77, 0.9)); 
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 0, 0.8),
+    rgba(255, 94, 77, 0.9)
+  );
   overflow: hidden;
   z-index: 9999;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.7);
-  width: clamp(0px,70%,200px);
+  width: clamp(0px, 70%, 200px);
 }
 
 .Showerror.active {
-  animation: DropAndExpand 1.2s ease forwards; 
+  animation: DropAndExpand 1.2s ease forwards;
 }
 
 .Showerror-text {
   transform: none;
-  transition: none; 
+  transition: none;
 }
 
 .indicator {

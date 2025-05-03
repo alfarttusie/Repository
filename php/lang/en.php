@@ -6,7 +6,6 @@ return [
     'login-username' => 'username',
     'login-password' => 'password',
     'login-submit' => 'login',
-    'language' => 'index.php?lang=ar',
     'home-title' => 'repository home',
     'home' => 'home',
     'add-btn' => 'add button',
@@ -21,4 +20,9 @@ return [
     'notification-save' => 'saved',
     'notification-delete' => 'deleted',
     'empty-key' => 'key cannot be empty',
+    'language-update' => 'language updated',
+    'direction' => 'ltr',
+    'empty' => 'do not leave empty field',
+    'wrong-info' => 'information is incorrect tries left: ',
+    'blocked' => 'you are blocked from login',
 ];

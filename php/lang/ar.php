@@ -7,7 +7,6 @@ return [
     'login-password' => 'كلمة المرور',
     'login-submit'   => 'تسجيل الدخول',
     'language-btn' => 'english',
-    'language' => 'index.php?lang=en',
     'home-title' => 'المستودع الرئيسية',
     'home' => 'الرئيسية',
     'add-btn' => 'اظافة زر',
@@ -21,4 +20,10 @@ return [
     'notification-save' =>  'تم الحفظ',
     'notification-delete' => 'تم الحذف',
     'empty-key' => 'لا يمكن ترك المفتاح فارغ',
+    'language-update' => 'تم تحديث اللغة',
+    'direction' => 'rtl',
+    'empty' => 'لا تترك حقل فارغ',
+    'wrong-info' => 'اسم المستخدم أو كلمة المرور غير صحيحة',
+    'blocked' => 'تم حظرك من تسجيل الدخول',
+
 ];

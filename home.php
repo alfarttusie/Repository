@@ -4,11 +4,6 @@ if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 require 'php/tools.php';
 require_once "php/lang.php";
 
-$lang = isset($_GET['lang']) && $_GET['lang'] == 'en' ? 'en' : 'ar';
-
-
-Lang::load($lang ?? 'en');
-
 class Home
 {
     private static $link;
@@ -19,9 +14,11 @@ class Home
         self::$link = self::connectToDB();
         $Token = @$_SESSION['session_token'] ?? null;
 
-        if ($Token && self::loginChecker(self::$link, $Token))
+        if ($Token && self::loginChecker(self::$link, $Token)) {
+            $lang = self::getLanguage(self::$link);
+            Lang::load($lang ?? 'en');
             self::View();
-        else
+        } else
             header('Location: index.php');
         exit;
     }
@@ -47,7 +44,7 @@ class Home
                         <script src='js/style.js'></script>
                         <title>" . lang::get('home-title') . "</title>
                     </head>
-                <body style='direction: " . (lang::get('language') == 'index.php?lang=ar' ? 'rtl' : 'ltr') . "'>
+                <body style='direction: " . (lang::get('direction')) . "'>
                     <div class='indicator'><p></p></div>
                         <div class='header'>
                             <button class='header-btn' id='logout'>" . lang::get('logout-btn') . "</button>

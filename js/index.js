@@ -1,12 +1,17 @@
 class index {
   constructor() {
     indicatorRemover();
-    const inputs = document.querySelectorAll("input");
-    inputs.forEach((input) => {
-      input.addEventListener("input", (event) => {
-        changeDirection(event.target);
+    document.querySelector(".language-btn").onclick = (e) => {
+      const lang = e.target.innerText.toLowerCase().includes("english")
+        ? "en"
+        : "ar";
+      sendRequest({ type: "lang", new: lang }).then((callback) => {
+        if (callback.status === "successful") {
+          location.reload();
+        }
       });
-    });
+    };
+
     this.initializeSession();
   }
 
@@ -31,18 +36,23 @@ class index {
           Button.classList.remove("disabled");
           switch (response.response) {
             case "blocked":
-              Message(`وقت الحضر ${response.time} ثانية`);
+              startCountdown(
+                response.time,
+                document.querySelector(".login-holder")
+              );
+              Message(lang.get("blocked"));
               Shake(".password");
               break;
             case "ok":
               window.location = "home.php";
               break;
             case "wrong":
-              localStorage.removeItem("bearer");
-              const attemptsLeft =
-                response.attemptsLeft == "none" ? 0 : response.attemptsLeft;
-              Message(`المعلومات غير صحيحة محاولات متبقية ${attemptsLeft}`);
-              Shake(".username");
+              if (response.attemptsLeft == "none") {
+                Message(lang.get("blocked"));
+              } else {
+                Shake(".username");
+                Message(lang.get("wrong-info") + ` ` + response.attemptsLeft);
+              }
               break;
             default:
               Message(`لا يمكن تسجيل الدخول`);

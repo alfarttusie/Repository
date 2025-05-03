@@ -23,7 +23,6 @@ class Requests
 
         return new Response(200, ['status' => 'logged out']);
     }
-
     private static function SetKey($data, $link)
     {
 
@@ -59,6 +58,16 @@ class Requests
             return false;
         }
     }
+    private static function ChangeLang($lang, $link)
+    {
+        $lang = mysqli_real_escape_string($link, $lang);
+        try {
+            $link->query("UPDATE `setting` SET `lang` = '$lang' WHERE `setting`.`id` = 1; ");
+            return new Response(200);
+        } catch (Exception $e) {
+            return new Response(500, ['debug' => $e->getMessage()]);
+        }
+    }
     public function __construct($data)
     {
         try {
@@ -67,7 +76,7 @@ class Requests
             $data = json_decode($data, true);
             $type = @$data['type'] ?? 'empty';
 
-            $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries'];
+            $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries', 'lang'];
 
             if ($type == 'empty' || $type == '') return new Response(400, ['debug' => 'Type not Set']);
             if (!in_array($type, $commands)) return new Response(400, ['debug' => 'Type not match']);
@@ -90,6 +99,8 @@ class Requests
             if ($type == 'sign in')
                 return new Signin(Post: $data, link: self::$connection);
 
+            if ($type == 'lang')
+                return self::ChangeLang($data['new'], self::$connection);
 
             /** after logged in*/
             if (!self::loginChecker(self::$connection))

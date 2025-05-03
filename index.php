@@ -5,25 +5,22 @@ if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 require_once  'php/tools.php';
 require_once "php/lang.php";
 
-$lang = isset($_GET['lang']) && $_GET['lang'] == 'en' ? 'en' : 'ar';
-
-
-Lang::load($lang ?? 'en');
-
 class Index
 {
     use Tools;
 
     function __construct()
     {
-        session_start();
-        $token = $_SESSION['session_token'] ?? null;
-        if ($token && self::loginChecker($token)) return header('Location: home.php');
-
+        $link = self::connectToDB();
+        $lang = self::getLanguage($link);
+        Lang::load($lang ?? 'en');
         self::HeaderView();
-        if (self::SysTemCheck($response))
+        if (self::SysTemCheck($response)) {
+            session_start();
+            $token = $_SESSION['session_token'] ?? null;
+            if ($token && self::loginChecker($token)) return header('Location: home.php');
             self::View();
-        else {
+        } else {
             http_response_code(503);
             self::Msg($response ?? 'empty');
         }
@@ -34,7 +31,7 @@ class Index
     {
         echo '
             <!DOCTYPE html>
-            <html lang="en">
+            <tml lang="en">
 
             <head>
                 <meta charset="UTF-8">
@@ -45,7 +42,8 @@ class Index
                 <link rel="stylesheet" href="css/animation.css">
                 <link rel="stylesheet" href="css/elements.css">
             </head>
-            <body>
+            <body style="direction: ' . (lang::get('direction')) . '">
+            
         ';
     }
     private static function View()
@@ -61,7 +59,7 @@ class Index
                 <button class="view-password">🙈</button>
             </div>
             <button class="login-btn">' . lang::get('login-submit') . '</button>
-            <a class="language-btn login-btn" href=' . lang::get('language') . '>' . lang::get('language-btn') . '</a>
+            <button class="language-btn" id="lang-btn">' . lang::get('language-btn') . '</button>
         </div>
         <script src="js/assistant.js"></script>
         <script src="js/index.js"></script>
@@ -80,6 +78,20 @@ class Index
     private static function FooterView()
     {
         echo '
+            <script>
+                class Translator {
+                    constructor() {
+                        this.data = ' . json_encode(lang::getAll(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '
+                        }   
+                        get(key) {
+                            return this.data[key] || key;
+                        }
+                        test(){
+                            console.log(`thidatadsdcvsdf`);
+                        }
+                    }
+                    const lang = new Translator();
+                    </script>
             </body>
             </html>
         ';

@@ -164,9 +164,6 @@ trait Tools
             return false;
         }
     }
-
-
-
     private static function Headers()
     {
         $headers = @getallheaders();
@@ -182,5 +179,11 @@ trait Tools
     {
         $stmt = $link->prepare("DELETE FROM `auth_tokens` WHERE `created_at` < (NOW() - INTERVAL 1 DAY)");
         $stmt->execute();
+    }
+    private static function getLanguage($link)
+    {
+        $db_lang = $link->query("SELECT `lang` FROM `setting` LIMIT 1");
+        $lang = $db_lang->fetch_assoc()['lang'] ?? 'en';
+        return empty($lang) ? 'en' : $lang;
     }
 }
