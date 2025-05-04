@@ -6,18 +6,11 @@ class ButtonSettings {
     const buttonName = Name || menu?.dataset?.invoker;
 
     if (!buttonName) {
-      console.error("اسم الزر غير متوفر.");
-      showNotification("تعذر العثور على اسم الزر.");
+      showNotification(lang.get("button-nofound"));
       return;
     }
 
     this.WorkDiv = home?.WorkDiv || null;
-
-    if (!this.WorkDiv) {
-      console.error("WorkDiv غير متوفر.");
-      showNotification("تعذر العثور على واجهة العمل.");
-      return;
-    }
 
     this.loadButtonSettings(buttonName);
   }
@@ -42,11 +35,11 @@ class ButtonSettings {
           this.WorkDiv.appendChild(line);
         });
       } else {
-        showNotification("لا توجد حقول مرتبطة بالزر.");
+        showNotification(lang.get("no-fields"));
       }
 
       const addNewButton = this.createElement("button", {
-        innerText: "إضافة",
+        innerText: lang.get("add"),
         className: "add-new-btn",
         onclick: () => {
           const line = this.createNewLine(buttonName);
@@ -56,8 +49,8 @@ class ButtonSettings {
 
       this.WorkDiv.appendChild(addNewButton);
     } catch (error) {
-      console.error("خطأ أثناء تحميل إعدادات الزر:", error);
-      showNotification("حدث خطأ أثناء تحميل الإعدادات. حاول مرة أخرى.");
+      console.error(error);
+      showNotification(lang.get("error-loading-settings"));
     }
   }
 
@@ -72,7 +65,7 @@ class ButtonSettings {
 
     const typeSelect = this.createTypeSelect(columnType);
     const saveTypeButton = this.createElement("button", {
-      innerText: "حفظ النوع",
+      innerText: lang.get("save-kind"),
       className: "save-type-btn",
       onclick: () => {
         this.updateColumnType(buttonName, columnName, typeSelect.value);
@@ -80,7 +73,7 @@ class ButtonSettings {
     });
 
     const deleteButton = this.createElement("button", {
-      innerText: "حذف",
+      innerText: lang.get("delete"),
       className: "delete-btn",
       onclick: () => {
         this.deleteColumn(buttonName, columnName, line);
@@ -98,9 +91,9 @@ class ButtonSettings {
     });
 
     const types = [
-      { value: "main", text: "رئيسي" },
-      { value: "password", text: "باسورد" },
-      { value: "normal", text: "عادي" },
+      { value: "main", text: lang.get("main-field") },
+      { value: "password", text: lang.get("password-field") },
+      { value: "normal", text: lang.get("normal-field") },
     ];
 
     types.forEach(({ value, text }) => {
@@ -119,7 +112,7 @@ class ButtonSettings {
     const line = this.createElement("div", { className: "line" });
 
     const nameInput = this.createElement("input", {
-      placeholder: "اسم الحقل",
+      placeholder: lang.get("enter-field-name"),
       className: "new-column-input",
     });
 
@@ -133,7 +126,7 @@ class ButtonSettings {
         const columnType = typeSelect.value;
 
         if (!columnName) {
-          showNotification("يرجى إدخال اسم صالح للحقل.");
+          showNotification(lang.get("enter-field-name"));
           return;
         }
 
@@ -157,16 +150,15 @@ class ButtonSettings {
       });
 
       if (response.status === "successful") {
-        showNotification("تمت الإضافة بنجاح!");
+        showNotification(lang.get("added-successfully"));
         line.remove();
         const newLine = this.createLine(columnName, columnType, buttonName);
         this.WorkDiv.appendChild(newLine);
       } else {
-        showNotification("فشل في إضافة الحقل.");
+        showNotification(lang.get("failed-to-add"));
       }
     } catch (error) {
-      console.error("خطأ أثناء إضافة الحقل:", error);
-      showNotification("حدث خطأ أثناء الإضافة. حاول مرة أخرى.");
+      console.error(error);
     }
   }
 
@@ -180,14 +172,13 @@ class ButtonSettings {
       });
 
       if (response.status === "successful") {
-        showNotification("تم حذف الحقل بنجاح!");
+        showNotification(lang.get("deleted-successfully"));
         lineElement.remove();
       } else {
-        showNotification("فشل في حذف الحقل.");
+        showNotification(lang.get("failed-to-delete"));
       }
     } catch (error) {
-      console.error("خطأ أثناء حذف الحقل:", error);
-      showNotification("حدث خطأ أثناء الحذف. حاول مرة أخرى.");
+      console.error(error);
     }
   }
 
@@ -202,13 +193,12 @@ class ButtonSettings {
       });
 
       if (response.status === "successful") {
-        showNotification("تم تغيير نوع الحقل بنجاح!");
+        showNotification(lang.get("changed-successfully"));
       } else {
-        showNotification("فشل في تغيير نوع الحقل.");
+        showNotification(lang.get("failed-to-change"));
       }
     } catch (error) {
-      console.error("خطأ أثناء تغيير نوع الحقل:", error);
-      showNotification("حدث خطأ أثناء التغيير. حاول مرة أخرى.");
+      console.error(error);
     }
   }
 

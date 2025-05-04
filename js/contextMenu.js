@@ -21,11 +21,11 @@ class ContextMenuHandler {
     menu.className = "context-menu";
 
     const items = {
-      "إضافة بيانات": () => new InsertData(),
-      "إعادة تسمية": ContextMenuHandler.RenameButton,
-      "اعدادت الزر": () => new ButtonSettings(),
-      تخصيص: () => console.log("Customize action"),
-      "حذف الزر": ContextMenuHandler.DeleteButton,
+      [lang.get("add-data")]: () => new InsertData(),
+      [lang.get("rename")]: ContextMenuHandler.RenameButton,
+      [lang.get("button-settings")]: () => new ButtonSettings(),
+      [lang.get("customize-btn")]: () => console.log("Customize action"),
+      [lang.get("delete-btn")]: ContextMenuHandler.DeleteButton,
     };
 
     Object.entries(items).forEach(([label, action]) => {
@@ -87,14 +87,14 @@ class ContextMenuHandler {
     const menu = document.querySelector(".context-menu");
     const buttonName = menu?.dataset?.invoker;
 
-    if (!confirm(`هل تريد حذف الزر "${buttonName}"؟`)) return;
+    if (!confirm(lang.get("delete-btn-confirm") + " " + buttonName)) return;
 
     sendRequest({
       type: "queries",
       job: "delete button",
       button: buttonName,
     }).then(() => {
-      showNotification("تم حذف الزر!");
+      showNotification(lang.get("delete-btn-success"));
       home.GetButtons();
     });
   }
@@ -109,16 +109,16 @@ class ContextMenuHandler {
     const line = lineCreator("rename-line");
 
     const input = Input({
-      placeholder: "أدخل الاسم الجديد",
+      placeholder:lang.get("new-name"),
     });
     line.appendChild(Label("اسم جديد"));
     line.appendChild(input);
 
     const btn = Button({
-      innerText: "تغيير",
+      innerText: lang.get("change"),
       onclick: () => {
         const newName = input.value.trim();
-        if (!newName) return showNotification("يرجى إدخال اسم جديد صالح.");
+        if (!newName) return showNotification(lang.get("empty"));
 
         sendRequest({
           type: "queries",
@@ -127,7 +127,7 @@ class ContextMenuHandler {
           new: newName,
         }).then((res) => {
           if (res.response === "ok") {
-            showNotification("تم تغيير الاسم!");
+            showNotification(lang.get("rename-success"));
             home.GetButtons();
           }
         });

@@ -4,7 +4,7 @@ class InsertData {
     const buttonName = name || (menu ? menu.dataset.invoker : null);
 
     if (buttonName) this.initialize(buttonName);
-    else displayEmptyMessage("لا يوجد زر محدد لإدخال البيانات");
+    else displayEmptyMessage(lang.get("no-button-selected"));
   }
 
   async initialize(buttonName) {
@@ -15,7 +15,7 @@ class InsertData {
     });
 
     if (response.columns === "no columns") {
-      this.showEmptyMessage("لا توجد أعمدة في هذا الزر");
+      this.showEmptyMessage(lang.get("no-columns"));
     } else {
       this.renderForm(response.columns, buttonName);
     }
@@ -73,7 +73,7 @@ class InsertData {
 
     const saveButton = Button({
       class: "save-button key-buttons",
-      innerText: "حفظ",
+      innerText: lang.get("save-btn"),
       onclick: () => this.saveData(buttonName, form),
     });
 

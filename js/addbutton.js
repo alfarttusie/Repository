@@ -188,9 +188,9 @@ class ButtonCreator {
       type: "select",
       params: { className: "field-position" },
     });
-    posSelect.appendChild(createOption("normal", "عادي"));
-    posSelect.appendChild(createOption("main", "رئيسي"));
-    posSelect.appendChild(createOption("password", "باسورد"));
+    posSelect.appendChild(createOption("normal", lang.get("normal-field")));
+    posSelect.appendChild(createOption("main", lang.get("main-field")));
+    posSelect.appendChild(createOption("password", lang.get("password-field")));
 
     return line;
   }
@@ -199,7 +199,7 @@ class ButtonCreator {
     const name = document.querySelector(".button-name").value.trim();
 
     if (name.length === 0) {
-      showNotification("اكتب اسم للزر");
+      showNotification(lang.get("empty-button-name"));
       Shake(".button-name");
       return;
     }
@@ -229,11 +229,11 @@ class ButtonCreator {
     }).then((res) => {
       indicatorRemover();
       if (res.response === "invalid key") {
-        showNotification("لا يوجد مفتاح تشفير");
+        showNotification(lang.get("no-encryptation-key"));
       } else if (res.response === "Button exist") {
         showNotification("الاسم موجود مسبقا");
       } else if (res.response === "successful") {
-        showNotification("تم الإضافة بنجاح");
+        showNotification(lang.get("added-successfully"));
         home.GetButtons();
         new InsertData(name);
       }
