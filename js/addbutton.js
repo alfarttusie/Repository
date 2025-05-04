@@ -28,7 +28,7 @@ class ButtonCreator {
       type: "label",
       params: {
         htmlFor: "button-name",
-        innerText: " الاسم : ",
+        innerText: lang.get("button-name"),
         className: "header-label",
       },
     });
@@ -49,7 +49,7 @@ class ButtonCreator {
       parent: header,
       type: "label",
       params: {
-        innerText: " عدد الجداول : ",
+        innerText: lang.get("number-of-fields"),
         className: "header-label",
       },
     });
@@ -77,7 +77,7 @@ class ButtonCreator {
       parent: header,
       type: "button",
       params: {
-        innerText: "حفظ",
+        innerText: lang.get("save-btn"),
         className: "key-buttons",
         onclick: this.handleSaveButton.bind(this),
       },
@@ -151,7 +151,7 @@ class ButtonCreator {
     elementCreator({
       parent: line,
       type: "label",
-      params: { innerText: "نوع الحقل : " },
+      params: { innerText: lang.get("field-type") },
     });
 
     const typeSelect = elementCreator({
@@ -161,7 +161,10 @@ class ButtonCreator {
     });
     ["small", "big"].forEach((type) => {
       typeSelect.appendChild(
-        createOption(type, type === "small" ? "حقل عادي" : "حقل كبير")
+        createOption(
+          type,
+          type === "small" ? lang.get("normal-field") : lang.get("big-field")
+        )
       );
     });
 
@@ -177,7 +180,7 @@ class ButtonCreator {
     elementCreator({
       parent: line,
       type: "label",
-      params: { innerText: "مكان الحقل : " },
+      params: { innerText: lang.get("field-position") },
     });
 
     const posSelect = elementCreator({

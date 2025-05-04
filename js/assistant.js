@@ -1,7 +1,6 @@
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 function responseHandler({ response, element }) {
   if (element) document.querySelector(element).remove();
   switch (response) {
@@ -367,11 +366,16 @@ function elementCreator({
 }
 function showNotification(Text) {
   const Holder = document.createElement("div");
+  Holder.style.direction = lang.get("lang");
   if (lang.get("lang") == "en") {
     Holder.style.left = "0px";
+    Holder.style.right = "unset";
   } else {
     Holder.style.right = "0px";
+    Holder.style.left = "unset";
   }
+  Holder.style.flexDirection =
+    lang.get("lang") === "en" ? "row-reverse" : "row";
   Holder.classList.add("Notify");
   const Secondary = document.createElement("div");
   Secondary.classList.add("secondary");
@@ -411,7 +415,6 @@ function startCountdown(seconds, element = null) {
 
   function updateCountdown() {
     if (seconds <= 0) {
-      
       countdownElement.remove();
       clearInterval(timer);
       return;

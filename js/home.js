@@ -60,7 +60,7 @@ class home {
           type: "p",
           params: {
             classList: ["empty"],
-            innerText: "لا توجد معلومات",
+            innerText: lang.get("no-info"),
           },
         });
         return;

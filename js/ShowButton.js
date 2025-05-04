@@ -14,11 +14,9 @@ class ShowButton {
       });
 
       indicatorRemover();
-
       if (response.response === "no data")
-        return displayEmptyMessage("لا توجد معلومات");
-      if (response.response === "no columns")
-        return displayEmptyMessage("لا توجد أعمدة في هذا الزر");
+        return displayEmptyMessage(lang.get("no-info"));
+      if (response.response === "no columns") return displayEmptyMessage();
 
       const holder = cleanWorkDiv("show-button");
       const header = this.createHeader(buttonName);
@@ -29,8 +27,8 @@ class ShowButton {
         holder.appendChild(line);
       });
     } catch (error) {
-      console.error("فشل تحميل البيانات:", error);
-      displayEmptyMessage("حدث خطأ أثناء تحميل البيانات");
+      console.error(error);
+      displayEmptyMessage(lang.get("loading-error"));
     }
   }
 
@@ -42,7 +40,7 @@ class ShowButton {
 
     const searchInput = Input({
       type: "text",
-      placeholder: "ابحث عن نص...",
+      placeholder: lang.get("search"),
       className: "showbutton-search",
     });
 
@@ -75,7 +73,7 @@ class ShowButton {
     const detailsButton = elementCreator({
       type: "button",
       params: {
-        innerText: "تفاصيل",
+        innerText: lang.get("show"),
         className: "showbutton-details-btn",
         onclick: () => this.showId(data.id, buttonName),
       },
@@ -92,21 +90,28 @@ class ShowButton {
       params: { className: "showbutton-main" },
     });
 
-    Object.entries(fields).forEach(([key, value]) => {
-      const field = elementCreator({
+    if (fields != "empty") {
+      Object.entries(fields).forEach(([key, value]) => {
+        const field = elementCreator({
+          type: "div",
+          params: { className: "showbutton-main-item" },
+        });
+        field.appendChild(Label(key));
+
+        const span = Span({ innerText: value, ondblclick: copyToClipboard });
+        span.classList.add("showbutton-main-span");
+        field.appendChild(span);
+
+        container.appendChild(field);
+      });
+    } else {
+      const emptyField = elementCreator({
         type: "div",
         params: { className: "showbutton-main-item" },
       });
-
-      field.appendChild(Label(key));
-
-      const span = Span({ innerText: value, ondblclick: copyToClipboard });
-      span.classList.add("showbutton-main-span");
-      field.appendChild(span);
-
-      container.appendChild(field);
-    });
-
+      emptyField.appendChild(Label(lang.get("no-main-fields")));
+      container.appendChild(emptyField);
+    }
     return container;
   }
 
@@ -116,20 +121,28 @@ class ShowButton {
       params: { className: "showbutton-password" },
     });
 
-    Object.entries(fields).forEach(([key, value]) => {
-      const field = elementCreator({
+    if (fields != "empty") {
+      Object.entries(fields).forEach(([key, value]) => {
+        const field = elementCreator({
+          type: "div",
+          params: { className: "showbutton-password-item" },
+        });
+
+        field.appendChild(Label(key));
+        const passField = PasswordField({ value });
+        passField.classList.add("showbutton-password-field");
+        field.appendChild(passField);
+
+        container.appendChild(field);
+      });
+    } else {
+      const emptyField = elementCreator({
         type: "div",
         params: { className: "showbutton-password-item" },
       });
-
-      field.appendChild(Label(key));
-      const passField = PasswordField({ value });
-      passField.classList.add("showbutton-password-field");
-      field.appendChild(passField);
-
-      container.appendChild(field);
-    });
-
+      emptyField.appendChild(Label(lang.get("no-password-fields")));
+      container.appendChild(emptyField);
+    }
     return container;
   }
 
@@ -154,8 +167,8 @@ class ShowButton {
         holder.appendChild(line);
       });
     } catch (error) {
-      console.error("فشل تحميل التفاصيل:", error);
-      displayEmptyMessage("حدث خطأ أثناء تحميل التفاصيل");
+      console.error(error);
+      displayEmptyMessage(lang.get("loading-error"));
     }
   }
 }

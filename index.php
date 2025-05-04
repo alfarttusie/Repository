@@ -15,10 +15,11 @@ class Index
         $lang = self::getLanguage($link);
         Lang::load($lang ?? 'en');
         self::HeaderView();
+        $response = 'unknown error';
         if (self::SysTemCheck($response)) {
             session_start();
             $token = $_SESSION['session_token'] ?? null;
-            if ($token && self::loginChecker($token)) return header('Location: home.php');
+            if ($token && self::loginChecker($token)) return exit(header('Location: home.php'));
             self::View();
         } else {
             http_response_code(503);

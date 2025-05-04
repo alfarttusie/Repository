@@ -55,7 +55,7 @@ class index {
               }
               break;
             default:
-              Message(`لا يمكن تسجيل الدخول`);
+              Message(lang.get("login-error"));
               break;
           }
         });
@@ -63,7 +63,7 @@ class index {
         console.log(err.message);
       }
     } catch (error) {
-      Message(`لا تترك حقل فارغ`);
+      Message(lang.get("empty"));
       Shake(error.message);
     }
   }

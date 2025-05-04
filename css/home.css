@@ -76,8 +76,9 @@ body {
 
 .left {
   border-radius: 8px;
-  grid-column: 1/86;
+  grid-column: 1/88;
   grid-row: 11/100;
+  /* background-color: #271d27; */
 }
 .WorkDiv {
   width: 100%;
