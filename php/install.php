@@ -143,24 +143,22 @@ class Install
             CREATE TABLE IF NOT EXISTS `admin_info` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `username` VARCHAR(255) NOT NULL UNIQUE,
-                `password` TEXT NOT NULL,
-                `token` TEXT NOT NULL,
-                `enckey` VARCHAR(20) NOT NULL
+                `password` TEXT NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         
-            INSERT INTO `admin_info` (`username`, `password`, `token`, `enckey`) 
-            VALUES ('$adminUser', '$adminPassword', '', '') 
+            INSERT INTO `admin_info` (`username`, `password`) 
+            VALUES ('$adminUser', '$adminPassword') 
             ON DUPLICATE KEY UPDATE username=username;
             
             CREATE TABLE IF NOT EXISTS `buttons` (
-                `id` int NOT NULL AUTO_INCREMENT,
-                `button` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `button` text CHARACTER SET utf8mb4  NOT NULL,
                 `main` text NOT NULL,
                 `password` text NOT NULL,
                 `unique_id` text NOT NULL,
-                `columns` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                `columns` text CHARACTER SET utf8mb4 NOT NULL,
                 PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
             
             CREATE TABLE IF NOT EXISTS `setting` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -185,9 +183,11 @@ class Install
                 `token` VARCHAR(255) NOT NULL,
                 `ip_address` VARCHAR(45),
                 `user_agent` TEXT,
+                `expiry` DATE,
+                `enckey` VARCHAR(20) NOT NULL,
                 `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ";
+            ";
 
         if (!$conn->multi_query($queries)) {
             self::resJson(500, ['error' => 'Database creation failed: ' . $conn->error]);

@@ -23,7 +23,28 @@ body {
   background: url("media/background.jpg") center/cover no-repeat;
   overflow: hidden;
 }
-
+.indicator {
+  z-index: 1;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  background: linear-gradient(135deg, #2c2c2cb6, #3b3b3bbb);
+  & p {
+    width: 35px;
+    aspect-ratio: 1;
+    --_g: no-repeat radial-gradient(farthest-side, #fff 94%, #fff0);
+    background: var(--_g) 0 0, var(--_g) 100% 0, var(--_g) 100% 100%,
+      var(--_g) 0 100%;
+    background-size: 40% 40%;
+    animation: indicator 0.5s infinite;
+  }
+}
+/*
 .Showerror {
   position: fixed;
   top: -150vh;
@@ -59,26 +80,7 @@ body {
   transition: none;
 }
 
-.indicator {
-  z-index: 1;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  background: linear-gradient(135deg, #2c2c2cb6, #3b3b3bbb);
-  & p {
-    width: 35px;
-    aspect-ratio: 1;
-    --_g: no-repeat radial-gradient(farthest-side, #fff 94%, #fff0);
-    background: var(--_g) 0 0, var(--_g) 100% 0, var(--_g) 100% 100%,
-      var(--_g) 0 100%;
-    background-size: 40% 40%;
-    animation: indicator 0.5s infinite;
-  }
+
 
   .Msg {
     display: flex;

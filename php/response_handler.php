@@ -6,9 +6,9 @@ class Response
 
     private static $link;
 
-    public function __construct(int $code, $data = null, bool $debug = true, $payload = null)
+    public function __construct(int $code, $data = null, bool $debug = true, $payload = null, int $expiration = 3600)
     {
-        self::setHeaders($payload);
+        self::setHeaders($payload, $expiration);
 
         $status_map = [
             200 => 'successful',
@@ -32,7 +32,7 @@ class Response
         echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
-    private static function setHeaders($payload): void
+    private static function setHeaders($payload, $expiration): void
     {
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
@@ -46,7 +46,7 @@ class Response
         header('Pragma: no-cache');
         header('Connection: keep-alive');
 
-        $token = self::buildToken($payload);
+        $token = self::buildToken($payload, $expiration);
         if ($token) {
             header('Bearer: ' . $token);
         }
@@ -59,7 +59,7 @@ class Response
         }
     }
 
-    private static function buildToken($customPayload): string
+    private static function buildToken($customPayload, int $expiration): string
     {
         self::$link = self::connectToDB();
         $link = self::$link;
@@ -67,7 +67,7 @@ class Response
         $payload = [
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-            'exp' => time() + 3600,
+            'exp' => time() + $expiration,
         ];
 
         if (self::loginChecker($link)) {

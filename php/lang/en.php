@@ -1,31 +1,50 @@
 <?php
 
-return [
-    'lang' => 'en',
+$login_page = [
     'login-title' => 'repository login',
     'login-username' => 'username',
     'login-password' => 'password',
     'login-submit' => 'login',
+    'blocked' => 'you are blocked from login',
+    'wrong-info' => 'information is incorrect tries left: ',
+    'login-error' => 'cannot login',
+];
+$home_page = [
     'home-title' => 'repository home',
-    'home' => 'home',
-    'add-btn' => 'add button',
-    'key-btn' => 'key',
     'logout-btn' => 'logout',
+    'settings-btn' => 'settings',
+    'key-btn' => 'key',
     'language-btn' => 'عربي',
+    'add-btn' => 'add button',
+    'home-btn' => 'home',
+];
+$notifications = [
+    'empty-field' => 'do not leave empty field',
+    'error-loading' => 'error loading data',
+];
+$system = [
+    "error-title" => 'system error',
+    "type-error" => 'Type not Set',
+    "system-error" => 'System error',
+    "post-error" => 'error in post data',
+    "empty-info" => 'cannot leave information empty',
+    'unknown error' => 'unknown error',
+    'database-error' => "Database is unavailable",
+    "offline-database" => "Database is offline",
+    "database-cerdentials-error" => "Database connection information error",
+];
+return array_merge([
+    'lang' => 'en',
+    'lang-revers' => 'ar',
+    'direction' => 'ltr',
     'logout-confirm' => 'Are you sure you want to logout?',
     'save-btn' => 'save',
     'cancel-btn' => 'cancel',
-    'settings-btn' => 'settings',
     'notification-update' => 'updated',
     'notification-save' => 'saved',
     'notification-delete' => 'deleted',
     'empty-key' => 'key cannot be empty',
     'language-update' => 'language updated',
-    'direction' => 'ltr',
-    'empty' => 'do not leave empty field',
-    'wrong-info' => 'information is incorrect tries left: ',
-    'blocked' => 'you are blocked from login',
-    'login-error' => 'cannot login',
     'no-info' => 'no information',
     'no-data' => 'no data',
     'no-main-fields' => 'no main fields',
@@ -34,7 +53,7 @@ return [
     'search' => 'search text...',
     'show' => 'show',
     'button-name' => ' name : ',
-    'number-of-fields' => 'tables number : ',
+    'number-of-fields' => 'tables : ',
     'field-type' => 'field type : ',
     'normal-field' => 'normal',
     'big-field' => 'big field',
@@ -70,4 +89,4 @@ return [
     "no-button-selected" => 'no button selected to add data',
     "no-columns" => 'no columns in this button',
 
-];
+], $login_page, $notifications, $home_page, $system);

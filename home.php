@@ -6,21 +6,29 @@ require_once "php/lang.php";
 
 class Home
 {
-    private static $link;
     use Tools;
     function __construct()
     {
-        session_start();
-        self::$link = self::connectToDB();
-        $Token = @$_SESSION['session_token'] ?? null;
+        $resonse = null;
 
-        if ($Token && self::loginChecker(self::$link, $Token)) {
-            $lang = self::getLanguage(self::$link);
+        if (!self::SysTemCheck($resonse)) {
+            header('Location: index.php');
+            exit;
+        }
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
+
+
+        self::$connection = self::connectToDB();
+        $Token = $_SESSION['session_token'] ?? null;
+        if ($Token && self::loginChecker(self::$connection, $Token)) {
+            $lang = self::getLanguage(self::$connection);
             Lang::load($lang ?? 'en');
             self::View();
-        } else
+        } else {
             header('Location: index.php');
-        exit;
+            exit;
+        }
     }
     private static function View()
     {
@@ -64,13 +72,10 @@ class Home
                     <script>
                     class Translator {
                         constructor() {
-                            this.data = " . json_encode(lang::getAll(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "
+                            this.data = " . json_encode(lang::getAll(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . ";
                             }   
                             get(key) {
                                 return this.data[key] || key;
-                            }
-                            test(){
-                               console.log(`thidatadsdcvsdf`);
                             }
                         }
                     const lang = new Translator();
@@ -90,8 +95,8 @@ class Home
     }
     function __destruct()
     {
-        if (self::$link) {
-            self::$link->close();
+        if (self::$connection) {
+            self::$connection->close();
         }
     }
 }

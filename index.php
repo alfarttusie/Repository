@@ -11,15 +11,19 @@ class Index
 
     function __construct()
     {
-        $link = self::connectToDB();
-        $lang = self::getLanguage($link);
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $token = $_SESSION['session_token'] ?? null;
+        if ($token && self::loginChecker($token)) return exit(header('Location: home.php'));
+
+
+        $lang = $_GET['lang'] ?? 'en';
         Lang::load($lang ?? 'en');
         self::HeaderView();
         $response = 'unknown error';
         if (self::SysTemCheck($response)) {
-            session_start();
-            $token = $_SESSION['session_token'] ?? null;
-            if ($token && self::loginChecker($token)) return exit(header('Location: home.php'));
+            self::$connection = self::connectToDB();
+            $lang = self::getLanguage(self::$connection);
+            lang::load($lang ?? 'en');
             self::View();
         } else {
             http_response_code(503);
@@ -70,9 +74,11 @@ class Index
     {
         print('
                 <div class="error-holder">
+                <p class="error-title">' . lang::get('error-title') . '</p>
                     <div class="error-text">
-                        ' . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . '
+                        ' . htmlspecialchars(Lang::get($error), ENT_QUOTES, 'UTF-8') . '
                     </div>
+                    <a class="error-btn"href="index.php?lang=' . lang::get('lang-revers') . '">' . lang::get('language-btn') . '</a>
                 </div>
         ');
     }
@@ -96,6 +102,10 @@ class Index
             </body>
             </html>
         ';
+    }
+    function __destruct()
+    {
+        if (isset(self::$connection)) self::$connection->close();
     }
 }
 

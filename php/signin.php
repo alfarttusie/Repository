@@ -107,21 +107,20 @@ class Signin
         usleep(random_int(300000, 700000));
         return password_verify($password, $result['password']);
     }
-
     private static function storeSessionToken($username, $token): void
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         $created = date('Y-m-d H:i:s');
+        $expiry = date('Y-m-d H:i:s', strtotime('+1 day')); // إضافة صلاحية التوكن ليوم واحد
 
         $stmt = self::$link->prepare("
-            INSERT INTO `auth_tokens` (`username`, `token`, `ip_address`, `user_agent`, `created_at`) 
-            VALUES (?, ?, ?, ?, ?)
+        INSERT INTO `auth_tokens` (`username`, `token`, `ip_address`, `user_agent`, `created_at`, `expiry`) 
+        VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("sssss", $username, $token, $ip, $agent, $created);
+        $stmt->bind_param("ssssss", $username, $token, $ip, $agent, $created, $expiry);
         $stmt->execute();
     }
-
     private static function generateAuthToken($username): array
     {
         $token = bin2hex(random_bytes(32));

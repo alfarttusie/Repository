@@ -16,7 +16,8 @@ class ShowButton {
       indicatorRemover();
       if (response.response === "no data")
         return displayEmptyMessage(lang.get("no-info"));
-      if (response.response === "no columns") return displayEmptyMessage();
+      if (response.response === "no columns")
+        return displayEmptyMessage(lang.get("no-columns"));
 
       const holder = cleanWorkDiv("show-button");
       const header = this.createHeader(buttonName);

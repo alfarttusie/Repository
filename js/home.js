@@ -10,7 +10,7 @@ class home {
 
   constructor() {
     document.addEventListener("DOMContentLoaded", () => {
-      indicatorRemover();
+      indicatorRemover({ type: "grid" });
       new Key();
       this.bindEvents();
     });

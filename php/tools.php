@@ -1,32 +1,33 @@
 <?php
 require 'jwt.php';
 require 'encryption.php';
-require 'settings.php';
+// require 'settings.php';
 require 'ArrayHelper.php';
+error_reporting(0);
 trait Tools
 {
     use Jwt;
     use encryption;
-    use Settings;
+    // use Settings;
     use ArrayHelper;
 
-    private static $Bearer;
     private static $connection;
 
     private static function generateRandomString($length = null): string
     {
-        $length = ($length == null) ? rand(10, 25) : $length;
-        $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $length = (is_int($length) && $length > 0) ? $length : rand(10, 25);
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $charactersLength = strlen($characters);
         $randomStr = '';
-        for ($i = 0; $i < $length; $i++)
-            $randomStr .= $characters[random_int(0, strlen($characters) - 1)];
-
+        for ($i = 0; $i < $length; $i++) {
+            $randomStr .= $characters[random_int(0, $charactersLength - 1)];
+        }
         return $randomStr;
     }
     private static function isMySqlServerReachable(): bool
     {
         try {
-            $socket = @fsockopen(self::$Serverip, 3306, $errno, $errstr, 4);
+            $socket = fsockopen(self::$Serverip, 3306, $errno, $errstr, 4);
             return $socket ? (fclose($socket) || true) : false;
         } catch (Exception $error) {
             return false;
@@ -35,7 +36,7 @@ trait Tools
     private static function DataBase_Info()
     {
         try {
-            $dbConnection = @new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword);
+            $dbConnection = new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword);
             return !$dbConnection->connect_error;
         } catch (Exception $error) {
             return false;
@@ -44,25 +45,37 @@ trait Tools
     private static function isDatabaseAvailable()
     {
         try {
-            $dbConnection = @new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword);
-            return $dbConnection->select_db(self::$database);
+            $dbConnection = new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword);
+            $status = false;
+            if ($dbConnection->select_db(self::$database)) {
+                $status =  true;
+            } else {
+                $dbConnection->close();
+                $status =  false;
+            }
+            $dbConnection->close();
+            return $status;
         } catch (Exception $error) {
             return false;
         }
     }
     private static function connectToDB()
     {
-        try {
-            $dbConnection = @new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database);
-            return $dbConnection;
-        } catch (Exception $error) {
-            return false;
+        if (!isset(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database)) {
+            throw new Exception('Database connection parameters are missing.');
         }
+
+        if (self::$connection instanceof mysqli) {
+            return self::$connection;
+        }
+
+        self::$connection = new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database);
+        return self::$connection;
     }
     private static function BotChecker()
     {
         try {
-            $userAgent = @$_SERVER['HTTP_USER_AGENT'];
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
             if (empty($userAgent))
                 return false;
 
@@ -87,11 +100,11 @@ trait Tools
     private static function SysTemCheck(&$response)
     {
         try {
-            if (!self::isMySqlServerReachable()) throw new Exception('MySQL server is offline');
+            if (!self::isMySqlServerReachable()) throw new Exception('offline-database');
 
-            if (!self::DataBase_Info())  throw new Exception('Invalid MySQL information');
+            if (!self::DataBase_Info())  throw new Exception('database-cerdentials-error');
 
-            if (!self::isDatabaseAvailable()) throw new Exception('Database is unavailable');
+            if (!self::isDatabaseAvailable()) throw new Exception('database-error');
 
             return true;
         } catch (Exception $e) {
@@ -133,20 +146,14 @@ trait Tools
             if (empty($username) || empty($token))
                 return false;
 
-            $stmt = $link->prepare("
-            SELECT `id`, `created_at` 
-            FROM `auth_tokens` 
-            WHERE `username` = ? AND `token` = ? 
-            LIMIT 1
-        ");
+            $stmt = $link->prepare("SELECT `id`, `created_at` FROM `auth_tokens`  WHERE `username` = ? AND `token` = ? LIMIT 1");
             $stmt->bind_param("ss", $username, $token);
             $stmt->execute();
             $result = $stmt->get_result();
             $tokenRow = $result->fetch_assoc();
 
-            if (!$tokenRow) {
+            if (!$tokenRow)
                 return false;
-            }
 
             $createdTime = strtotime($tokenRow['created_at']);
             $now = time();
@@ -166,24 +173,42 @@ trait Tools
     }
     private static function Headers()
     {
-        $headers = @getallheaders();
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
         $jwt = $headers['Bearer'] ?? null;
 
-        if (!$jwt) return [];
+        if (!$jwt)
+            return ['error' => 'JWT token missing'];
 
         $data = self::verifyJwt($jwt);
 
-        return is_array($data['payload'] ?? null) ? $data['payload'] : [];
+        return ($data['valid'] ?? false) && is_array($data['payload'] ?? null)
+            ? $data['payload']
+            : ['error' => 'Invalid JWT token'];
     }
     private static function deleteExpiredTokens(mysqli $link): void
     {
-        $stmt = $link->prepare("DELETE FROM `auth_tokens` WHERE `created_at` < (NOW() - INTERVAL 1 DAY)");
+        $stmt = $link->prepare("DELETE FROM `auth_tokens` WHERE `created_at` < NOW() - INTERVAL 1 DAY");
         $stmt->execute();
     }
-    private static function getLanguage($link)
+    private static function getLanguage(mysqli $link): string
     {
-        $db_lang = $link->query("SELECT `lang` FROM `setting` LIMIT 1");
-        $lang = $db_lang->fetch_assoc()['lang'] ?? 'en';
-        return empty($lang) ? 'en' : $lang;
+        $lang = 'en';
+
+        try {
+            $stmt = $link->prepare("SELECT `lang` FROM `setting` WHERE `id` = 1 LIMIT 1");
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $row = $result->fetch_assoc()) {
+                $langFromDb = trim($row['lang'] ?? '');
+                if (!empty($langFromDb)) {
+                    $lang = $langFromDb;
+                }
+            }
+        } catch (Exception $e) {
+            return $lang;
+        }
+
+        return $lang;
     }
 }

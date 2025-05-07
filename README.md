@@ -3,7 +3,7 @@
 # Password Manager
 
 ## 📌 Project Overview
-This project is a **secure password manager** that allows users to **store encrypted passwords** and manage them easily. It utilizes **PHP** for backend processing and **JavaScript & CSS** for a smooth user interface.
+This project is a **secure password manager** that allows users to **store encrypted passwords** and manage them easily. It utilizes **PHP & MYSQL** for backend processing and **JavaScript & CSS** for a smooth user interface.
 
 ## 🚀 Features
 - 🔒 **Encrypted password storage** for high security.

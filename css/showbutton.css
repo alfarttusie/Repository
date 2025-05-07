@@ -87,7 +87,7 @@
 
 .password-field {
   background-color: transparent;
-  border: 1px solid wheat;
+  /* border: 1px solid wheat; */
   padding: 0.3rem;
   color: skyblue;
 }

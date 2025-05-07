@@ -1,31 +1,50 @@
 <?php
 
-return [
-    'lang' => 'ar',
+$login_page = [
     'login-title'   => 'المستودع تسجيل الدخول',
     'login-username' => 'اسم المستخدم',
     'login-password' => 'كلمة المرور',
     'login-submit'   => 'تسجيل الدخول',
-    'language-btn' => 'english',
+    'blocked' => 'تم حظرك من تسجيل الدخول',
+    'wrong-info' => 'اسم المستخدم أو كلمة المرور غير صحيحة',
+    'login-error' => 'لا يمكن تسجيل الدخول',
+];
+$home_page = [
     'home-title' => 'المستودع الرئيسية',
-    'home' => 'الرئيسية',
-    'add-btn' => 'اظافة زر',
-    'key-btn' => 'المفتاح',
     'logout-btn'   => 'تسجيل الخروج',
+    'settings-btn' => 'الإعدادات',
+    'key-btn' => 'المفتاح',
+    'language-btn' => 'english',
+    'add-btn' => 'اضافة زر',
+    'home-btn' => 'الرئيسية',
+];
+$notifications = [
+    'empty-field' => 'لا تترك حقل فارغ',
+    'error-loading' => 'حدث خطأ أثناء تحميل البيانات',
+];
+$system = [
+    "error-title" => 'خطاء في النظام',
+    "type-error" => 'لا يمكن تعيين نوع الطلب',
+    "system-error" => 'حدث خطأ في النظام',
+    "post-error" => 'خطأ في البيانات المرسلة',
+    "empty-info" => 'لا يمكن ترك المعلومات فارغة',
+    'unknown error' => 'خطأ غير معروف',
+    'database-error' => "قاعدة البيانات غير متاحة",
+    "offline-database" => "قاعدة البيانات غير متصلة",
+    "database-cerdentials-error" => "خطاء في معلومات قاعدة البيانات",
+];
+return array_merge([
+    'lang' => 'ar',
+    'lang-revers' => 'en',
+    'direction' => 'rlt',
     'logout-confirm' => 'هل أنت متأكد أنك تريد تسجيل الخروج؟',
     'save-btn' => 'حفظ',
     'cancel-btn' => 'إلغاء',
-    'settings-btn' => 'الإعدادات',
     'notification-update' => 'تم التحديث',
     'notification-save' =>  'تم الحفظ',
     'notification-delete' => 'تم الحذف',
     'empty-key' => 'لا يمكن ترك المفتاح فارغ',
     'language-update' => 'تم تحديث اللغة',
-    'direction' => 'rlt',
-    'empty' => 'لا تترك حقل فارغ',
-    'wrong-info' => 'اسم المستخدم أو كلمة المرور غير صحيحة',
-    'blocked' => 'تم حظرك من تسجيل الدخول',
-    'login-error' => 'لا يمكن تسجيل الدخول',
     'no-info' => 'لا توجد معلومات',
     'no-data' => 'لا توجد بيانات',
     'no-main-fields' => 'لا توجد حقول رئيسية',
@@ -69,5 +88,4 @@ return [
     "rename-success" => "تمت إعادة تسمية الزر بنجاح!",
     "no-button-selected" => "لا يوجد زر محدد لإدخال البيانات",
     "no-columns" => "لا توجد أعمدة في هذا الزر",
-
-];
+], $login_page, $notifications, $home_page, $system);

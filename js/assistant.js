@@ -137,7 +137,7 @@ function findButtonByText(text) {
   }
   function PasswordField(element) {
     const Holder = document.createElement("p");
-    Holder.classList.add("PasswordField");
+    Holder.classList.add("password-field");
 
     const viewButton = document.createElement("button");
     viewButton.innerText = "🙈";

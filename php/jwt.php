@@ -13,16 +13,21 @@ trait Jwt
     }
 
     private static function base64UrlDecode($encoded)
-    {
-        return @base64_decode(str_replace(['-', '_'], ['+', '/'], $encoded));
+{
+    $decoded = base64_decode(str_replace(['-', '_'], ['+', '/'], $encoded), true);
+    if ($decoded === false) {
+        throw new Exception('Invalid base64 input');
     }
+    return $decoded;
+}
+
 
     public static function createJwt(array $payload, int $expiration = 3600)
     {
         $headerEncoded = self::base64UrlEncode(json_encode(self::$header));
 
         $payload['iat'] = time();
-        $payload['exp'] = time() + $expiration;
+        // $payload['exp'] = time() + $expiration;
 
         $payloadEncoded = self::base64UrlEncode(json_encode($payload));
         $signature = hash_hmac('SHA256', "$headerEncoded.$payloadEncoded", self::$secret, true);

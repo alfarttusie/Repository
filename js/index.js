@@ -7,14 +7,13 @@ class index {
         : "ar";
       sendRequest({ type: "lang", new: lang }).then((callback) => {
         if (callback.status === "successful") {
-          location.reload();
+          window.location = "index.php?lang=" + lang;
         }
       });
     };
 
     this.initializeSession();
   }
-
   handleLogin() {
     const Button = document.querySelector(".login-btn");
     const username = document.querySelector(".username");
@@ -32,7 +31,7 @@ class index {
           username: encodedUsername,
           password: encodedPassword,
         }).then((response) => {
-          indicatorRemover();
+          indicatorRemover({ type: "grid" });
           Button.classList.remove("disabled");
           switch (response.response) {
             case "blocked":
@@ -50,7 +49,7 @@ class index {
               if (response.attemptsLeft == "none") {
                 Message(lang.get("blocked"));
               } else {
-                Shake(".username");
+                Shake(".login-holder");
                 Message(lang.get("wrong-info") + ` ` + response.attemptsLeft);
               }
               break;
@@ -63,7 +62,7 @@ class index {
         console.log(err.message);
       }
     } catch (error) {
-      Message(lang.get("empty"));
+      Message(lang.get("empty-field"));
       Shake(error.message);
     }
   }
@@ -71,7 +70,7 @@ class index {
     Showindicator(document.querySelector(".login-holder"));
 
     sendRequest({ type: "init session" }).then((response) => {
-      indicatorRemover({ element: ".login-holder" });
+      indicatorRemover({ element: ".login-holder", type: "grid" });
       if (response.status == "successful") {
         const loginBtn = document.querySelector(".login-btn");
         loginBtn.addEventListener("click", () => this.handleLogin());

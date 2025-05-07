@@ -2,43 +2,35 @@ class Key {
   static KeyViewer() {
     let old = document.querySelector(".encryption-key");
     if (old) return Key.hide();
-
-    const WorkDiv = cleanWorkDiv("encryption-key");
-
-    const line = lineCreator("key-line");
-    WorkDiv.appendChild(line);
-
-    /** Save Button */
-
-    line.appendChild(
-      Button({
-        innerText: lang.get("save-btn"),
-        onclick: Key.save,
-        class: "key-buttons",
-      })
-    );
-
-    /** value input */
-    line.appendChild(
-      PasswordField({
-        placeholder: "Enter encryption key",
-        onkeydown: (event) => (event.key == "Enter" ? Key.save() : null),
-      })
-    );
-
-    /** cancel button */
-    line.appendChild(
-      Button({
-        innerText: lang.get("cancel-btn"),
-        class: "key-buttons",
-        onclick: Key.hide,
-      })
-    );
+    elementCreator({
+      parent: document.body,
+      type: "div",
+      Children: [
+        Button({
+          innerText: lang.get("cancel-btn"),
+          class: "key-buttons",
+          onclick: Key.hide,
+        }),
+        PasswordField({
+          placeholder: "Enter encryption key",
+          onkeydown: (event) => (event.key == "Enter" ? Key.save() : null),
+        }),
+        Button({
+          innerText: lang.get("save-btn"),
+          onclick: Key.save,
+          class: "key-buttons",
+        }),
+      ],
+      params: {
+        classList: "encryption-key",
+        style: { animationName: "open" },
+      },
+    });
   }
   static save() {
-    const line = document.querySelector(".PasswordField");
-    const KeyValue = document.querySelector(".PasswordField > input");
-    Showindicator(line);
+    const Holder = document.querySelector(".encryption-key ");
+    const KeyValue = Holder.querySelector(".password-field > input");
+    Showindicator(Holder);
     if (KeyValue.value.length > 0) {
       sendRequest({ type: "Set Key", key: KeyValue.value }).then((callback) => {
         indicatorRemover();
@@ -74,7 +66,7 @@ class Key {
     );
   }
   static hide() {
-    document.querySelector(".key-line").style.animationName = "close";
+    document.querySelector(".encryption-key").style.animationName = "close";
     setTimeout(() => {
       document.querySelector(".encryption-key").remove();
     }, 900);

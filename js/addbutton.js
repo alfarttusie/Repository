@@ -218,7 +218,7 @@ class ButtonCreator {
       else if (type === "password") passwords.push(input);
       else others.push(input);
     });
-    Showindicator(document.querySelector(".add-button-header"));
+    Showindicator(document.querySelector(".add-button"));
     sendRequest({
       type: "queries",
       job: "new button",
@@ -228,6 +228,7 @@ class ButtonCreator {
       columns: [...main, ...passwords, ...others],
     }).then((res) => {
       indicatorRemover();
+      
       if (res.response === "invalid key") {
         showNotification(lang.get("no-encryptation-key"));
       } else if (res.response === "Button exist") {
