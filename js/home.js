@@ -49,17 +49,18 @@ class home {
 
   static GetButtons() {
     const RightDiv = document.querySelector(".right");
+    RightDiv.innerHTML = "";
     Showindicator(RightDiv);
 
     sendRequest({ type: "queries", job: "buttons list" }).then((callback) => {
       indicatorRemover();
 
       if (callback.response === "empty") {
-        const EmptyP = elementCreator({
+        elementCreator({
           parent: RightDiv,
           type: "p",
           params: {
-            classList: ["empty"],
+            classList: ["empty-buttons"],
             innerText: lang.get("no-info"),
           },
         });
@@ -67,12 +68,41 @@ class home {
       }
 
       if (callback.response === "ok") {
-        RightDiv.innerHTML = "";
+        const wrapper = elementCreator({
+          parent: RightDiv,
+          type: "div",
+          params: { className: "buttons-wrapper" },
+        });
+
+        elementCreator({
+          parent: wrapper,
+          type: "input",
+          params: {
+            type: "text",
+            className: "search-buttons",
+            placeholder: lang.get("search"),
+            oninput: (e) => {
+              const val = e.target.value.toLowerCase();
+              wrapper.querySelectorAll("button").forEach((btn) => {
+                const match = btn.innerText.toLowerCase().includes(val);
+                btn.style.display = match ? "block" : "none";
+              });
+            },
+          },
+        });
+
+        const scrollContainer = elementCreator({
+          parent: wrapper,
+          type: "div",
+          params: { className: "buttons-scroll" },
+        });
+
         callback.buttons.forEach((button) => {
           const buttonElement = elementCreator({
-            parent: RightDiv,
+            parent: scrollContainer,
             type: "button",
             params: {
+              className: "left-buttons",
               innerText: button,
               onclick: (event) => new ShowButton(event),
               oncontextmenu: (e) => ContextMenuHandler.Start(e, buttonElement),

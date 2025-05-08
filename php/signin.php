@@ -112,7 +112,7 @@ class Signin
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         $created = date('Y-m-d H:i:s');
-        $expiry = date('Y-m-d H:i:s', strtotime('+1 day')); // إضافة صلاحية التوكن ليوم واحد
+        $expiry = date('Y-m-d H:i:s', strtotime('+1 day'));
 
         $stmt = self::$link->prepare("
         INSERT INTO `auth_tokens` (`username`, `token`, `ip_address`, `user_agent`, `created_at`, `expiry`) 
@@ -125,7 +125,17 @@ class Signin
     {
         $token = bin2hex(random_bytes(32));
         self::storeSessionToken($username, $token);
-        $_SESSION['session_token'] = ['user' => $username, 'token' => $token];
+        $domain = $_SERVER['HTTP_HOST'];
+        setcookie(
+            "session_token",
+            json_encode(['user' => $username, 'token' => $token]),
+            time() + 86400,
+            "/",
+            $domain,
+            isset($_SERVER['HTTPS']),
+            true
+        );
+
         return ['token' => $token];
     }
     private static function isRecognizedDevice($username): bool

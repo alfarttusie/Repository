@@ -16,7 +16,6 @@
   height: 40px;
   width: 0;
   background-color: #252527;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,24 +37,6 @@
   }
 }
 
-@keyframes secondaryExpand {
-  0% {
-    width: 0;
-  }
-  100% {
-    width: 95%;
-  }
-}
-
-@keyframes textAppear {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 @keyframes notifyCollapse {
   0% {
     width: 240px;
@@ -65,12 +46,30 @@
   }
 }
 
+@keyframes secondaryExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 95%;
+  }
+}
+
 @keyframes secondaryCollapse {
   0% {
     width: 95%;
   }
   100% {
     width: 0;
+  }
+}
+
+@keyframes textAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -86,8 +85,8 @@
 .Notify.active .Text {
   animation: textAppear 0.2s 0.7s forwards;
 }
-.Notify::hover,
-.secondary::hover {
+
+.Notify:hover,
+.secondary:hover {
   animation-play-state: paused;
 }
-

@@ -7,10 +7,7 @@
     top: 5%;
     width: 0.3%;
   }
-  40% {
-    top: 5%;
-    width: 50%;
-  }
+  40%,
   50% {
     top: 5%;
     width: 50%;
@@ -19,19 +16,19 @@
     top: 5%;
     width: 0.3%;
   }
-  90% {
-    width: 0%;
-  }
+  90%,
   100% {
-    top: -10vh;
     width: 0%;
+    top: -10vh;
   }
 }
+
 @keyframes indicator {
   100% {
     background-position: 100% 0, 100% 100%, 0 100%, 0 0;
   }
 }
+
 @keyframes dance {
   0% {
     transform: rotate(-5deg);
@@ -43,6 +40,7 @@
     transform: rotate(-5deg);
   }
 }
+
 @keyframes shake-animation {
   0% {
     transform: translateX(0);
@@ -63,6 +61,7 @@
     transform: translateX(0);
   }
 }
+
 .animated-message {
   display: flex;
   justify-content: center;

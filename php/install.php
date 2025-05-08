@@ -156,8 +156,7 @@ class Install
                 `main` text NOT NULL,
                 `password` text NOT NULL,
                 `unique_id` text NOT NULL,
-                `columns` text CHARACTER SET utf8mb4 NOT NULL,
-                PRIMARY KEY (`id`)
+                `columns` text CHARACTER SET utf8mb4 NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
             
             CREATE TABLE IF NOT EXISTS `setting` (

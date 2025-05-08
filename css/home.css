@@ -7,7 +7,6 @@ body {
   direction: inherit;
 }
 
-/* ========== HEADER ========= */
 .header {
   border-radius: 10px;
   grid-column: 10 / 90;
@@ -42,12 +41,10 @@ body {
   transform: scale(1.1);
 }
 
-/* دعم اتجاه اللغة في header */
 body[dir="rtl"] .header {
   flex-direction: row-reverse;
 }
 
-/* ========== RIGHT PANEL ========= */
 .right {
   position: relative;
   grid-column: 88 / 99;
@@ -59,6 +56,8 @@ body[dir="rtl"] .header {
   padding: 5%;
   overflow-x: hidden;
   overflow-y: auto;
+  border-left: 1px solid wheat;
+  overflow: hidden;
 }
 
 .right button {
@@ -88,20 +87,23 @@ body[dir="rtl"] .header {
   font-size: clamp(10px, 3vw, 24px);
 }
 
-/* ========== LEFT PANEL ========= */
 .left {
   border-radius: 8px;
   grid-column: 1 / 88;
   grid-row: 11 / 100;
+  overflow: hidden;
 }
 
-/* ========== GENERAL CONTAINERS ========= */
 .WorkDiv {
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
 }
 
-/* ========== EMPTY INFO ========= */
 .empty-info {
   display: flex;
   justify-content: center;
@@ -121,11 +123,12 @@ body[dir="rtl"] .header {
   border-bottom: 1px solid black;
 }
 
-/* ========== INPUT & SELECT ========= */
 input[type="number"] {
   -webkit-appearance: none;
   -moz-appearance: textfield !important;
   appearance: none;
+  font-size: clamp(12px, 2vw, 18px);
+  padding: 0.4em;
 }
 
 input[type="number"]:focus {
@@ -141,14 +144,13 @@ select {
   border-left: 1px solid rgba(200, 238, 225, 0.8);
   border-right: 1px solid rgba(200, 238, 225, 0.8);
   border-radius: 6px;
-  padding: 0.1%;
+  padding: 0.4em;
   font-size: clamp(10px, 70%, 20px);
   line-height: 1.7;
   width: 100%;
   text-align: center;
   appearance: none;
   background-repeat: no-repeat;
-  background-color: transparent;
 }
 
 select::-ms-expand {
@@ -172,7 +174,6 @@ option {
   background-color: #271d27;
 }
 
-/* ========== SCROLLBAR STYLING ========= */
 .right::-webkit-scrollbar {
   width: 6px;
 }
@@ -180,4 +181,125 @@ option {
 .right::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
+}
+
+.rotate {
+  overflow: hidden;
+  writing-mode: vertical-rl;
+}
+
+.empty-buttons {
+  letter-spacing: 0.2em;
+  text-align: justify;
+  text-justify: inter-character;
+  direction: rtl;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ccc;
+  font-size: clamp(14px, 400%, 24px);
+  font-weight: bold;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  height: 100%;
+  width: calc(100% - 2rem);
+  margin: 1rem auto;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.7s ease-in-out;
+  writing-mode: vertical-rl;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.buttons-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.search-buttons {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: clamp(12px, 2vw, 18px);
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+.buttons-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.left-buttons {
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  color: #fff;
+  font-weight: bold;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  font-size: clamp(12px, 2vw, 18px);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-align: center;
+}
+
+.left-buttons:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #6f6b88, #a5a1c2);
+}
+
+.left-buttons:active {
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem;
+  }
+
+  .left {
+    grid-column: 1 / 100;
+    grid-row: 11 / 60;
+    padding: 1rem;
+  }
+
+  .right {
+    grid-column: 1 / 100;
+    grid-row: 60 / 100;
+    padding: 1rem;
+  }
+
+  .header button {
+    max-width: 100%;
+    width: 90%;
+    margin-bottom: 0.4rem;
+  }
+
+  .right button {
+    width: 90%;
+  }
 }

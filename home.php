@@ -15,15 +15,14 @@ class Home
             header('Location: index.php');
             exit;
         }
-        if (session_status() === PHP_SESSION_NONE)
-            session_start();
-
 
         self::$connection = self::connectToDB();
-        $Token = $_SESSION['session_token'] ?? null;
-        if ($Token && self::loginChecker(self::$connection, $Token)) {
-            $lang = self::getLanguage(self::$connection);
-            Lang::load($lang ?? 'en');
+        $SESSION = isset($_COOKIE['session_token'])
+            ? json_decode($_COOKIE['session_token'], true)
+            : null;
+
+        if ($SESSION && isset($SESSION['user'], $SESSION['token']) && self::loginChecker(self::$connection, $SESSION)) {
+            Lang::load(self::getLanguage(self::$connection) ?? 'en');
             self::View();
         } else {
             header('Location: index.php');
@@ -38,6 +37,7 @@ class Home
                     <head>
                         <meta charset='UTF-8'>
                         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                        <meta http-equiv='X-UA-Compatible' content='IE=edge' />
                         <link rel='stylesheet' href='css/main.css'>
                         <link rel='stylesheet' href='css/home.css'>
                         <link rel='stylesheet' href='css/animation.css'>
@@ -48,8 +48,8 @@ class Home
                         <link rel='stylesheet' href='css/insertdata.css'>
                         <link rel='stylesheet' href='css/showbutton.css'>
                         <link rel='stylesheet' href='css/addbutton.css'>
+                        <link rel='stylesheet' href='css/ButtonSettings.css'>
                         <script src='js/assistant.js'></script>
-                        <script src='js/style.js'></script>
                         <title>" . lang::get('home-title') . "</title>
                     </head>
                 <body style='direction: " . (lang::get('direction')) . "'>
@@ -60,7 +60,7 @@ class Home
                             <button class='header-btn' id='settings'>" . lang::get('settings-btn') . "</button>
                             <button class='header-btn' id='lang-btn'>" . lang::get('language-btn') . "</button>
                             <button class='header-btn' id='addButton'>" . lang::get('add-btn') . "</button>
-                            <button class='header-btn' id='home'>" . lang::get('home') . "</button>
+                            <button class='header-btn' id='home'>" . lang::get('home-btn') . "</button>
                         </div>
                     
                         <div class='left'>

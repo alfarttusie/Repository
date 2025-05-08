@@ -3,6 +3,23 @@ input {
   font-size: clamp(10px, 3vw, 28px);
   max-height: 50px;
 }
+
+input:hover,
+input:focus {
+  outline: none;
+  border-radius: 8px;
+  border: 1px solid whitesmoke;
+}
+
+input:-webkit-autofill {
+  background-color: white !important;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: black !important;
+  -moz-text-fill-color: black !important;
+}
+
 button {
   display: flex;
   justify-content: center;
@@ -10,30 +27,17 @@ button {
   font-size: clamp(10px, 3vw, 24px);
   font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
 }
-input:hover,
-input:focus {
-  outline: none;
-  border: none;
-  border-radius: 8px;
-  border: 1px solid whitesmoke;
+
+button:disabled {
+  background-color: #b5b5b5;
+  cursor: not-allowed;
 }
-input:-webkit-autofill {
-  box-shadow: 0 0 0 1000px white inset !important;
-  border-radius: 8px;
-  -webkit-text-fill-color: black !important;
-  -moz-text-fill-color: black !important;
-}
-input:-webkit-autofill {
-  background-color: white !important;
-  border-radius: 8px;
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: black !important;
-}
+
 a {
   font-size: clamp(10px, 3vw, 24px);
   text-decoration: none;
 }
+
 a:focus {
   outline: none;
 }
@@ -44,26 +48,28 @@ a:focus {
   grid-template-rows: repeat(99, 1fr);
   width: 90%;
   overflow: hidden;
-  & input {
-    grid-row: 1/100;
-    grid-column: 1/100;
-    outline: none;
-  }
-  & button {
-    cursor: pointer;
-    grid-column: 90 / -1;
-    grid-row: 10/90;
-    font-size: clamp(20px, 4vw, 25px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
-  }
 }
+
+.password-field input {
+  grid-row: 1 / 100;
+  grid-column: 1 / 100;
+  outline: none;
+}
+
+.password-field button {
+  cursor: pointer;
+  grid-column: 90 / -1;
+  grid-row: 10 / 90;
+  font-size: clamp(20px, 4vw, 25px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+
 .shake {
   animation: shake-animation 0.5s;
 }
-  /*
 
 label {
   display: flex;
@@ -73,30 +79,15 @@ label {
   font-size: clamp(10px, 3vw, 24px);
   font-weight: bolder;
 }
-.HolderDiv {
-  border: 1px solid wheat;
-  margin: auto;
-  width: 100%;
-  height: 100%;
-}
 
-submit {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .line {
   margin: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .line label {
   font-size: 20px;
   color: whitesmoke;
-}
-
-button:disabled {
-  background-color: #b5b5b5;
-  cursor: not-allowed;
 }

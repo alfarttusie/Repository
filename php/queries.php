@@ -197,12 +197,16 @@ class queries
     }
     private static function ButtonColumns($button, $link)
     {
-        $button = self::encryptText($button);
-        $buttonData = @$link->query("SELECT `columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_array(MYSQLI_ASSOC);
-        $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
-        if (count($columns) > 0) {
+        try {
+            $button = self::encryptText($button);
+            $buttonData = $link->query("SELECT `columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_array(MYSQLI_ASSOC);
+            $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
+            if (count($columns) > 0) {
             return new Response(200, ['columns' => $columns]);
-        } else return new Response(200, ['columns' => 'no columns']);
+            } else return new Response(200, ['columns' => 'no columns']);
+        } catch (Exception $e) {
+            return new Response(500, ['debug' =>  $e->getMessage()]);
+        }
     }
     private static function insertData($data, $button, $link)
     {

@@ -61,17 +61,10 @@ trait Tools
     }
     private static function connectToDB()
     {
-        if (!isset(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database)) {
-            throw new Exception('Database connection parameters are missing.');
-        }
-
-        if (self::$connection instanceof mysqli) {
-            return self::$connection;
-        }
-
         self::$connection = new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database);
         return self::$connection;
     }
+
     private static function BotChecker()
     {
         try {

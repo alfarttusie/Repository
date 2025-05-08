@@ -106,16 +106,19 @@ class ContextMenuHandler {
     const workDiv = home.WorkDiv;
     workDiv.innerHTML = "";
 
-    const line = lineCreator("rename-line");
+    const line = lineCreator("bs-rename-line");
 
     const input = Input({
-      placeholder:lang.get("new-name"),
+      placeholder: lang.get("new-name"),
+      className: "bs-rename-input",
     });
-    line.appendChild(Label("اسم جديد"));
+
+    line.appendChild(Label(lang.get("new-name")));
     line.appendChild(input);
 
     const btn = Button({
       innerText: lang.get("change"),
+      className: "bs-rename-btn",
       onclick: () => {
         const newName = input.value.trim();
         if (!newName) return showNotification(lang.get("empty"));

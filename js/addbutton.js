@@ -2,59 +2,63 @@ class ButtonCreator {
   static DEFAULT_MIN_COUNT = 1;
 
   static initializeUI() {
-    const HolderDiv = cleanWorkDiv("add-button");
-
+    const HolderDiv = cleanWorkDiv("btn-creator-wrapper");
+  
     const container = elementCreator({
       parent: HolderDiv,
       type: "div",
       params: { className: "buttonCreatorContainer" },
     });
-
+  
     ButtonCreator.createHeader(container);
-    ButtonCreator.createLinesHolder(container);
+  
+    const scrollWrapper = elementCreator({
+      parent: container,
+      type: "div",
+      params: { className: "creator-scroll-area" },
+    });
+  
+    ButtonCreator.createLinesHolder(scrollWrapper);
     ButtonCreator.updateLines(ButtonCreator.DEFAULT_MIN_COUNT);
   }
+  
 
   static createHeader(parent) {
     const header = elementCreator({
       parent,
       type: "div",
-      params: { className: "add-button-header" },
+      params: { className: "btn-creator-header" },
     });
 
-    // Label
     elementCreator({
       parent: header,
       type: "label",
       params: {
-        htmlFor: "button-name",
+        htmlFor: "btn-creator-name",
         innerText: lang.get("button-name"),
-        className: "header-label",
+        className: "btn-creator-label",
       },
     });
 
-    // Input
     elementCreator({
       parent: header,
       type: "input",
       params: {
         type: "text",
-        id: "button-name",
-        className: "button-name header-input",
+        id: "btn-creator-name",
+        className: "btn-creator-name btn-creator-input",
       },
     });
 
-    // Counter label
     elementCreator({
       parent: header,
       type: "label",
       params: {
         innerText: lang.get("number-of-fields"),
-        className: "header-label",
+        className: "btn-creator-label",
       },
     });
 
-    // Counter input
     const counter = elementCreator({
       parent: header,
       type: "input",
@@ -62,7 +66,7 @@ class ButtonCreator {
         type: "number",
         min: this.DEFAULT_MIN_COUNT,
         value: this.DEFAULT_MIN_COUNT,
-        className: "counter-input",
+        className: "btn-creator-counter",
       },
     });
 
@@ -72,13 +76,12 @@ class ButtonCreator {
     counter.addEventListener("wheel", (e) => this.handleWheelEvent(e, counter));
     counter.addEventListener("input", () => this.handleManualInput(counter));
 
-    // Save button
     elementCreator({
       parent: header,
       type: "button",
       params: {
         innerText: lang.get("save-btn"),
-        className: "key-buttons",
+        className: "btn-creator-save",
         onclick: this.handleSaveButton.bind(this),
       },
     });
@@ -89,7 +92,7 @@ class ButtonCreator {
       parent,
       type: "div",
       params: {
-        className: "linseHolder",
+        className: "btn-creator-lines",
       },
     });
   }
@@ -126,8 +129,8 @@ class ButtonCreator {
   }
 
   static updateLines(count) {
-    const holder = document.querySelector(".linseHolder");
-    const allLines = document.querySelectorAll(".addbuttonline");
+    const holder = document.querySelector(".btn-creator-lines");
+    const allLines = document.querySelectorAll(".btn-creator-line");
 
     if (count > allLines.length) {
       for (let i = allLines.length; i < count; i++) {
@@ -145,7 +148,7 @@ class ButtonCreator {
     const line = elementCreator({
       type: "div",
       parent: null,
-      params: { className: "addbuttonline line" },
+      params: { className: "btn-creator-line" },
     });
 
     elementCreator({
@@ -157,7 +160,7 @@ class ButtonCreator {
     const typeSelect = elementCreator({
       parent: line,
       type: "select",
-      params: { className: "field-type" },
+      params: { className: "btn-creator-type" },
     });
     ["small", "big"].forEach((type) => {
       typeSelect.appendChild(
@@ -173,7 +176,7 @@ class ButtonCreator {
       type: "input",
       params: {
         type: "text",
-        className: "line-input",
+        className: "btn-creator-line-input",
       },
     });
 
@@ -186,7 +189,7 @@ class ButtonCreator {
     const posSelect = elementCreator({
       parent: line,
       type: "select",
-      params: { className: "field-position" },
+      params: { className: "btn-creator-position" },
     });
     posSelect.appendChild(createOption("normal", lang.get("normal-field")));
     posSelect.appendChild(createOption("main", lang.get("main-field")));
@@ -196,29 +199,30 @@ class ButtonCreator {
   }
 
   static handleSaveButton() {
-    const name = document.querySelector(".button-name").value.trim();
+    const name = document.querySelector(".btn-creator-name").value.trim();
 
     if (name.length === 0) {
       showNotification(lang.get("empty-button-name"));
-      Shake(".button-name");
+      Shake(".btn-creator-name");
       return;
     }
 
-    const lines = document.querySelectorAll(".addbuttonline");
+    const lines = document.querySelectorAll(".btn-creator-line");
     const main = [],
       passwords = [],
       others = [];
 
     lines.forEach((line) => {
-      const input = line.querySelector(".line-input")?.value.trim();
-      const type = line.querySelector(".field-position").value;
+      const input = line.querySelector(".btn-creator-line-input")?.value.trim();
+      const type = line.querySelector(".btn-creator-position").value;
       if (!input) return;
 
       if (type === "main") main.push(input);
       else if (type === "password") passwords.push(input);
       else others.push(input);
     });
-    Showindicator(document.querySelector(".add-button"));
+
+    Showindicator(document.querySelector(".btn-creator-wrapper"));
     sendRequest({
       type: "queries",
       job: "new button",
@@ -228,7 +232,6 @@ class ButtonCreator {
       columns: [...main, ...passwords, ...others],
     }).then((res) => {
       indicatorRemover();
-      
       if (res.response === "invalid key") {
         showNotification(lang.get("no-encryptation-key"));
       } else if (res.response === "Button exist") {

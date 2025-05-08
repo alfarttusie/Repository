@@ -11,7 +11,6 @@ class ButtonSettings {
     }
 
     this.WorkDiv = home?.WorkDiv || null;
-
     this.loadButtonSettings(buttonName);
   }
 
@@ -40,7 +39,7 @@ class ButtonSettings {
 
       const addNewButton = this.createElement("button", {
         innerText: lang.get("add"),
-        className: "add-new-btn",
+        className: "bs-add-new-btn",
         onclick: () => {
           const line = this.createNewLine(buttonName);
           this.WorkDiv.appendChild(line);
@@ -55,18 +54,19 @@ class ButtonSettings {
   }
 
   createLine(columnName, columnType, buttonName) {
-    const line = this.createElement("div", { className: "line" });
+    const line = this.createElement("div", { className: "bs-line" });
 
     const input = this.createElement("input", {
       value: columnName,
       readOnly: true,
-      className: "column-input",
+      className: "bs-column-input",
     });
 
     const typeSelect = this.createTypeSelect(columnType);
+
     const saveTypeButton = this.createElement("button", {
       innerText: lang.get("save-kind"),
-      className: "save-type-btn",
+      className: "bs-save-type-btn",
       onclick: () => {
         this.updateColumnType(buttonName, columnName, typeSelect.value);
       },
@@ -74,20 +74,19 @@ class ButtonSettings {
 
     const deleteButton = this.createElement("button", {
       innerText: lang.get("delete"),
-      className: "delete-btn",
+      className: "bs-delete-btn",
       onclick: () => {
         this.deleteColumn(buttonName, columnName, line);
       },
     });
 
     line.append(input, typeSelect, saveTypeButton, deleteButton);
-
     return line;
   }
 
   createTypeSelect(selectedType) {
     const typeSelect = this.createElement("select", {
-      className: "type-select",
+      className: "bs-type-select",
     });
 
     const types = [
@@ -109,18 +108,18 @@ class ButtonSettings {
   }
 
   createNewLine(buttonName) {
-    const line = this.createElement("div", { className: "line" });
+    const line = this.createElement("div", { className: "bs-line" });
 
     const nameInput = this.createElement("input", {
       placeholder: lang.get("enter-field-name"),
-      className: "new-column-input",
+      className: "bs-new-column-input",
     });
 
     const typeSelect = this.createTypeSelect("main");
 
     const saveButton = this.createElement("button", {
-      innerText: "حفظ",
-      className: "save-btn",
+      innerText: lang.get("save-btn"),
+      className: "bs-save-btn",
       onclick: () => {
         const columnName = nameInput.value.trim();
         const columnType = typeSelect.value;
@@ -135,7 +134,6 @@ class ButtonSettings {
     });
 
     line.append(typeSelect, nameInput, saveButton);
-
     return line;
   }
 

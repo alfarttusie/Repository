@@ -1,65 +1,46 @@
-.InsertData-div {
-  padding: 1%;
+.insertdata-container {
+  direction: rtl;
+  padding: 2%;
   width: 100%;
   height: 100%;
-  overflow: auto;
-}
-
-.insertdata-linesHolder {
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem;
 }
 
 .insertdata-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid wheat;
-  padding: 0.5rem 0;
+  gap: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 }
 
 .insertdata-line label {
   flex: 1;
-  color: wheat;
+  text-align: center;
+  font-size: clamp(12px, 2vw, 18px);
+  color: white;
+  font-weight: bold;
 }
 
 .insertdata-line input {
   flex: 2;
+  text-align: center;
   padding: 0.5rem;
-  text-align: center;
-  background-color: #4b9e898a;
-  color: white;
-  border: none;
-  outline: none;
-  border-left: 1px solid wheat;
-  border-right: 1px solid wheat;
-}
-
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.save-button {
-  padding: 0.6rem 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
+  font-size: clamp(12px, 2vw, 16px);
+  border-radius: 6px;
+  border: 1px solid #ccc;
   background-color: transparent;
-  border: 1px solid wheat;
-  color: wheat;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  color: white;
 }
 
-.save-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.empty {
-  text-align: center;
-  padding: 2rem;
-  color: #ccc;
+.insertdata-footer {
+  margin: 2rem auto 1rem auto;
+  width: 70%;
+  display: flex;
+  justify-content: center;
 }

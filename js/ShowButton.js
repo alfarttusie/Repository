@@ -21,12 +21,25 @@ class ShowButton {
 
       const holder = cleanWorkDiv("show-button");
       const header = this.createHeader(buttonName);
+      const listContainer = document.createElement("div");
+      listContainer.className = "sb-list";
       holder.appendChild(header);
+      holder.appendChild(listContainer);
 
       response.data.forEach((entry) => {
         const line = this.createLine(entry, buttonName);
-        holder.appendChild(line);
+        listContainer.appendChild(line);
       });
+
+      const input = header.querySelector(".sb-search");
+      input.oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        listContainer.querySelectorAll(".sb-line").forEach((line) => {
+          line.style.display = line.innerText.toLowerCase().includes(val)
+            ? "flex"
+            : "none";
+        });
+      };
     } catch (error) {
       console.error(error);
       displayEmptyMessage(lang.get("loading-error"));
@@ -36,13 +49,13 @@ class ShowButton {
   createHeader(buttonName) {
     const header = elementCreator({
       type: "div",
-      params: { className: "showbutton-header" },
+      params: { className: "sb-header" },
     });
 
     const searchInput = Input({
       type: "text",
       placeholder: lang.get("search"),
-      className: "showbutton-search",
+      className: "sb-search",
     });
 
     header.appendChild(searchInput);
@@ -52,7 +65,7 @@ class ShowButton {
       type: "label",
       params: {
         innerText: buttonName,
-        className: "showbutton-label",
+        className: "sb-label",
       },
     });
 
@@ -62,7 +75,7 @@ class ShowButton {
   createLine(data, buttonName) {
     const line = elementCreator({
       type: "div",
-      params: { className: "showbutton-line" },
+      params: { className: "sb-line" },
     });
 
     const mainContent = this.createMainFields(data.main || {});
@@ -75,7 +88,7 @@ class ShowButton {
       type: "button",
       params: {
         innerText: lang.get("show"),
-        className: "showbutton-details-btn",
+        className: "sb-details-btn",
         onclick: () => this.showId(data.id, buttonName),
       },
     });
@@ -88,27 +101,25 @@ class ShowButton {
   createMainFields(fields) {
     const container = elementCreator({
       type: "div",
-      params: { className: "showbutton-main" },
+      params: { className: "sb-main" },
     });
 
     if (fields != "empty") {
       Object.entries(fields).forEach(([key, value]) => {
         const field = elementCreator({
           type: "div",
-          params: { className: "showbutton-main-item" },
+          params: { className: "sb-main-item" },
         });
         field.appendChild(Label(key));
-
         const span = Span({ innerText: value, ondblclick: copyToClipboard });
-        span.classList.add("showbutton-main-span");
+        span.classList.add("sb-main-span");
         field.appendChild(span);
-
         container.appendChild(field);
       });
     } else {
       const emptyField = elementCreator({
         type: "div",
-        params: { className: "showbutton-main-item" },
+        params: { className: "sb-main-item" },
       });
       emptyField.appendChild(Label(lang.get("no-main-fields")));
       container.appendChild(emptyField);
@@ -119,19 +130,19 @@ class ShowButton {
   createPasswordFields(fields) {
     const container = elementCreator({
       type: "div",
-      params: { className: "showbutton-password" },
+      params: { className: "sb-password" },
     });
 
     if (fields != "empty") {
       Object.entries(fields).forEach(([key, value]) => {
         const field = elementCreator({
           type: "div",
-          params: { className: "showbutton-password-item" },
+          params: { className: "sb-password-item" },
         });
 
         field.appendChild(Label(key));
         const passField = PasswordField({ value });
-        passField.classList.add("showbutton-password-field");
+        passField.classList.add("sb-password-field");
         field.appendChild(passField);
 
         container.appendChild(field);
@@ -139,7 +150,7 @@ class ShowButton {
     } else {
       const emptyField = elementCreator({
         type: "div",
-        params: { className: "showbutton-password-item" },
+        params: { className: "sb-password-item" },
       });
       emptyField.appendChild(Label(lang.get("no-password-fields")));
       container.appendChild(emptyField);
@@ -162,9 +173,11 @@ class ShowButton {
       Object.entries(callback.data).forEach(([key, value]) => {
         if (key === "id") return;
 
-        const line = lineCreator("showbutton-detail");
+        const line = lineCreator("sb-detail");
         line.appendChild(Label(key));
-        line.appendChild(Span({ innerText: value }));
+        line.appendChild(
+          Span({ innerText: value, ondblclick: copyToClipboard })
+        );
         holder.appendChild(line);
       });
     } catch (error) {

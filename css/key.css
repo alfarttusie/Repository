@@ -3,12 +3,12 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  left: 0px;
-  right: 0px;
+  left: 0;
+  right: 0;
   margin: auto;
   margin-top: -5%;
   height: clamp(0px, 15vh, 60px);
-  width: 0px;
+  width: 0;
   max-width: 900px;
   animation-name: open;
   animation-duration: 1s;
@@ -16,18 +16,21 @@
   animation-timing-function: ease-in-out;
   border-left: 5px solid yellow;
   border-right: 5px solid yellow;
-  overflow: hidden;
   background-color: #1d15174d;
+  overflow: hidden;
 }
+
 .encryption-key input {
   color: wheat;
   text-align: center;
   border-radius: 8px;
   background-color: transparent !important;
 }
+
 .encryption-key .password-field {
   width: 70%;
 }
+
 .key-buttons {
   position: relative;
   border: none;
@@ -47,12 +50,12 @@
 @keyframes open {
   0% {
     margin-top: -4%;
-    width: 0px;
+    width: 0;
     opacity: 0;
   }
   50% {
     margin-top: 10%;
-    width: 0px;
+    width: 0;
     opacity: 0.8;
   }
   100% {
@@ -61,6 +64,7 @@
     opacity: 1;
   }
 }
+
 @keyframes close {
   0% {
     margin-top: 10%;
@@ -69,12 +73,12 @@
   }
   50% {
     margin-top: 10%;
-    width: 0px;
+    width: 0;
     opacity: 0.8;
   }
   100% {
     margin-top: -4%;
-    width: 0px;
+    width: 0;
     opacity: 0;
   }
 }

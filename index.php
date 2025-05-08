@@ -1,5 +1,4 @@
 <?php
-
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require_once  'php/tools.php';
@@ -11,10 +10,12 @@ class Index
 
     function __construct()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        $token = $_SESSION['session_token'] ?? null;
-        if ($token && self::loginChecker($token)) return exit(header('Location: home.php'));
+        $SESSION = isset($_COOKIE['session_token'])
+            ? json_decode($_COOKIE['session_token'], true)
+            : null;
 
+        if ($SESSION && self::loginChecker($SESSION))
+            return exit(header('Location: home.php'));
 
         $lang = $_GET['lang'] ?? 'en';
         Lang::load($lang ?? 'en');
@@ -36,7 +37,7 @@ class Index
     {
         echo '
             <!DOCTYPE html>
-            <tml lang="en">
+            <html lang="en">
 
             <head>
                 <meta charset="UTF-8">
@@ -78,7 +79,7 @@ class Index
                     <div class="error-text">
                         ' . htmlspecialchars(Lang::get($error), ENT_QUOTES, 'UTF-8') . '
                     </div>
-                    <a class="error-btn"href="index.php?lang=' . lang::get('lang-revers') . '">' . lang::get('language-btn') . '</a>
+                    <a class="error-btn" href="index.php?lang=' . lang::get('lang-revers') . '">' . lang::get('language-btn') . '</a>
                 </div>
         ');
     }
