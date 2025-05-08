@@ -1,3 +1,4 @@
+
 # Repository
 
 ## 🔐 Password Manager
@@ -29,7 +30,7 @@ This project is a **secure password manager** that allows users to **store encry
 ### ⚙️ Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/repository.git
+   git clone https://github.com/alfarttusie/repository.git
    ```
 2. Move it to your web directory (e.g., `htdocs` in XAMPP or `/var/www/html` in Linux).
 3. Open your browser and navigate to:
