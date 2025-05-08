@@ -55,6 +55,16 @@ class ButtonSettings {
 
   createLine(columnName, columnType, buttonName) {
     const line = this.createElement("div", { className: "bs-line" });
+    const renameBtn = this.createElement("button", {
+      innerText: lang.get("rename"),
+      className: "rename-column-btn",
+      onclick: () => {
+        const newName = prompt(lang.get("new-name"), columnName);
+        if (!newName || newName === columnName) return;
+
+        this.renameColumn(buttonName, columnName, newName, line);
+      },
+    });
 
     const input = this.createElement("input", {
       value: columnName,
@@ -76,11 +86,12 @@ class ButtonSettings {
       innerText: lang.get("delete"),
       className: "bs-delete-btn",
       onclick: () => {
-        this.deleteColumn(buttonName, columnName, line);
+        if (confirm(lang.get("delete-column-confirm")))
+          this.deleteColumn(buttonName, columnName, line);
       },
     });
 
-    line.append(input, typeSelect, saveTypeButton, deleteButton);
+    line.append(input, typeSelect, saveTypeButton, deleteButton, renameBtn);
     return line;
   }
 
@@ -113,6 +124,7 @@ class ButtonSettings {
     const nameInput = this.createElement("input", {
       placeholder: lang.get("enter-field-name"),
       className: "bs-new-column-input",
+      onkeydown: (e) => Clicker(e, saveButton),
     });
 
     const typeSelect = this.createTypeSelect("main");
@@ -149,9 +161,7 @@ class ButtonSettings {
 
       if (response.status === "successful") {
         showNotification(lang.get("added-successfully"));
-        line.remove();
-        const newLine = this.createLine(columnName, columnType, buttonName);
-        this.WorkDiv.appendChild(newLine);
+        new ButtonSettings(buttonName);
       } else {
         showNotification(lang.get("failed-to-add"));
       }
@@ -206,5 +216,26 @@ class ButtonSettings {
     if (Array.isArray(children))
       children.forEach((child) => element.appendChild(child));
     return element;
+  }
+  async renameColumn(buttonName, oldName, newName, lineElement) {
+    try {
+      const response = await sendRequest({
+        type: "queries",
+        job: "Rename Column",
+        button: buttonName,
+        column: oldName,
+        new: newName,
+      });
+
+      if (response.status === "successful") {
+        showNotification(lang.get("rename-success"));
+        new ButtonSettings(buttonName);
+      } else {
+        showNotification(lang.get("failed-to-rename"));
+      }
+    } catch (error) {
+      console.error(error);
+      showNotification(lang.get("error-loading-settings"));
+    }
   }
 }

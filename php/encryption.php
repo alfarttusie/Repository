@@ -6,6 +6,9 @@ trait encryption
     private static $OPTIONS = OPENSSL_RAW_DATA;
     private static $encryptionKey;
     private static $IV_KEY = "99754f94d3106633";
+
+
+    
     public static function encryptText(string $plaintext, $Key = null): string
     {
         $encryptionKey = $Key ?? self::$encryptionKey;

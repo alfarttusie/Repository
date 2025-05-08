@@ -90,7 +90,7 @@ body[dir="rtl"] .header {
 .left {
   border-radius: 8px;
   grid-column: 1 / 88;
-  grid-row: 11 / 100;
+  grid-row: 11 / 98;
   overflow: hidden;
 }
 

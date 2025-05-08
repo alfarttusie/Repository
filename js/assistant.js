@@ -55,16 +55,6 @@ function ShowError(Msg) {
     holder.classList.add("active");
   }, 900);
 }
-function HolderDiv(CssClass = null) {
-  const Holder = document.querySelector(".left");
-  Holder.innerHTML = "";
-  let Work = document.createElement("div");
-  if (CssClass) {
-    Work.classList.add(CssClass);
-  } else Work.classList.add("WorkDiv");
-  Holder.appendChild(Work);
-  return Work;
-}
 function ShowPassword(event) {
   const button = event.currentTarget;
   let emoji = button.textContent == "🙉" ? "🙈" : "🙉";
@@ -101,11 +91,6 @@ function cleanWorkDiv(element = null) {
     return Holder;
   }
 }
-function element_old(type = null, element) {
-  type = Object.entries(element).forEach((key, value) =>
-    console.log(`${key} ==> ${value}`)
-  );
-}
 function displayEmptyMessage(Text) {
   const MainDiv = document.querySelector(".left");
   const div = cleanWorkDiv("empty-info");
@@ -113,11 +98,6 @@ function displayEmptyMessage(Text) {
   span.innerText = Text;
   div.appendChild(span);
   MainDiv.appendChild(div);
-}
-function SetStyle(element, style) {
-  Object.entries(style).forEach(
-    ([property, value]) => (element.style[property] = value)
-  );
 }
 function findButtonByText(text) {
   const button = Array.from(document.querySelectorAll("button")).find((btn) =>
@@ -434,4 +414,10 @@ function startCountdown(seconds, element = null) {
 
   updateCountdown();
   const timer = setInterval(updateCountdown, 1000);
+}
+
+function Clicker(event, Button) {
+  if (event.key === "Enter") {
+    Button.click();
+  }
 }

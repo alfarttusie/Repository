@@ -5,6 +5,7 @@ require 'tools.php';
 require 'response_handler.php';
 require 'signin.php';
 require 'queries.php';
+require 'settings.php';
 require_once "lang.php";
 
 
@@ -101,7 +102,7 @@ class Requests
 
             $response = 'unknown error';
 
-            $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries', 'lang'];
+            $commands = ['init session', 'sign in', 'Key checker', 'Set Key', 'log out', 'queries', 'lang', 'settings'];
 
             if ($type == 'empty' || $type == '') return new Response(400, ['debug' => 'Type not Set']);
             if (!in_array($type, $commands)) return new Response(400, ['debug' => 'Type not found']);
@@ -153,6 +154,8 @@ class Requests
                 case 'queries':
                     return new queries(post: $data, key: $key, link: self::$connection);
                     break;
+                case 'settings':
+                    return new settings(post: $data, key: $key, link: self::$connection);
                 default:
                     return new Response(400, ['debug' => 'Type not match']);
                     break;

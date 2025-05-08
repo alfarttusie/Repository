@@ -57,6 +57,7 @@ class queries
             'Button Columns Type'  => self::ButtonColumnsType($button, $link),
             'Rename Column'        => self::RenameColumn($button, $post, $link),
             'Column Validation'    => self::ColumnValidation($button, $post, $link),
+            'Delete Column'        => self::DeleteColumn($button, $post, $link),
             default                => new Response(400, ['debug' => 'no job found'])
         };
     }
@@ -202,7 +203,7 @@ class queries
             $buttonData = $link->query("SELECT `columns` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_array(MYSQLI_ASSOC);
             $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? null;
             if (count($columns) > 0) {
-            return new Response(200, ['columns' => $columns]);
+                return new Response(200, ['columns' => $columns]);
             } else return new Response(200, ['columns' => 'no columns']);
         } catch (Exception $e) {
             return new Response(500, ['debug' =>  $e->getMessage()]);
@@ -449,5 +450,33 @@ class queries
         $columns = json_decode(self::decryptText($Data['columns']), true) ?? array();
         $status = in_array($column, $columns) ? 'found' : 'not found';
         return new Response(200, ['status' => $status]);
+    }
+    private static function DeleteColumn($button, $data, $link)
+    {
+        $column = @$data['column'] ?? null;
+        if (!$column) return new Response(400, ['debug' => 'empty column']);
+
+        $button = self::encryptText($button);
+        $buttonData = $link->query("SELECT `main`, `password`, `columns`, `unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc();
+        $columns = json_decode(self::decryptText($buttonData['columns']), true) ?? [];
+        $sqlMains = json_decode(self::decryptText($buttonData['main']), true) ?? [];
+        $sqlPasswords = json_decode(self::decryptText($buttonData['password']), true) ?? [];
+        $uniqueid = $buttonData['unique_id'];
+
+        if (!in_array($column, $columns)) return new Response(400, ['debug' => 'column not found']);
+
+        $encCol = self::encryptText($column);
+        $link->query("ALTER TABLE `$uniqueid` DROP COLUMN `$encCol`");
+
+        $columns = array_values(array_filter($columns, fn($c) => $c !== $column));
+        $sqlMains = array_values(array_filter($sqlMains, fn($c) => $c !== $column));
+        $sqlPasswords = array_values(array_filter($sqlPasswords, fn($c) => $c !== $column));
+
+        $link->query("UPDATE `buttons` SET 
+        `columns` = '" . self::encryptText(json_encode($columns)) . "',
+        `main` = '" . self::encryptText(json_encode($sqlMains)) . "',
+        `password` = '" . self::encryptText(json_encode($sqlPasswords)) . "'
+        WHERE `button` = '$button'");
+        return new Response(200, ['status' => 'successful']);
     }
 }

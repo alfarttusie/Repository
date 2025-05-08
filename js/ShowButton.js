@@ -56,6 +56,7 @@ class ShowButton {
       type: "text",
       placeholder: lang.get("search"),
       className: "sb-search",
+      autocomplete: "off",
     });
 
     header.appendChild(searchInput);
@@ -78,12 +79,6 @@ class ShowButton {
       params: { className: "sb-line" },
     });
 
-    const mainContent = this.createMainFields(data.main || {});
-    const passwordContent = this.createPasswordFields(data.passwords || {});
-
-    line.appendChild(mainContent);
-    line.appendChild(passwordContent);
-
     const detailsButton = elementCreator({
       type: "button",
       params: {
@@ -92,8 +87,13 @@ class ShowButton {
         onclick: () => this.showId(data.id, buttonName),
       },
     });
-
     line.appendChild(detailsButton);
+
+    const mainContent = this.createMainFields(data.main || {});
+    const passwordContent = this.createPasswordFields(data.passwords || {});
+
+    line.appendChild(mainContent);
+    line.appendChild(passwordContent);
 
     return line;
   }
@@ -104,15 +104,23 @@ class ShowButton {
       params: { className: "sb-main" },
     });
 
-    if (fields != "empty") {
+    if (fields !== "empty") {
       Object.entries(fields).forEach(([key, value]) => {
         const field = elementCreator({
           type: "div",
           params: { className: "sb-main-item" },
         });
-        field.appendChild(Label(key));
-        const span = Span({ innerText: value, ondblclick: copyToClipboard });
+
+        const isEmpty = value === "empty" || value === "";
+
+        const span = Span({
+          innerText: isEmpty ? lang.get("no-data") : value,
+          ondblclick: !isEmpty ? copyToClipboard : null,
+        });
+
         span.classList.add("sb-main-span");
+        if (isEmpty) span.classList.add("sb-empty-value");
+
         field.appendChild(span);
         container.appendChild(field);
       });
@@ -124,6 +132,7 @@ class ShowButton {
       emptyField.appendChild(Label(lang.get("no-main-fields")));
       container.appendChild(emptyField);
     }
+
     return container;
   }
 
@@ -133,17 +142,26 @@ class ShowButton {
       params: { className: "sb-password" },
     });
 
-    if (fields != "empty") {
+    if (fields !== "empty") {
       Object.entries(fields).forEach(([key, value]) => {
         const field = elementCreator({
           type: "div",
           params: { className: "sb-password-item" },
         });
 
-        field.appendChild(Label(key));
-        const passField = PasswordField({ value });
-        passField.classList.add("sb-password-field");
-        field.appendChild(passField);
+        const isEmpty = value === "empty" || value === "";
+
+        if (isEmpty) {
+          const span = Span({
+            innerText: lang.get("no-data"),
+          });
+          span.classList.add("sb-main-span", "sb-empty-value");
+          field.appendChild(span);
+        } else {
+          const passField = PasswordField({ value });
+          passField.classList.add("sb-password-field");
+          field.appendChild(passField);
+        }
 
         container.appendChild(field);
       });
@@ -155,6 +173,7 @@ class ShowButton {
       emptyField.appendChild(Label(lang.get("no-password-fields")));
       container.appendChild(emptyField);
     }
+
     return container;
   }
 
@@ -170,16 +189,70 @@ class ShowButton {
       const holder = home.WorkDiv;
       holder.innerHTML = "";
 
+      const formData = {};
+
       Object.entries(callback.data).forEach(([key, value]) => {
         if (key === "id") return;
 
         const line = lineCreator("sb-detail");
+        const updateBtn = Button({
+          innerText: lang.get("save-btn"),
+          className: "sb-update-btn",
+          onclick: async () => {
+            const res = await sendRequest({
+              type: "queries",
+              job: "update value",
+              button: buttonName,
+              id,
+              column: key,
+              value: formData[key],
+            });
+
+            if (res?.status === "successful") {
+              showNotification(lang.get("notification-update"));
+            } else {
+              showNotification(lang.get("failed-to-update"));
+            }
+          },
+        });
+        const input = Input({
+          name: key,
+          value: value,
+          placeholder: key,
+        });
+
+        input.oninput = () => (formData[key] = input.value);
+        formData[key] = value;
+
+        line.appendChild(updateBtn);
+        line.appendChild(input);
         line.appendChild(Label(key));
-        line.appendChild(
-          Span({ innerText: value, ondblclick: copyToClipboard })
-        );
         holder.appendChild(line);
       });
+
+      const deleteBtn = Button({
+        innerText: lang.get("delete"),
+        className: "sb-delete-btn",
+        onclick: async () => {
+          if (!confirm(lang.get("delete-btn-confirm"))) return;
+
+          const res = await sendRequest({
+            type: "queries",
+            job: "delete id",
+            button: buttonName,
+            id,
+          });
+
+          if (res?.status === "successful") {
+            showNotification(lang.get("notification-delete"));
+            new ShowButton(buttonName);
+          } else {
+            showNotification(lang.get("failed-to-delete"));
+          }
+        },
+      });
+
+      holder.append(deleteBtn);
     } catch (error) {
       console.error(error);
       displayEmptyMessage(lang.get("loading-error"));

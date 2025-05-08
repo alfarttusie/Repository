@@ -51,14 +51,22 @@ class InsertData {
     const form = elementCreator({
       type: "form",
       parent: container,
-      params: { className: "insertdata-form" },
+      params: {
+        className: "insertdata-form",
+        onsubmit: (e) => {
+          e.preventDefault();
+          this.saveData(buttonName, form);
+        },
+      },
     });
 
     columns.forEach((column) => {
       const line = elementCreator({
         type: "div",
         parent: form,
-        params: { className: "insertdata-line" },
+        params: {
+          className: "insertdata-line",
+        },
       });
 
       line.appendChild(Label(column));

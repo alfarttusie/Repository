@@ -79,6 +79,7 @@ class home {
           type: "input",
           params: {
             type: "text",
+            autocomplete: "off",
             className: "search-buttons",
             placeholder: lang.get("search"),
             oninput: (e) => {

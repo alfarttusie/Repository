@@ -1,6 +1,7 @@
 class ContextMenuHandler {
   static timeout;
   static lastTap = 0;
+  static currentButtonName = null;
 
   static createMenuItem(label, action, parent) {
     const item = document.createElement("div");
@@ -101,8 +102,7 @@ class ContextMenuHandler {
 
   static RenameButton() {
     const menu = document.querySelector(".context-menu");
-    const buttonName = menu?.dataset?.invoker;
-
+    ContextMenuHandler.currentButtonName = menu?.dataset?.invoker;
     const workDiv = home.WorkDiv;
     workDiv.innerHTML = "";
 
@@ -121,22 +121,24 @@ class ContextMenuHandler {
       className: "bs-rename-btn",
       onclick: () => {
         const newName = input.value.trim();
-        if (!newName) return showNotification(lang.get("empty"));
-
+        if (!newName) return showNotification(lang.get("empty-field"));
         sendRequest({
           type: "queries",
           job: "rename button",
-          button: buttonName,
+          button: ContextMenuHandler.currentButtonName,
           new: newName,
         }).then((res) => {
           if (res.response === "ok") {
             showNotification(lang.get("rename-success"));
             home.GetButtons();
+            ContextMenuHandler.currentButtonName = newName;
+          } else {
+            showNotification(lang.get(res.response));
           }
         });
       },
     });
-
+    input.onkeydown = (e) => Clicker(e, btn);
     line.appendChild(btn);
     workDiv.appendChild(line);
   }
