@@ -40,7 +40,6 @@ class Signin
             return new Response(403, ['debug' => $exception->getMessage()]);
         }
     }
-
     private static function isUserBlocked(&$time): bool
     {
         $stmt = self::$link->prepare("SELECT `times`, `time` FROM `visitors` WHERE `ip` = ?");
@@ -49,10 +48,6 @@ class Signin
         $visitor = $stmt->get_result()->fetch_assoc();
 
         if (!$visitor) {
-            $now = time();
-            $insert = self::$link->prepare("INSERT INTO `visitors` (`ip`, `times`, `time`) VALUES (?, 1, ?)");
-            $insert->bind_param("si", self::$userIp, $now);
-            $insert->execute();
             return false;
         }
 
@@ -72,7 +67,6 @@ class Signin
         $time = intval($visitor['time']) - time();
         return true;
     }
-
     private static function recordFailedLogin()
     {
         $stmt = self::$link->prepare("SELECT `times` FROM `visitors` WHERE `ip` = ?");
@@ -80,21 +74,26 @@ class Signin
         $stmt->execute();
         $visitor = $stmt->get_result()->fetch_assoc();
 
-        if (!$visitor) return 0;
-
         $setting = self::$link->query("SELECT `times`, `time` FROM `setting` LIMIT 1")->fetch_assoc();
-
-        $times = intval($visitor['times']) + 1;
         $blockUntil = time() + ($setting['time'] * 60);
 
-        $update = self::$link->prepare("UPDATE `visitors` SET `times` = ?, `time` = ? WHERE `ip` = ?");
-        $update->bind_param("iis", $times, $blockUntil, self::$userIp);
-        $update->execute();
+        $times = intval($visitor['times']);
+        if ($times < 1) {
+            $insert = self::$link->prepare("INSERT INTO `visitors` (`ip`, `times`, `time`) VALUES (?, ?, ?)");
+            $initial = 1;
+            $insert->bind_param("sii", self::$userIp, $initial, $blockUntil);
+            $insert->execute();
+            $left = $setting['times'] - 1;
+        } else {
+            $times = $times + 1;
+            $update = self::$link->prepare("UPDATE `visitors` SET `times` = ?, `time` = ? WHERE `ip` = ?");
+            $update->bind_param("iis", $times, $blockUntil, self::$userIp);
+            $update->execute();
+            $left = $setting['times'] - $times;
+        }
 
-        $left = $setting['times'] - $times;
         return $left <= 0 ? 'none' : $left;
     }
-
     private static function validateCredentials($username, $password): bool
     {
         $stmt = self::$link->prepare("SELECT password FROM `admin_info` WHERE username = ? LIMIT 1");

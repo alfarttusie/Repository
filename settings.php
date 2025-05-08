@@ -27,7 +27,6 @@ class SettingsPage
 
         $this->render();
     }
-
     private function render()
     {
         $page = $_GET['page'] ?? 'home';
@@ -66,30 +65,30 @@ class SettingsPage
             'restore' => self::restore(),
             'security' => self::security(),
             'language' => self::language(),
+            'username' => self::username(),
+            'backup-single' =>    self::backupSingleButton(),
             default => self::home()
         };
 
         echo '</div></div></body></html>';
     }
-
     private static function renderSidebar()
     {
         echo '
-        <div class="sidebar">
-            <h2>' . lang::get("settings-btn") . '</h2>
-            <ul>
-                <li><a href="?page=password">🔐 ' . lang::get("password-field") . '</a></li>
-                <li><a href="?page=backup">💾 النسخ الاحتياطي</a></li>
-                <li><a href="?page=restore">♻️ استعادة النسخة</a></li>
-                <li><a href="home.php">⬅️ ' . lang::get("home-btn") . '</a></li>
-                <li><a href="?page=login">🔑 إعدادات الدخول</a></li>
-                <li><a href="?page=security">🛡️ ' . lang::get("security") . '</a></li>
-                <li><a href="?page=language">🌐 ' . lang::get("language-btn") . '</a></li>
-            </ul>
-        </div>';
+            <div class="sidebar">
+                <h2>الإعدادات</h2>
+                <ul>
+                    <li><a href="settings.php?page=password">🔐 كلمة المرور</a></li>
+                    <li><a href="settings.php?page=username">👤 تغيير اسم المستخدم</a></li>
+                    <li><a href="settings.php?page=backup">💾 النسخ الاحتياطي</a></li>
+                    <li><a href="settings.php?page=restore">♻️ الاستعادة</a></li>
+                    <li><a href="settings.php?page=login">🔑 إعدادات الدخول</a></li>
+                    <li><a href="settings.php?page=security">🛡️ الأمان</a></li>
+                    <li><a href="settings.php?page=language">🌐 اللغة</a></li>
+                    <li><a href="home.php">🏠 العودة للرئيسية</a></li>
+                </ul>
+            </div>';
     }
-
-
     public static function password()
     {
         echo '
@@ -145,87 +144,199 @@ class SettingsPage
         </script>
         ';
     }
-
-
     private static function backup()
     {
         echo '
-    <div class="card">
-        <h3>النسخ الاحتياطي</h3>
-        <p>يمكنك تحميل نسخة احتياطية مشفرة من قاعدة البيانات.</p>
-        <button class="save-btn" id="backup-btn">تحميل النسخة الاحتياطية</button>
-        <script>
-        document.querySelector("#backup-btn").onclick = async () => {
-            Showindicator(document.body);
-            const response = await sendRequest({ type: "settings", job: "backup" });
-            indicatorRemover();
+            <div class="card">
+                <h3>النسخ الاحتياطي</h3>
+                <p>يمكنك تحميل نسخة احتياطية مشفرة من قاعدة البيانات.</p>
+                <button class="save-btn" id="backup-btn">تحميل النسخة الاحتياطية</button>
+                <script>
+                document.querySelector("#backup-btn").onclick = async () => {
+                    Showindicator(document.body);
+                    const response = await sendRequest({ type: "settings", job: "backup" });
+                    indicatorRemover();
 
-            if (response?.status === "ok" && response.backup) {
-                const data = response.backup;
-                const blob = new Blob([data], { type: "application/json;charset=utf-8" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "backup.json";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-                showNotification(lang.get("notification-save"));
-            } else if (response?.response === "invalid key") {
-                showNotification(lang.get("invalid key"));
-            } else if (response?.response === "no data") {
-                showNotification(lang.get("no-data"));
-            } else {
-                showNotification(lang.get("unexpected-error"));
-            }
-        };
-        </script>
-    </div>';
+                    if (response?.status === "ok" && response.backup) {
+                        const data = response.backup;
+                        const blob = new Blob([data], { type: "application/json;charset=utf-8" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "backup.json";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        showNotification(lang.get("notification-save"));
+                    } else if (response?.response === "invalid key") {
+                        showNotification(lang.get("invalid key"));
+                    } else if (response?.response === "no data") {
+                        showNotification(lang.get("no-data"));
+                    } else {
+                        showNotification(lang.get("unexpected-error"));
+                    }
+                };
+                </script>
+            </div>';
     }
-
     private static function login()
     {
-        echo '<div class="card">
-            <h3>إعدادات الدخول</h3>
-            <div class="form-group">
-                <label>عدد محاولات تسجيل الدخول قبل الحظر</label>
-                <input type="number" min="1" max="10">
+        echo '
+            <div class="card">
+                <h3>إعدادات الدخول</h3>
+                <div class="form-group">
+                    <label>عدد المحاولات قبل الحظر</label>
+                    <input type="number" id="login-limit" min="1">
+                </div>
+                <div class="form-group">
+                    <label>مدة الحظر بالدقائق</label>
+                    <input type="number" id="block-time" min="1">
+                </div>
+                <button class="save-btn" onclick="saveLoginSettings()">حفظ الإعدادات</button>
             </div>
-            <button class="save-btn">حفظ</button>
-        </div>';
-    }
 
+            <script>
+            async function fetchLoginSettings() {
+                const res = await sendRequest({ type: "settings", job: "get login settings" });
+                if (res?.status === "ok") {
+                    document.getElementById("login-limit").value = res.login_attempts;
+                    document.getElementById("block-time").value = res.block_time;
+                }
+            }
+
+            async function saveLoginSettings() {
+                const limit = parseInt(document.getElementById("login-limit").value);
+                const time = parseInt(document.getElementById("block-time").value);
+                const res = await sendRequest({
+                    type: "settings",
+                    job: "update login settings",
+                    login_limit: limit,
+                    block_time: time
+                });
+                if (res?.status === "updated") {
+                    showNotification(lang.get("notification-update"));
+                }
+            }
+
+            fetchLoginSettings();
+            </script>';
+    }
     private static function security()
     {
-        echo '<div class="card">
-            <h3>إعدادات الأمان</h3>
-            <div class="form-group">
-                <label>تفعيل المصادقة الثنائية</label>
-                <select>
-                    <option>نعم</option>
-                    <option>لا</option>
-                </select>
-            </div>
-            <button class="save-btn">حفظ</button>
-        </div>';
-    }
+        $link = self::connectToDB();
 
+        $settingResult = $link->query("SELECT `times` FROM `setting` WHERE `id` = 1");
+        if ($settingResult && $row = $settingResult->fetch_assoc()) {
+            $maxAttempts = (int) $row['times'];
+        } else {
+            $maxAttempts = 3;
+        }
+
+        $blockedIps = [];
+        $ipQuery = $link->query("SELECT `ip`, `times`, `time` FROM `visitors` WHERE `times` >= $maxAttempts ORDER BY `time` DESC");
+        if ($ipQuery) {
+            while ($row = $ipQuery->fetch_assoc()) {
+                $blockedIps[] = $row;
+            }
+        }
+
+        echo '
+            <div class="card">
+                <h3>قائمة العناوين المحظورة</h3>
+                <p>العناوين التالية تم حظرها بسبب تجاوز عدد المحاولات المسموح به (' . $maxAttempts . ' مرات).</p>';
+
+        if (empty($blockedIps)) {
+            echo '<p style="color: gray;">لا توجد عناوين محظورة حالياً.</p>';
+        } else {
+            echo '
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                    <thead>
+                        <tr style="background-color: #eee;">
+                            <th style="padding: 8px; border: 1px solid #ccc;">عنوان IP</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">عدد المحاولات</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">آخر محاولة</th>
+                            <th style="padding: 8px; border: 1px solid #ccc;">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+            foreach ($blockedIps as $row) {
+                $ip = htmlspecialchars($row['ip']);
+                echo '
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ccc;">' . $ip . '</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;">' . (int) $row['times'] . '</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;">' . htmlspecialchars($row['time']) . '</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;">
+                                <button onclick="deleteBlockedIP(\'' . $ip . '\')" style="padding: 6px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ حذف</button>
+                            </td>
+                        </tr>';
+            }
+            echo '
+                    </tbody>
+                </table>';
+        }
+
+        echo <<<SCRIPT
+                                <script>
+                                function deleteBlockedIP(ip) {
+                                    if (!confirm("هل أنت متأكد من حذف هذا العنوان؟")) return;
+
+                                    sendRequest({
+                                        type: "settings",
+                                        job: "delete blocked ip",
+                                        ip: ip
+                                    }).then(res => {
+                                        if (res?.status === "deleted") {
+                                            showNotification("تم الحذف بنجاح");
+                                            setTimeout(() => location.reload(), 800);
+                                        } else {
+                                            showNotification("فشل الحذف");
+                                        }
+                                    });
+                                }
+                                </script>
+                                </div>
+                                SCRIPT;
+    }
     private static function language()
     {
-        echo '<div class="card">
-            <h3>اللغة</h3>
-            <div class="form-group">
-                <label>اختر اللغة</label>
-                <select>
-                    <option value="ar">العربية</option>
-                    <option value="en">English</option>
-                </select>
+        echo '
+            <div class="card">
+                <h3>تغيير اللغة</h3>
+                <div class="form-group">
+                    <label>اختر اللغة</label>
+                    <select id="lang-select">
+                        <option value="ar">العربية</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button class="save-btn" onclick="changeLanguage()">تحديث اللغة</button>
             </div>
-            <button class="save-btn">تحديث</button>
-        </div>';
-    }
 
+            <script>
+            async function fetchLang() {
+                const res = await sendRequest({ type: "settings", job: "get language" });
+                if (res?.status === "ok") {
+                    document.getElementById("lang-select").value = res.lang;
+                }
+            }
+
+            async function changeLanguage() {
+                const selectedLang = document.getElementById("lang-select").value;
+                const res = await sendRequest({
+                    type: "settings",
+                    job: "update language",
+                    lang: selectedLang
+                });
+                if (res?.status === "language updated") {
+                    showNotification(lang.get("language-update"));
+                }
+            }
+
+            fetchLang();
+            </script>';
+    }
     private static function home()
     {
         $dbType = self::$connection->get_server_info();
@@ -284,8 +395,6 @@ class SettingsPage
             </div>
         </div>';
     }
-
-
     private static function parseUserAgent($agent)
     {
         $device = 'غير معروف';
@@ -311,7 +420,6 @@ class SettingsPage
 
         return "$device – $os";
     }
-
     private static function restore()
     {
         echo '
@@ -369,8 +477,116 @@ class SettingsPage
             </script>
         </div>';
     }
+    private static function backupSingleButton()
+    {
+        echo '
+        <div class="card">
+            <h3>نسخ احتياطي لزر معين</h3>
+            <p>اختر الزر الذي تريد أخذ نسخة احتياطية له.</p>
+    
+            <select id="backup-single-select" class="input" style="margin-bottom: 1rem;"></select>
+            <button class="save-btn" id="backup-single-btn">تحميل النسخة</button>
+    
+            <script>
+            async function fetchButtons() {
+                Showindicator(document.body);
+                const response = await sendRequest({ type: "queries", job: "buttons list" });
+                indicatorRemover();
+    
+                const select = document.querySelector("#backup-single-select");
+                if (response?.response === "ok") {
+                    response.buttons.forEach(btn => {
+                        const option = document.createElement("option");
+                        option.value = btn;
+                        option.innerText = btn;
+                        select.appendChild(option);
+                    });
+                } else {
+                    const opt = document.createElement("option");
+                    opt.disabled = true;
+                    opt.innerText = lang.get("no-info");
+                    select.appendChild(opt);
+                }
+            }
+    
+            document.querySelector("#backup-single-btn").onclick = async () => {
+                const selected = document.querySelector("#backup-single-select").value;
+                if (!selected) {
+                    showNotification("يرجى اختيار زر");
+                    return;
+                }
+    
+                Showindicator(document.body);
+                const response = await sendRequest({
+                    type: "settings",
+                    job: "single backup",
+                    button: selected
+                });
+                indicatorRemover();
+    
+                if (response?.status == "ok") {
+                    const data = response.backup;
+                    const blob = new Blob([data], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${selected}_backup.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                    showNotification(lang.get("notification-save"));
+                } else {
+                    showNotification(lang.get("invalid key"));
+                }
+            };
+    
+            fetchButtons();
+            </script>
+        </div>';
+    }
+    private static function username()
+    {
+        echo '
+                <div class="card">
+                    <h3>تغيير اسم المستخدم</h3>
+                    <p>قم بإدخال اسم المستخدم الجديد، سيتم تسجيل الخروج تلقائياً بعد التغيير.</p>
 
+                    <input type="text" id="new-username" class="input" placeholder="👤 اسم المستخدم الجديد" />
+                    <button class="save-btn" id="change-username-btn">تغيير</button>
 
+                    <script>
+                    document.querySelector("#change-username-btn").onclick = async () => {
+                        const input = document.querySelector("#new-username");
+                        const newUsername = input.value.trim();
+
+                        if (!newUsername) {
+                            showNotification("يرجى إدخال اسم المستخدم");
+                            return;
+                        }
+
+                        Showindicator(document.body);
+
+                        const response = await sendRequest({
+                            type: "settings",
+                            job: "change username",
+                            new: newUsername
+                        });
+
+                        indicatorRemover();
+
+                        if (response?.status === "username changed") {
+                            showNotification("تم تغيير اسم المستخدم. سيتم تسجيل الخروج...");
+                            setTimeout(() => window.location = "index.php", 1500);
+                        } else if (response?.response === "username exists") {
+                            showNotification("اسم المستخدم موجود مسبقاً");
+                        } else {
+                            showNotification(response?.debug || "حدث خطأ أثناء تغيير الاسم");
+                        }
+                    };
+                    </script>
+                </div>';
+    }
     function __destruct()
     {
         if (self::$connection) self::$connection->close();

@@ -36,6 +36,27 @@ class settings
             case 'restore':
                 return self::ImportBackup($post, $link);
                 break;
+            case 'single backup':
+                return self::BackupSingleButton($post, $link);
+                break;
+            case "update login settings":
+                return self::LoginSettings($post, $link);
+                break;
+            case "get login settings":
+                return self::GetLoginSettings($link);
+                break;
+            case "update language":
+                return self::UpdateLanguage($post, $link);
+                break;
+            case "get language":
+                return self::GetLanguage($link);
+                break;
+            case "change username":
+                return self::ChangeUsername($post, $link);
+                break;
+            case "delete blocked ip":
+                return self::deleteBlockedIp($post);
+                break;
         }
         return new Response(400, ['debug' => 'Type not match']);
     }
@@ -203,5 +224,145 @@ class settings
         }
 
         return new Response(200, ['data' => 'imported']);
+    }
+    private static function BackupSingleButton($data, $link)
+    {
+        $button = $data['button'] ?? null;
+
+        if (!$button) {
+            return new Response(400, ['debug' => 'button name missing']);
+        }
+
+        if (!self::Button_exist($button)) {
+            return new Response(404, ['debug' => 'button not found']);
+        }
+
+        $stmt = $link->prepare("SELECT `unique_id`, `main`, `password`, `columns` FROM `buttons` WHERE `button` = ?");
+        $stmt->bind_param("s", self::encryptText($button));
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$row) {
+            return new Response(404, ['debug' => 'button data missing']);
+        }
+
+        $unique = $row['unique_id'];
+        $columns = json_decode(self::decryptText($row['columns']), true) ?? [];
+        $main = json_decode(self::decryptText($row['main']), true) ?? [];
+        $password = json_decode(self::decryptText($row['password']), true) ?? [];
+
+        $query = $link->query("SELECT * FROM `$unique`");
+        $dataRows = [];
+        while ($entry = $query->fetch_assoc()) {
+            $record = [];
+            foreach ($entry as $key => $value) {
+                if ($key === 'id') {
+                    $record['id'] = $value;
+                } else {
+                    $decryptedKey = self::decryptText($key);
+                    $record[$decryptedKey] = $value ? self::decryptText($value) : "";
+                }
+            }
+            $dataRows[] = $record;
+        }
+
+        $finalJson = json_encode([
+            $button => [
+                'columns'  => $columns,
+                'main'     => $main,
+                'password' => $password,
+                'data'     => $dataRows
+            ]
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+        $encryptedJson = self::encryptText($finalJson);
+        return new Response(200, ['status' => 'ok', 'backup' => $encryptedJson]);
+    }
+    private static function LoginSettings($data, $link)
+    {
+        $loginLimit = intval($data['login_limit']) ?? null;
+        $blockTime = intval($data['block_time']) ?? null;
+
+        if (!is_numeric($loginLimit) || !is_numeric($blockTime)) {
+            return new Response(400, ['debug' => 'invalid input']);
+        }
+        $stmt = $link->prepare("UPDATE `setting` SET `times` = ?, `time` = ? WHERE `id` = 1");
+        $stmt->bind_param("ii", $loginLimit, $blockTime);
+        $stmt->execute();
+        $stmt->close();
+
+        return new Response(200, ['status' => 'updated']);
+    }
+    private static function GetLoginSettings($link)
+    {
+        $result = $link->query("SELECT `times`, `time` FROM `setting` WHERE `id` = 1");
+        if ($result && $row = $result->fetch_assoc()) {
+            return new Response(200, ['status' => 'ok', 'login_attempts' => $row['times'], 'block_time' => $row['time']]);
+        }
+
+        return new Response(500, ['debug' => 'cannot fetch login settings']);
+    }
+    private static function UpdateLanguage($data, $link)
+    {
+        $lang = $data['lang'] ?? null;
+        if (!in_array($lang, ['ar', 'en'])) {
+            return new Response(400, ['debug' => 'invalid lang']);
+        }
+
+        $stmt = $link->prepare("UPDATE `setting` SET `lang` = ? WHERE `id` = 1");
+        $stmt->bind_param("s", $lang);
+        $stmt->execute();
+        $stmt->close();
+
+        return new Response(200, ['status' => 'language updated']);
+    }
+    private static function GetLanguage($link)
+    {
+        $result = $link->query("SELECT `lang` FROM `setting` WHERE `id` = 1");
+        if ($result && $row = $result->fetch_assoc()) {
+            return new Response(200, ['status' => 'ok', 'lang' => $row['lang']]);
+        }
+
+        return new Response(500, ['debug' => 'cannot fetch language']);
+    }
+    private static function ChangeUsername($data, $link)
+    {
+        $Bearer = self::Headers();
+        $currentUsername = $Bearer['user'] ?? null;
+        $newUsername = $data['new'] ?? null;
+
+        if (!$currentUsername || !$newUsername)
+            return new Response(400, ['debug' => 'missing username info']);
+
+        $check = $link->prepare("SELECT COUNT(*) as count FROM `admin_info` WHERE `username` = ?");
+        $check->bind_param("s", $newUsername);
+        $check->execute();
+        $exists = $check->get_result()->fetch_assoc()['count'] > 0;
+        $check->close();
+
+        if ($exists) return new Response(200, ['response' => 'username exists']);
+
+        $stmt = $link->prepare("UPDATE `admin_info` SET `username` = ? WHERE `username` = ?");
+        $stmt->bind_param("ss", $newUsername, $currentUsername);
+        $stmt->execute();
+        $stmt->close();
+
+        $link->query("DELETE FROM `auth_tokens` WHERE `username` = '$currentUsername'");
+
+        return new Response(200, ['status' => 'username changed']);
+    }
+    private static function deleteBlockedIp($data)
+    {
+        $ip = $data['ip'] ?? null;
+        if (!$ip) return new Response(400, ['debug' => 'empty ip']);
+
+        $stmt = self::$connection->prepare("DELETE FROM `visitors` WHERE `ip` = ?");
+        $stmt->bind_param("s", $ip);
+        if ($stmt->execute()) {
+            return new Response(200, ['status' => 'deleted']);
+        } else {
+            return new Response(500, ['debug' => 'failed to delete']);
+        }
     }
 }
