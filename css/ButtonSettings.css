@@ -1,0 +1,134 @@
+.bs-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.bs-line:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bs-column-input,
+.bs-new-column-input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: clamp(12px, 2vw, 18px);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+}
+
+.bs-column-input[readonly] {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bs-type-select {
+  padding: 0.5rem;
+  font-size: clamp(12px, 2vw, 16px);
+  border: none;
+  border-radius: 6px;
+  background-color: #4b9e89;
+  color: white;
+  text-align: center;
+}
+
+.bs-type-select:focus {
+  outline: none;
+  box-shadow: 0 0 5px #76b900;
+}
+
+.bs-save-type-btn,
+.bs-delete-btn,
+.bs-save-btn,
+.bs-add-new-btn {
+  padding: 0.5rem 1rem;
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: bold;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1d1517, #ff4b2b);
+  border: none;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.bs-save-type-btn:hover,
+.bs-delete-btn:hover,
+.bs-save-btn:hover,
+.bs-add-new-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #3d2a2c, #ff6b3b);
+}
+
+.bs-save-type-btn:active,
+.bs-delete-btn:active,
+.bs-save-btn:active,
+.bs-add-new-btn:active {
+  transform: scale(0.97);
+}
+.bs-rename-line {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px dashed #ffc107;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bs-rename-input {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: transparent;
+  color: white;
+  transition: border-color 0.3s;
+  text-align: center;
+}
+
+.bs-rename-input:focus {
+  outline: none;
+  border-color: #76b900;
+  box-shadow: 0 0 5px #76b900aa;
+}
+
+.bs-rename-btn {
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, #4b6cb7, #182848);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.bs-rename-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #5f86c2, #243b55);
+}
+.rename-column-btn {
+  background-color: #607d8b;
+  color: white;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  border: none;
+}
+.rename-column-btn:hover {
+  background-color: #455a64;
+}
