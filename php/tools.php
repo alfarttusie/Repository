@@ -1,14 +1,12 @@
 <?php
 require 'jwt.php';
 require 'encryption.php';
-// require 'settings.php';
 require 'ArrayHelper.php';
-error_reporting(0);
+// error_reporting(0);
 trait Tools
 {
     use Jwt;
     use encryption;
-    // use Settings;
     use ArrayHelper;
 
     private static $connection;
@@ -109,24 +107,25 @@ trait Tools
     {
         try {
             $response = 'empty';
-            $headers = getallheaders();
+            $headers = array_change_key_case(getallheaders(), CASE_LOWER);
             $origin = $headers['origin'] ?? null;
-            $contentType = $headers['Content-type'] ?? null;
+            $contentType = $headers['content-type'] ?? null;
             $payload = self::Headers();
+
             if (!self::BotChecker())
                 throw new Exception('Suspect as a bot');
             if (empty($payload))
                 throw new Exception('JWT token needed');
-
-
             if (stripos($contentType, 'application/json') === false)
                 throw new Exception('Data not JSON');
+
             return true;
         } catch (Exception $exception) {
             $response = $exception->getMessage();
             return false;
         }
     }
+
     private static function loginChecker($link, $Bearer = null)
     {
         try {
@@ -167,7 +166,7 @@ trait Tools
     private static function Headers()
     {
         $headers = function_exists('getallheaders') ? getallheaders() : [];
-        $jwt = $headers['Bearer'] ?? null;
+        $jwt = $headers['bearer'] ?? null;
 
         if (!$jwt)
             return ['error' => 'JWT token missing'];

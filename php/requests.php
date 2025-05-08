@@ -1,5 +1,8 @@
 <?php
 // error_reporting(0);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 require 'tools.php';
 require 'response_handler.php';
@@ -92,12 +95,10 @@ class Requests
     {
         try {
             $headers = function_exists('getallheaders') ? getallheaders() : [];
-            $bearerToken = $headers['Bearer'] ?? null;
+
+            $bearerToken = $headers['bearer'] ?? null;
             $data = json_decode($data, true);
             $type = @$data['type'] ?? 'empty';
-
-
-
 
 
             $response = 'unknown error';
@@ -121,8 +122,10 @@ class Requests
 
             if (!self::Postvalidation($response)) return new Response(400, ['debug' => $response]);
 
+
             $jwt_validation = self::verifyJwt($bearerToken);
             if (!$jwt_validation['valid']) return new Response(400, ['debug' => $jwt_validation['error']]);
+
 
             if ($type == 'sign in')
                 return new Signin(Post: $data, link: self::$connection);

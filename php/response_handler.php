@@ -35,9 +35,9 @@ class Response
     private static function setHeaders($payload, $expiration): void
     {
         header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: *');
+        // header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        // header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('X-Frame-Options: SAMEORIGIN');
         header("Content-Security-Policy: default-src 'self';");
         header('X-XSS-Protection: 1; mode=block');
@@ -48,7 +48,7 @@ class Response
 
         $token = self::buildToken($payload, $expiration);
         if ($token) {
-            header('Bearer: ' . $token);
+            header('bearer: ' . $token);
         }
     }
 
@@ -87,7 +87,6 @@ class Response
 
         return self::createJwt($payload);
     }
-
     public function __destruct()
     {
         if (self::$link) {

@@ -13,13 +13,13 @@ trait Jwt
     }
 
     private static function base64UrlDecode($encoded)
-{
-    $decoded = base64_decode(str_replace(['-', '_'], ['+', '/'], $encoded), true);
-    if ($decoded === false) {
-        throw new Exception('Invalid base64 input');
+    {
+        $decoded = base64_decode(str_replace(['-', '_'], ['+', '/'], $encoded), true);
+        if ($decoded === false) {
+            throw new Exception('Invalid base64 input');
+        }
+        return $decoded;
     }
-    return $decoded;
-}
 
 
     public static function createJwt(array $payload, int $expiration = 3600)

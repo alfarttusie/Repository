@@ -10,9 +10,6 @@ class Signin
     function __construct($Post, $link)
     {
         try {
-            if (session_status() === PHP_SESSION_NONE) session_start();
-            session_regenerate_id(true);
-
             self::$link = $link;
             self::$userIp = $_SERVER['REMOTE_ADDR'];
 

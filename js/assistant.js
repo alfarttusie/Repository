@@ -242,10 +242,10 @@ function sendRequest(data) {
     http.open("POST", "php/requests.php", true);
     http.setRequestHeader("Content-type", "application/json");
     if (localStorage.bearer)
-      http.setRequestHeader("Bearer", localStorage.bearer);
+      http.setRequestHeader("bearer", localStorage.bearer);
     http.onload = () => {
       try {
-        localStorage.bearer = http.getResponseHeader("Bearer");
+        localStorage.bearer = http.getResponseHeader("bearer");
         try {
           const response = JSON.parse(http.responseText);
           resolve(response);
