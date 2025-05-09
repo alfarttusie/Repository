@@ -219,6 +219,8 @@ class ShowButton {
           name: key,
           value: value,
           placeholder: key,
+          ondblclick: copyToClipboard,
+          onkeydown: (e) => Clicker(e, updateBtn),
         });
 
         input.oninput = () => (formData[key] = input.value);

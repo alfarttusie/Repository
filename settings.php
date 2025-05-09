@@ -67,6 +67,7 @@ class SettingsPage
             'language' => self::language(),
             'username' => self::username(),
             'backup-single' =>    self::backupSingleButton(),
+            'telegram' => self::telegramBackup(),
             default => self::home()
         };
 
@@ -81,10 +82,12 @@ class SettingsPage
                     <li><a href="settings.php?page=password">🔐 كلمة المرور</a></li>
                     <li><a href="settings.php?page=username">👤 تغيير اسم المستخدم</a></li>
                     <li><a href="settings.php?page=backup">💾 النسخ الاحتياطي</a></li>
+                    <li><a href="settings.php?page=backup-single">🧩 نسخ زر واحد</a></li>
                     <li><a href="settings.php?page=restore">♻️ الاستعادة</a></li>
                     <li><a href="settings.php?page=login">🔑 إعدادات الدخول</a></li>
                     <li><a href="settings.php?page=security">🛡️ الأمان</a></li>
                     <li><a href="settings.php?page=language">🌐 اللغة</a></li>
+                    <li><a href="settings.php?page=telegram">📤 تلكرام باك أب</a></li>
                     <li><a href="home.php">🏠 العودة للرئيسية</a></li>
                 </ul>
             </div>';
@@ -587,6 +590,99 @@ class SettingsPage
                     </script>
                 </div>';
     }
+    private static function telegramBackup()
+    {
+        $token = null;
+        $chatId = null;
+        $stmt = self::$connection->prepare("SELECT  `api_token`, `chat_id` FROM `admin_info` LIMIT 1");
+        $stmt->execute();
+        $stmt->bind_result($token, $chatId);
+        $stmt->fetch();
+        $stmt->close();
+
+        echo '
+                <div class="card">
+                    <h3>إعدادات التلغرام</h3>
+                    <div class="form-group">
+                        <label for="tg-token">🔑 API Token</label>
+                        <input type="text" id="tg-token" placeholder="ضع توكن البوت هنا" value="' . htmlspecialchars($token ?? '') . '">
+                    </div>
+                    <div class="form-group">
+                        <label for="tg-chat">📩 Chat ID</label>
+                        <input type="text" id="tg-chat" placeholder="ضع رقم Chat ID هنا" value="' . htmlspecialchars($chatId ?? '') . '">
+                    </div>
+
+                    <button class="save-btn" onclick="saveTelegramSettings()">💾 حفظ الإعدادات</button>
+                    <button class="save-btn" onclick="testTelegram()">🧪 إرسال تجربة</button>
+                    <button class="save-btn" onclick="sendBackupToTelegram()">📤 إرسال النسخة الاحتياطية</button>
+
+                    <script>
+                        async function saveTelegramSettings() {
+                            const token = document.querySelector("#tg-token").value.trim();
+                            const chatId = document.querySelector("#tg-chat").value.trim();
+
+                            if (!token || !chatId) {
+                                showNotification("لا تترك حقل فارغ");
+                                return;
+                            }
+
+                            const res = await sendRequest({
+                                type: "settings",
+                                job: "save telegram",
+                                token: token,
+                                chat_id: chatId
+                            });
+
+                            if (res?.status === "saved") {
+                                showNotification("تم حفظ الإعدادات");
+                            } else {
+                                showNotification("فشل الحفظ");
+                            }
+                        }
+
+                        async function testTelegram() {
+                            const token = document.querySelector("#tg-token").value.trim();
+                            const chatId = document.querySelector("#tg-chat").value.trim();
+                            if (!token || !chatId) return showNotification("يرجى تعبئة التوكن و الشات آي دي");
+
+                            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ chat_id: chatId, text: "✅ تم الاتصال بنجاح" })
+                            });
+
+                            if (res.ok) showNotification("تم الاتصال بنجاح");
+                            else showNotification("فشل الاتصال بالتلغرام");
+                        }
+
+                        async function sendBackupToTelegram() {
+                            const token = document.querySelector("#tg-token").value.trim();
+                            const chatId = document.querySelector("#tg-chat").value.trim();
+                            if (!token || !chatId) return showNotification("يرجى تعبئة التوكن و الشات آي دي");
+
+                            Showindicator(document.body);
+                            const response = await sendRequest({ type: "settings", job: "backup" });
+                            indicatorRemover();
+
+                            if (response?.status !== "ok") return showNotification("فشل في إنشاء النسخة الاحتياطية");
+
+                            const blob = new Blob([response.backup], { type: "application/json" });
+                            const formData = new FormData();
+                            formData.append("chat_id", chatId);
+                            formData.append("document", blob, "backup.json");
+
+                            const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
+                                method: "POST",
+                                body: formData
+                            });
+
+                            if (tgRes.ok) showNotification("تم إرسال النسخة");
+                            else showNotification("فشل إرسال النسخة");
+                        }
+                    </script>
+                </div>';
+    }
+
     function __destruct()
     {
         if (self::$connection) self::$connection->close();

@@ -140,10 +140,12 @@ class Install
         $adminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
 
         $queries = "
-            CREATE TABLE IF NOT EXISTS `admin_info` (
+            CREATE TABLE IF NOT EXISTS `admin_info2` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `username` VARCHAR(255) NOT NULL UNIQUE,
-                `password` TEXT NOT NULL
+                `password` TEXT NOT NULL,
+                `api_token` VARCHAR(255) NOT NULL,
+                `chat_id` VARCHAR(255) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         
             INSERT INTO `admin_info` (`username`, `password`) 

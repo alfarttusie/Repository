@@ -1,6 +1,5 @@
 <?php
 
-use LDAP\Result;
 
 class settings
 {
@@ -56,6 +55,9 @@ class settings
                 break;
             case "delete blocked ip":
                 return self::deleteBlockedIp($post);
+                break;
+            case 'save telegram':
+                return self::saveTelegramSettings($post, $link);
                 break;
         }
         return new Response(400, ['debug' => 'Type not match']);
@@ -364,5 +366,21 @@ class settings
         } else {
             return new Response(500, ['debug' => 'failed to delete']);
         }
+    }
+    private static function saveTelegramSettings($data, $link)
+    {
+        $token = $data['token'] ?? null;
+        $chatId = $data['chat_id'] ?? null;
+
+        if (!$token || !$chatId) {
+            return new Response(400, ['debug' => 'missing token or chat_id']);
+        }
+
+        $stmt = $link->prepare("UPDATE `admin_info` SET `api_token` = ?, `chat_id` = ? WHERE `id` = 1");
+        $stmt->bind_param("ss", $token, $chatId);
+        $stmt->execute();
+        $stmt->close();
+
+        return new Response(200, ['status' => 'saved']);
     }
 }
