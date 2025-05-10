@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require 'php/tools.php';

@@ -1,8 +1,5 @@
 <?php
-// error_reporting(0);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(0);
 
 require 'tools.php';
 require 'response_handler.php';
@@ -96,7 +93,7 @@ class Requests
         try {
             $headers = function_exists('getallheaders') ? getallheaders() : [];
 
-            $bearerToken = $headers['bearer'] ?? null;
+            $bearerToken = @$headers['bearer'] ?? null;
             $data = json_decode($data, true);
             $type = @$data['type'] ?? 'empty';
 
@@ -122,8 +119,9 @@ class Requests
 
             if (!self::Postvalidation($response)) return new Response(400, ['debug' => $response]);
 
+            if (empty($bearerToken)) return new Response(400, ['debug' => 'empty bearer Token']);
 
-            $jwt_validation = self::verifyJwt($bearerToken);
+            $jwt_validation = self::verifyJwt($bearerToken) ?? null;
             if (!$jwt_validation['valid']) return new Response(400, ['debug' => $jwt_validation['error']]);
 
 

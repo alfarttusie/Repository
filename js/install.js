@@ -34,15 +34,15 @@ class Install {
       http.open("POST", "php/install.php", true);
       http.setRequestHeader("Content-type", "application/json");
 
-      if (localStorage.getItem("Bearer")) {
-        http.setRequestHeader("Bearer", localStorage.getItem("Bearer"));
+      if (localStorage.getItem("bearer")) {
+        http.setRequestHeader("bearer", localStorage.getItem("Bearer"));
       }
 
       http.onload = () => {
         try {
           const bearerToken = http.getResponseHeader("Bearer");
           if (bearerToken) {
-            localStorage.setItem("Bearer", bearerToken);
+            localStorage.setItem("bearer", bearerToken);
           }
 
           try {

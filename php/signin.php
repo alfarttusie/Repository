@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(0);
+
 class Signin
 {
     use Tools;

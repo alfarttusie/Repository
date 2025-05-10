@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require_once 'php/tools.php';
@@ -27,6 +28,7 @@ class SettingsPage
 
         $this->render();
     }
+
     private function render()
     {
         $page = $_GET['page'] ?? 'home';
@@ -682,7 +684,6 @@ class SettingsPage
                     </script>
                 </div>';
     }
-
     function __destruct()
     {
         if (self::$connection) self::$connection->close();

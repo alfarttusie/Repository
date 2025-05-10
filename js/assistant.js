@@ -105,6 +105,7 @@ function findButtonByText(text) {
   );
   return button;
 }
+
 /** creates elements */
 {
   function Button(element) {
@@ -216,7 +217,6 @@ function findButtonByText(text) {
   }
 }
 
-/** after update */
 
 function indicatorRemover({ element, type } = {}) {
   const indicator = document.querySelector(".indicator");

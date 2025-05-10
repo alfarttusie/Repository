@@ -1,9 +1,6 @@
 <?php
 
-declare(strict_types=1);
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-mb_internal_encoding("UTF-8");
+error_reporting(0);
 
 class Install
 {
@@ -140,7 +137,7 @@ class Install
         $adminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
 
         $queries = "
-            CREATE TABLE IF NOT EXISTS `admin_info2` (
+            CREATE TABLE IF NOT EXISTS `admin_info` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `username` VARCHAR(255) NOT NULL UNIQUE,
                 `password` TEXT NOT NULL,

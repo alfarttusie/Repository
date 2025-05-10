@@ -2,7 +2,7 @@
 require 'jwt.php';
 require 'encryption.php';
 require 'ArrayHelper.php';
-// error_reporting(0);
+error_reporting(0);
 trait Tools
 {
     use Jwt;

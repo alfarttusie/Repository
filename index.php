@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+
 if (!file_exists('php/db.php')) exit(header('Location: install.php'));
 
 require_once  'php/tools.php';
@@ -42,11 +44,13 @@ class Index
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta name="theme-color" content="#1f1f1f">
                 <title>' . lang::get('login-title') . '</title>
                 <link rel="stylesheet" href="css/main.css">
                 <link rel="stylesheet" href="css/index.css">
                 <link rel="stylesheet" href="css/animation.css">
                 <link rel="stylesheet" href="css/elements.css">
+                <link rel="manifest" href="/manifest.json">
             </head>
             <body style="direction: ' . (lang::get('direction')) . '">
             
@@ -93,9 +97,6 @@ class Index
                         }   
                         get(key) {
                             return this.data[key] || key;
-                        }
-                        test(){
-                            console.log(`thidatadsdcvsdf`);
                         }
                     }
                     const lang = new Translator();

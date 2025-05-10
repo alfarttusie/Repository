@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(0);
+
 class RepositoryInstaller
 {
     private function getEnglishView()
