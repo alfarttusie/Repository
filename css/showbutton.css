@@ -60,6 +60,7 @@
 }
 
 .sb-line {
+  position: relative;
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 8px;
   padding: 1rem;

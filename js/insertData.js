@@ -2,6 +2,8 @@ class InsertData {
   constructor(name = null) {
     const menu = document.querySelector(".context-menu");
     const buttonName = name || (menu ? menu.dataset.invoker : null);
+    if (findButtonByText(buttonName))
+      Showindicator(findButtonByText(buttonName));
 
     if (buttonName) this.initialize(buttonName);
     else displayEmptyMessage(lang.get("no-button-selected"));
@@ -13,7 +15,7 @@ class InsertData {
       job: "Get Columns",
       button: buttonName,
     });
-
+    indicatorRemover();
     if (response.columns === "no columns") {
       this.showEmptyMessage(lang.get("no-columns"));
     } else {
@@ -100,12 +102,15 @@ class InsertData {
       const value = line.querySelector("input").value;
       data[label] = value;
     });
-
+    Showindicator(document.querySelector(".insertdata-container"));
     sendRequest({
       type: "queries",
       job: "insert Data",
       button: buttonName,
       info: data,
-    }).then(() => new ShowButton(buttonName));
+    }).then(() => {
+      indicatorRemover();
+      new ShowButton(buttonName);
+    });
   }
 }

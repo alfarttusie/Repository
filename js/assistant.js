@@ -34,11 +34,15 @@ function responseHandler({ response, element }) {
   }
 }
 function Showindicator(element) {
-  let indicator = document.createElement("div");
-  indicator.classList.add("indicator");
-  const loading = document.createElement("p");
-  indicator.appendChild(loading);
-  element.appendChild(indicator);
+  if (element) {
+    let indicator = document.createElement("div");
+    indicator.classList.add("indicator");
+    const loading = document.createElement("p");
+    indicator.appendChild(loading);
+    element.appendChild(indicator);
+  } else {
+    console.log(`error with Showindicator ${element}`);
+  }
 }
 function ShowError(Msg) {
   const holder = document.createElement("div");
@@ -216,7 +220,6 @@ function findButtonByText(text) {
     return option;
   }
 }
-
 
 function indicatorRemover({ element, type } = {}) {
   const indicator = document.querySelector(".indicator");
@@ -415,9 +418,19 @@ function startCountdown(seconds, element = null) {
   updateCountdown();
   const timer = setInterval(updateCountdown, 1000);
 }
-
 function Clicker(event, Button) {
   if (event.key === "Enter") {
     Button.click();
   }
+}
+function getElementByText(text) {
+  const xpath = `//*[normalize-space(text()) = "${text}"]`;
+  const result = document.evaluate(
+    xpath,
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  );
+  return result.singleNodeValue;
 }

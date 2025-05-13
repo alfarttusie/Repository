@@ -1,3 +1,6 @@
+#key {
+  position: relative;
+}
 .encryption-key {
   position: absolute;
   display: flex;

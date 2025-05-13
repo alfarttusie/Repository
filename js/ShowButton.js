@@ -1,7 +1,7 @@
 class ShowButton {
   constructor(event) {
     const buttonName = event.target ? event.target.innerText : event;
-    Showindicator(findButtonByText(buttonName));
+    indicatorRemover();
     this.loadData(buttonName);
   }
 
@@ -12,7 +12,6 @@ class ShowButton {
         job: "show Button",
         button: buttonName,
       });
-
       indicatorRemover();
       if (response.response === "no data")
         return displayEmptyMessage(lang.get("no-info"));
@@ -84,7 +83,7 @@ class ShowButton {
       params: {
         innerText: lang.get("show"),
         className: "sb-details-btn",
-        onclick: () => this.showId(data.id, buttonName),
+        onclick: () => this.showId(data.id, buttonName, line),
       },
     });
     line.appendChild(detailsButton);
@@ -177,8 +176,9 @@ class ShowButton {
     return container;
   }
 
-  async showId(id, buttonName) {
+  async showId(id, buttonName, old_line) {
     try {
+      Showindicator(old_line);
       const callback = await sendRequest({
         type: "queries",
         job: "select id",
@@ -199,6 +199,7 @@ class ShowButton {
           innerText: lang.get("save-btn"),
           className: "sb-update-btn",
           onclick: async () => {
+            Showindicator(line);
             const res = await sendRequest({
               type: "queries",
               job: "update value",
@@ -209,8 +210,10 @@ class ShowButton {
             });
 
             if (res?.status === "successful") {
+              indicatorRemover();
               showNotification(lang.get("notification-update"));
             } else {
+              indicatorRemover();
               showNotification(lang.get("failed-to-update"));
             }
           },
@@ -237,14 +240,13 @@ class ShowButton {
         className: "sb-delete-btn",
         onclick: async () => {
           if (!confirm(lang.get("delete-btn-confirm"))) return;
-
+          Showindicator(holder);
           const res = await sendRequest({
             type: "queries",
             job: "delete id",
             button: buttonName,
             id,
           });
-
           if (res?.status === "successful") {
             showNotification(lang.get("notification-delete"));
             new ShowButton(buttonName);
@@ -257,7 +259,7 @@ class ShowButton {
       holder.append(deleteBtn);
     } catch (error) {
       console.error(error);
-      displayEmptyMessage(lang.get("loading-error"));
+      Message(lang.get("loading-error"));
     }
   }
 }

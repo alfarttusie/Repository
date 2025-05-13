@@ -99,6 +99,7 @@ class home {
         });
 
         callback.buttons.forEach((button) => {
+          let touchTimer;
           const buttonElement = elementCreator({
             parent: scrollContainer,
             type: "button",
@@ -107,8 +108,14 @@ class home {
               innerText: button,
               onclick: (event) => new ShowButton(event),
               oncontextmenu: (e) => ContextMenuHandler.Start(e, buttonElement),
-              ontouchstart: (e) => ContextMenuHandler.Start(e, buttonElement),
-              ontouchend: (e) => ContextMenuHandler.HandleTouchEnd?.(e),
+              ontouchstart: (e) => {
+                touchTimer = setTimeout(() => {
+                  ContextMenuHandler.Start(e, buttonElement);
+                }, 600);
+              },
+              ontouchend: () => {
+                clearTimeout(touchTimer);
+              },
             },
           });
         });

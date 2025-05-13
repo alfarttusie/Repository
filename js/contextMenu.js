@@ -89,7 +89,8 @@ class ContextMenuHandler {
     const buttonName = menu?.dataset?.invoker;
 
     if (!confirm(lang.get("delete-btn-confirm") + " " + buttonName)) return;
-
+    Showindicator(findButtonByText(buttonName));
+    cleanWorkDiv();
     sendRequest({
       type: "queries",
       job: "delete button",

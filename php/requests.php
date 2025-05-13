@@ -92,7 +92,6 @@ class Requests
     {
         try {
             $headers = function_exists('getallheaders') ? getallheaders() : [];
-
             $bearerToken = @$headers['bearer'] ?? null;
             $data = json_decode($data, true);
             $type = @$data['type'] ?? 'empty';
