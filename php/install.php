@@ -61,7 +61,7 @@ class Install
     /**
      * Saves database connection details to `db.php` as a trait.
      */
-    private static function saveDbConfig(string $dbUser, string $dbPassword, string $dbName, string $serverIp): void
+    private static function saveDbConfig(string $dbUser, string $dbPassword, string $dbName, string $serverIp, $IV_KEY): void
     {
         $secretKey = self::generateRandomString();
 
@@ -71,14 +71,18 @@ class Install
         $config .= "    private static string \$ServerUser = '" . addslashes($dbUser) . "';\n";
         $config .= "    private static string \$ServerPassword = '" . addslashes($dbPassword) . "';\n";
         $config .= "    private static string \$database = '" . addslashes($dbName) . "';\n";
-        $config .= "    private static string \$secret = '" . addslashes($secretKey) . "';\n";
+        $config .= "    private static string \$IV_KEY =   '" . addslashes($IV_KEY) . "';\n";
+        $config .= "    private static string \$secret =   '" . addslashes($secretKey) . "';\n";
         $config .= "}\n";
 
         if (!file_put_contents('db.php', $config)) {
             self::resJson(500, ['error' => 'Failed to create db.php']);
         }
     }
-
+    private static function generateIV(): string
+    {
+        return random_bytes(16);
+    }
     /**
      * Install constructor
      * Handles the installation process by receiving POST data.
@@ -115,8 +119,8 @@ class Install
         } else {
             self::resJson(400, ['error' => 'Invalid type specified']);
         }
-
-        self::saveDbConfig($dbUser, $dbPassword, $dbName, $serverIp);
+        $IV_KEY = substr(self::generateRandomString(16), 0, 16);
+        self::saveDbConfig($dbUser, $dbPassword, $dbName, $serverIp, $IV_KEY);
         self::resJson(201, ['success' => 'Configuration saved in db.php']);
     }
 

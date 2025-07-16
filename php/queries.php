@@ -102,48 +102,48 @@ class queries
     }
     private static function ButtonsList($link)
     {
-        $buttons = [];
-        $queryResult = @$link->query("SELECT `button` FROM `buttons` ORDER by `id`");
-        if ($queryResult->num_rows > 0) {
-            while ($buttonData = $queryResult->fetch_assoc()) {
-                $decryptedButton = self::decryptText($buttonData['button']);
-                $decodedButton = htmlspecialchars_decode(htmlspecialchars($decryptedButton));
-                array_push($buttons, $decodedButton);
-            }
-            return new Response(200, ['response' => 'ok', 'buttons' => $buttons]);
-        } else
-            return new Response(200, ['response' => 'empty']);
-    }
-    private static function DeleteButton($button, $link)
-    {
-        $button = self::encryptText($button);
-        $uniqueid = $link->query("SELECT `unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc()['unique_id'];
-        $link->query("DELETE FROM `buttons` WHERE `button` = '$button'");
-        $link->query("DROP TABLE IF EXISTS " . $uniqueid);
-        return new Response(200);
-    }
-    private static function RenameButton($data, $link)
-    {
-        $newName = $data['new'] ?? null;
-        $oldName = $data['button'] ?? null;
-
-        if (!$newName)
-            return new Response(400, ['debug' => 'new name not set']);
-
-        if (self::Button_exist($newName))
-            return new Response(200, ['response' => 'new button exist']);
-
-
-        $newEncrypted = self::encryptText($newName);
-        $oldEncrypted = self::encryptText($oldName);
-
-        $stmt = $link->prepare("UPDATE `buttons` SET `button` = ? WHERE `button` = ?");
-        $stmt->bind_param("ss", $newEncrypted, $oldEncrypted);
-        if ($stmt->execute()) {
-            return new Response(200, ['response' => 'ok']);
-        } else {
-            return new Response(500, ['debug' => 'failed to rename button']);
+            $buttons = [];
+            $queryResult = @$link->query("SELECT `button` FROM `buttons` ORDER by `id`");
+            if ($queryResult->num_rows > 0) {
+                while ($buttonData = $queryResult->fetch_assoc()) {
+                    $decryptedButton = self::decryptText($buttonData['button']);
+                    $decodedButton = htmlspecialchars_decode(htmlspecialchars($decryptedButton));
+                    array_push($buttons, $decodedButton);
+                }
+                return new Response(200, ['response' => 'ok', 'buttons' => $buttons]);
+            } else
+                return new Response(200, ['response' => 'empty']);
         }
+        private static function DeleteButton($button, $link)
+        {
+            $button = self::encryptText($button);
+            $uniqueid = $link->query("SELECT `unique_id` FROM `buttons` WHERE `button` = '" . $button . "'")->fetch_assoc()['unique_id'];
+            $link->query("DELETE FROM `buttons` WHERE `button` = '$button'");
+            $link->query("DROP TABLE IF EXISTS " . $uniqueid);
+            return new Response(200);
+        }
+        private static function RenameButton($data, $link)
+        {
+            $newName = $data['new'] ?? null;
+            $oldName = $data['button'] ?? null;
+
+            if (!$newName)
+                return new Response(400, ['debug' => 'new name not set']);
+
+            if (self::Button_exist($newName))
+                return new Response(200, ['response' => 'new button exist']);
+
+
+            $newEncrypted = self::encryptText($newName);
+            $oldEncrypted = self::encryptText($oldName);
+
+            $stmt = $link->prepare("UPDATE `buttons` SET `button` = ? WHERE `button` = ?");
+            $stmt->bind_param("ss", $newEncrypted, $oldEncrypted);
+            if ($stmt->execute()) {
+                return new Response(200, ['response' => 'ok']);
+            } else {
+                return new Response(500, ['debug' => 'failed to rename button']);
+            }
     }
     private static function GetButton($button, $link)
     {

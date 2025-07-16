@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(0);
-
+if (file_exists('php/db.php')) exit(header('Location: index.php'));
 class RepositoryInstaller
 {
     private function getEnglishView()

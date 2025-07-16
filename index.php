@@ -12,12 +12,10 @@ class Index
 
     function __construct()
     {
+
         $SESSION = isset($_COOKIE['session_token'])
             ? json_decode($_COOKIE['session_token'], true)
             : null;
-
-        if ($SESSION && self::loginChecker($SESSION))
-            return exit(header('Location: home.php'));
 
         $lang = $_GET['lang'] ?? 'en';
         Lang::load($lang ?? 'en');
@@ -25,6 +23,8 @@ class Index
         $response = 'unknown error';
         if (self::SysTemCheck($response)) {
             self::$connection = self::connectToDB();
+            if ($SESSION && self::loginChecker(self::$connection,$SESSION))
+                return exit(header('Location: home.php'));
             $lang = self::getLanguage(self::$connection);
             lang::load($lang ?? 'en');
             self::View();
@@ -32,7 +32,6 @@ class Index
             http_response_code(503);
             self::Msg($response ?? 'empty');
         }
-
         self::FooterView();
     }
     private static function HeaderView()

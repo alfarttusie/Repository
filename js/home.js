@@ -97,7 +97,7 @@ class home {
           type: "div",
           params: { className: "buttons-scroll" },
         });
-
+        callback.buttons.sort();
         callback.buttons.forEach((button) => {
           let touchTimer;
           const buttonElement = elementCreator({

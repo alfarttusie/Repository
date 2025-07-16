@@ -52,6 +52,9 @@ class Signin
 
         $setting = self::$link->query("SELECT `times`, `time` FROM `setting` LIMIT 1")->fetch_assoc();
 
+        if ($visitor['time'] < 1000) {
+            self::$link->qery("DELETE FROM `visitors` WHERE ip = '" . self::$userIp . "'");
+        }
         if ($visitor['times'] < $setting['times']) {
             return false;
         }

@@ -2,6 +2,7 @@ class ShowButton {
   constructor(event) {
     const buttonName = event.target ? event.target.innerText : event;
     indicatorRemover();
+    Showindicator(findButtonByText(buttonName));
     this.loadData(buttonName);
   }
 

@@ -81,6 +81,7 @@ class SettingsPage
             <div class="sidebar">
                 <h2>الإعدادات</h2>
                 <ul>
+                <li><a href="home.php">🏠 العودة للرئيسية</a></li>
                     <li><a href="settings.php?page=password">🔐 كلمة المرور</a></li>
                     <li><a href="settings.php?page=username">👤 تغيير اسم المستخدم</a></li>
                     <li><a href="settings.php?page=backup">💾 النسخ الاحتياطي</a></li>
@@ -90,7 +91,6 @@ class SettingsPage
                     <li><a href="settings.php?page=security">🛡️ الأمان</a></li>
                     <li><a href="settings.php?page=language">🌐 اللغة</a></li>
                     <li><a href="settings.php?page=telegram">📤 تلكرام باك أب</a></li>
-                    <li><a href="home.php">🏠 العودة للرئيسية</a></li>
                 </ul>
             </div>';
     }

@@ -15,7 +15,8 @@ class Response
             400 => 'Bad Request',
             401 => 'unauthorized request',
             403 => 'Forbidden',
-            503 => 'Service Unavailable'
+            503 => 'Service Unavailable',
+            500 => 'Service Unavailable'
         ];
 
         $response = [];

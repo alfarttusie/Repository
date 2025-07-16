@@ -44,7 +44,6 @@ body {
 body[dir="rtl"] .header {
   flex-direction: row-reverse;
 }
-
 .right {
   position: relative;
   grid-column: 88 / 99;
@@ -53,25 +52,22 @@ body[dir="rtl"] .header {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 5%;
   overflow-x: hidden;
   overflow-y: auto;
   border-left: 1px solid wheat;
   overflow: hidden;
 }
-
 .right button {
   position: relative;
-  border: 1px solid whitesmoke;
   margin: 4% auto;
-  border-radius: 8px;
-  width: 100%;
+  width: 90%;
   height: 100%;
   max-height: 45px;
-  font-size: clamp(10px, 3vw, 24px);
+  font-size: clamp(10px, 2vw, 24px);
   transition: transform 0.3s ease, filter 0.3s, opacity 0.3s;
   background-color: transparent;
   overflow: hidden;
+  transition: all, 0.3s;
 }
 
 .right button:hover {
@@ -243,16 +239,15 @@ option {
 
 .buttons-scroll {
   flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  overflow-y: auto;
 }
 .left-buttons {
   background: linear-gradient(135deg, #1f1c2c, #928dab);
   color: #fff;
   font-weight: bold;
-  padding: 0.7rem 1.2rem;
+  min-height: 30px;
   border-radius: 8px;
   border: none;
   width: 100%;
@@ -292,7 +287,6 @@ option {
   .right {
     grid-column: 1 / 100;
     grid-row: 60 / 100;
-    padding: 1rem;
   }
   .header button {
     width: 90%;

@@ -62,7 +62,6 @@ trait Tools
         self::$connection = new mysqli(self::$Serverip, self::$ServerUser, self::$ServerPassword, self::$database);
         return self::$connection;
     }
-
     private static function BotChecker()
     {
         try {
@@ -125,7 +124,6 @@ trait Tools
             return false;
         }
     }
-
     private static function loginChecker($link, $Bearer = null)
     {
         try {
@@ -151,13 +149,12 @@ trait Tools
             $now = time();
             $hoursPassed = ($now - $createdTime) / 3600;
 
-            if ($hoursPassed > 24) {
+            if ($hoursPassed > 48) {
                 $stmtDelete = $link->prepare("DELETE FROM `auth_tokens` WHERE `id` = ?");
                 $stmtDelete->bind_param("i", $tokenRow['id']);
                 $stmtDelete->execute();
                 return false;
             }
-
             return true;
         } catch (Exception $e) {
             return false;
