@@ -3,8 +3,8 @@
 
 class GitHubAutoUpdater
 {
-    private string $githubUser = "alsabah313";
-    private string $repository = "testupdate";
+    private string $githubUser = "alfarttusie";
+    private string $repository = "Repository";
     private string $branchName = "main";
 
     private array $ignoredPaths = ['.git', '.github', 'README.md', 'update.php'];
