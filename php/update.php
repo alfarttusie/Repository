@@ -7,7 +7,7 @@ class GitHubAutoUpdater
     private string $repository = "Repository";
     private string $branchName = "main";
 
-    private array $ignoredPaths = ['.git', '.github', 'README.md', 'update.php'];
+    private array $ignoredPaths = ['.git', '.github', 'README.md', 'doc', 'update.php', 'db.php', 'fonts'];
 
     private array $httpOptions = [
         'http' => [
@@ -23,31 +23,44 @@ class GitHubAutoUpdater
 
     public function __construct()
     {
+
+        $path = dirname(__DIR__);
         $remoteFileList = $this->getRemoteFileList();
         $localFileList = $this->getLocalFileList();
 
-        foreach ($remoteFileList as $relativePath) {
-            if ($this->isIgnored($relativePath)) continue;
+        foreach ($remoteFileList as $remoteFile) {
+            if ($this->isIgnored($remoteFile)) continue;
+
+
+            $url = $this->fixUrlPath("https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/$remoteFile");
+
+            $localFile = $path . DIRECTORY_SEPARATOR . $remoteFile;
 
             switch (true) {
-                case !file_exists($relativePath):
-                    $this->downloadRemoteFile($relativePath);
-                    $this->syncLog['new'][] = $relativePath;
+                case !file_exists($localFile):
+                    print("Downloading new file: $remoteFile\n");
+                    $this->downloadRemoteFile($remoteFile);
+                    $this->syncLog['new'][] = $remoteFile;
                     break;
-
-                case @file_get_contents($relativePath) != @file_get_contents("https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/$relativePath"):
-                    $this->downloadRemoteFile($relativePath);
-                    $this->syncLog['updated'][] = $relativePath;
+                case hash_file('sha1', $localFile) !== sha1(@file_get_contents($url)):
+                    unlink($localFile);
+                    $this->downloadRemoteFile($remoteFile);
+                    $this->syncLog['updated'][] = $remoteFile;
+                    print("Updating file: $remoteFile\n");
                     break;
             }
         }
-
         $deletedFiles = array_diff($localFileList, $remoteFileList);
         foreach ($deletedFiles as $localOnlyPath) {
             if (is_file($localOnlyPath)) {
-                unlink($localOnlyPath);
+                unlink($path . DIRECTORY_SEPARATOR . $localOnlyPath);
                 $this->syncLog['deleted'][] = $localOnlyPath;
             }
+        }
+        if ($this->syncLog['new'] || $this->syncLog['updated'] || $this->syncLog['deleted']) {
+            print("Update completed.\n");
+        } else {
+            print("No updates found.\n");
         }
     }
 
@@ -80,6 +93,7 @@ class GitHubAutoUpdater
     private function downloadRemoteFile(string $relativePath)
     {
         $url = "https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/{$relativePath}";
+        $url = $this->fixUrlPath($url);
         $context = stream_context_create($this->httpOptions);
         $remoteContent = @file_get_contents($url, false, $context);
 
@@ -91,21 +105,37 @@ class GitHubAutoUpdater
         file_put_contents($relativePath, $remoteContent);
     }
 
-    private function getLocalFileList(): array
+    private function getLocalFileList($dir = null): array
     {
         $fileList = [];
-        $root = __DIR__;
+
+        $startDir = $dir !== null ? $dir : dirname(__DIR__);
+        $root = realpath($startDir);
+
+        if ($root === false || !is_dir($root)) return $fileList;
+
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS)
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
         );
 
         foreach ($iterator as $fileInfo) {
+            if (!$fileInfo->isFile()) continue;
+
             $relativePath = str_replace($root . DIRECTORY_SEPARATOR, '', $fileInfo->getPathname());
-            if ($this->isIgnored($relativePath)) continue;
-            $fileList[] = $relativePath;
+
+            if ($this->isIgnored($relativePath))  continue;
+
+            $fileList[] = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
         }
 
         return $fileList;
+    }
+
+    private function fixUrlPath(string $url): string
+    {
+        $url = str_replace('\\', '/', $url);
+        $url = preg_replace('#(?<!:)//+#', '/', $url);
+        return $url;
     }
 }
 
