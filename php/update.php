@@ -22,7 +22,7 @@ class GitHubAutoUpdater
     public function __construct()
     {
 
-        $path = dirname(__DIR__) . DIRECTORY_SEPARATOR . "php";
+        $path = dirname(__DIR__);
         $remoteFileList = $this->getRemoteFileList();
         $localFileList = $this->getLocalFileList();
 
@@ -36,7 +36,6 @@ class GitHubAutoUpdater
 
             switch (true) {
                 case !file_exists($localFile):
-                    print("Downloading new file: $remoteFile\n");
                     $this->downloadRemoteFile($remoteFile);
                     $this->syncLog['new'][] = $remoteFile;
                     break;
@@ -44,7 +43,6 @@ class GitHubAutoUpdater
                     unlink($localFile);
                     $this->downloadRemoteFile($remoteFile);
                     $this->syncLog['updated'][] = $remoteFile;
-                    print("Updating file: $remoteFile\n");
                     break;
             }
         }

@@ -63,7 +63,7 @@ class settings
                 return self::saveTelegramSettings($post, $link);
                 break;
             case 'update':
-                new GitHubAutoUpdater();
+                return new GitHubAutoUpdater();
                 break;
         }
 
