@@ -1,9 +1,5 @@
 <?php
 
-
-
-
-
 class settings
 
 {
