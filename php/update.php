@@ -1,6 +1,5 @@
 <?php
 
-
 class GitHubAutoUpdater
 {
     private string $githubUser = "alfarttusie";
@@ -22,41 +21,42 @@ class GitHubAutoUpdater
     public function __construct()
     {
 
-        $path = dirname(__DIR__);
         $remoteFileList = $this->getRemoteFileList();
         $localFileList = $this->getLocalFileList();
+
 
         foreach ($remoteFileList as $remoteFile) {
             if ($this->isIgnored($remoteFile)) continue;
 
-
             $url = $this->fixUrlPath("https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/$remoteFile");
 
-            $localFile = $path . DIRECTORY_SEPARATOR . $remoteFile;
-
             switch (true) {
-                case !file_exists($localFile):
-                    $this->downloadRemoteFile($remoteFile);
+                case !file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . $remoteFile):
+                    $this->downloadRemoteFile(dirname(__DIR__) . DIRECTORY_SEPARATOR . $remoteFile, $url);
                     $this->syncLog['new'][] = $remoteFile;
                     break;
-                case hash_file('sha1', $localFile) !== sha1(@file_get_contents($url)):
-                    unlink($localFile);
-                    $this->downloadRemoteFile($remoteFile);
+                case hash_file('sha1', dirname(__DIR__) . DIRECTORY_SEPARATOR . $remoteFile) !== sha1(@file_get_contents($url)):
+                    unlink(dirname(__DIR__) . DIRECTORY_SEPARATOR . $remoteFile);
+                    $this->downloadRemoteFile(dirname(__DIR__) . DIRECTORY_SEPARATOR . $remoteFile, $url);
                     $this->syncLog['updated'][] = $remoteFile;
                     break;
             }
         }
-        $deletedFiles = array_diff($localFileList, $remoteFileList);
+
+
+
+        $deletedFiles = array_diff($localFileList,  $remoteFileList);
         foreach ($deletedFiles as $localOnlyPath) {
-            if (is_file($localOnlyPath)) {
-                unlink($path . DIRECTORY_SEPARATOR . $localOnlyPath);
+            if (is_file(dirname(__DIR__) . DIRECTORY_SEPARATOR . $localOnlyPath)) {
+                unlink(dirname(__DIR__) . DIRECTORY_SEPARATOR . $localOnlyPath);
                 $this->syncLog['deleted'][] = $localOnlyPath;
             }
         }
+
         if ($this->syncLog['new'] || $this->syncLog['updated'] || $this->syncLog['deleted'])
-            return new Response(200, ['status' => 'updated']);
+            new Response(200, ['status' => 'updated', 'log' => $this->syncLog]);
         else
-            return new Response(200, ['status' => 'no changes']);
+            new Response(200, ['status' => 'no changes', 'test' => $deletedFiles]);
     }
     private function isIgnored(string $path): bool
     {
@@ -82,10 +82,8 @@ class GitHubAutoUpdater
 
         return $fileList;
     }
-    private function downloadRemoteFile(string $relativePath)
+    private function downloadRemoteFile(string $relativePath, string $url)
     {
-        $url = "https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/{$relativePath}";
-        $url = $this->fixUrlPath($url);
         $context = stream_context_create($this->httpOptions);
         $remoteContent = @file_get_contents($url, false, $context);
 
@@ -116,7 +114,7 @@ class GitHubAutoUpdater
 
             if ($this->isIgnored($relativePath))  continue;
 
-            $fileList[] = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+            $fileList[] =  str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
         }
 
         return $fileList;

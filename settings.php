@@ -700,6 +700,8 @@ class SettingsPage
                         if (response?.status === "updated") {
                             showNotification("تم التحديث بنجاح");
                             setTimeout(() => location.reload(), 2000);
+                        else if( response?.status === "no changes") {
+                            showNotification("لا توجد تحديثات جديدة");
                         } else {
                             showNotification("فشل في التحديث");
                         }
