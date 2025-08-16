@@ -14,17 +14,15 @@ class GitHubAutoUpdater
             'header' => "User-Agent: PHP\r\n"
         ]
     ];
-
     private array $syncLog = [
         'new' => [],
         'updated' => [],
         'deleted' => []
     ];
-
     public function __construct()
     {
 
-        $path = dirname(__DIR__);
+        $path = dirname(__DIR__) . DIRECTORY_SEPARATOR . "php";
         $remoteFileList = $this->getRemoteFileList();
         $localFileList = $this->getLocalFileList();
 
@@ -57,13 +55,11 @@ class GitHubAutoUpdater
                 $this->syncLog['deleted'][] = $localOnlyPath;
             }
         }
-        if ($this->syncLog['new'] || $this->syncLog['updated'] || $this->syncLog['deleted']) {
-            print("Update completed.\n");
-        } else {
-            print("No updates found.\n");
-        }
+        if ($this->syncLog['new'] || $this->syncLog['updated'] || $this->syncLog['deleted'])
+            return new Response(200, ['status' => 'updated']);
+        else
+            return new Response(200, ['status' => 'no changes']);
     }
-
     private function isIgnored(string $path): bool
     {
         foreach ($this->ignoredPaths as $ignored) {
@@ -71,7 +67,6 @@ class GitHubAutoUpdater
         }
         return false;
     }
-
     private function getRemoteFileList(): array
     {
         $fileList = [];
@@ -89,7 +84,6 @@ class GitHubAutoUpdater
 
         return $fileList;
     }
-
     private function downloadRemoteFile(string $relativePath)
     {
         $url = "https://raw.githubusercontent.com/{$this->githubUser}/{$this->repository}/{$this->branchName}/{$relativePath}";
@@ -104,7 +98,6 @@ class GitHubAutoUpdater
 
         file_put_contents($relativePath, $remoteContent);
     }
-
     private function getLocalFileList($dir = null): array
     {
         $fileList = [];
@@ -130,7 +123,6 @@ class GitHubAutoUpdater
 
         return $fileList;
     }
-
     private function fixUrlPath(string $url): string
     {
         $url = str_replace('\\', '/', $url);
@@ -138,5 +130,3 @@ class GitHubAutoUpdater
         return $url;
     }
 }
-
-new GitHubAutoUpdater();

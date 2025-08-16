@@ -90,8 +90,8 @@ class Response
     }
     public function __destruct()
     {
-        if (self::$link)
+        if (self::$link) {
             self::$link->close();
-        self::$link = null;
+        }
     }
 }

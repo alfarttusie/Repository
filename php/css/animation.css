@@ -1,0 +1,82 @@
+@keyframes moveAndExpand {
+  0% {
+    top: -8%;
+    width: 0.3%;
+  }
+  20% {
+    top: 5%;
+    width: 0.3%;
+  }
+  40%,
+  50% {
+    top: 5%;
+    width: 50%;
+  }
+  80% {
+    top: 5%;
+    width: 0.3%;
+  }
+  90%,
+  100% {
+    width: 0%;
+    top: -10vh;
+  }
+}
+
+@keyframes indicator {
+  100% {
+    background-position: 100% 0, 100% 100%, 0 100%, 0 0;
+  }
+}
+
+@keyframes dance {
+  0% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+  100% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes shake-animation {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animated-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(10px, 3vw, 24px);
+  font-weight: bolder;
+}
+@keyframes upDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

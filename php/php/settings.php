@@ -1,5 +1,5 @@
 <?php
-require 'update.php';
+
 class settings
 
 {
@@ -61,9 +61,6 @@ class settings
                 break;
             case 'save telegram':
                 return self::saveTelegramSettings($post, $link);
-                break;
-            case 'update':
-                new GitHubAutoUpdater();
                 break;
         }
 

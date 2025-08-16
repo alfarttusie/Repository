@@ -1,18 +1,15 @@
 class index {
   constructor() {
     indicatorRemover();
-    document.querySelector(".language-btn").onclick = (e) => {
-      const lang = e.target.innerText.toLowerCase().includes("english")
-        ? "en"
-        : "ar";
-      sendRequest({ type: "lang", new: lang }).then((callback) => {
-        if (callback.status === "successful") {
-          window.location = "index.php?lang=" + lang;
-        }
-      });
-    };
-
-    this.initializeSession();
+    const loginBtn = document.querySelector(".login-btn");
+    loginBtn.addEventListener("click", () => this.handleLogin());
+    document.addEventListener(
+      "keydown",
+      (event) => event.key === "Enter" && loginBtn.click()
+    );
+    document
+      .querySelector(".view-password")
+      .addEventListener("click", ShowPassword);
   }
   handleLogin() {
     const Button = document.querySelector(".login-btn");
@@ -65,24 +62,6 @@ class index {
       Message(lang.get("empty-field"));
       Shake(error.message);
     }
-  }
-  initializeSession() {
-    Showindicator(document.querySelector(".login-holder"));
-
-    sendRequest({ type: "init session" }).then((response) => {
-      indicatorRemover({ element: ".login-holder", type: "grid" });
-      if (response.status == "successful") {
-        const loginBtn = document.querySelector(".login-btn");
-        loginBtn.addEventListener("click", () => this.handleLogin());
-        document.addEventListener(
-          "keydown",
-          (event) => event.key === "Enter" && loginBtn.click()
-        );
-        document
-          .querySelector(".view-password")
-          .addEventListener("click", ShowPassword);
-      } else if (response.status === "logedin") window.location = "home.php";
-    });
   }
 }
 

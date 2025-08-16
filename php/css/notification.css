@@ -1,0 +1,92 @@
+.Notify {
+  z-index: 10000000000;
+  position: absolute;
+  top: 3%;
+  height: 40px;
+  width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #76b900;
+}
+
+.secondary {
+  position: absolute;
+  height: 40px;
+  width: 0;
+  background-color: #252527;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.Text {
+  color: white;
+  font-size: 20px;
+  opacity: 0;
+}
+
+@keyframes notifyExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 240px;
+  }
+}
+
+@keyframes notifyCollapse {
+  0% {
+    width: 240px;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes secondaryExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 95%;
+  }
+}
+
+@keyframes secondaryCollapse {
+  0% {
+    width: 95%;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes textAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.Notify.active {
+  animation: notifyExpand 0.15s forwards, notifyCollapse 0.25s 2.3s forwards;
+}
+
+.Notify.active .secondary {
+  animation: secondaryExpand 0.35s 0.35s forwards,
+    secondaryCollapse 0.3s 2s forwards;
+}
+
+.Notify.active .Text {
+  animation: textAppear 0.2s 0.7s forwards;
+}
+
+.Notify:hover,
+.secondary:hover {
+  animation-play-state: paused;
+}

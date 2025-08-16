@@ -28,7 +28,6 @@ class SettingsPage
 
         $this->render();
     }
-
     private function render()
     {
         $page = $_GET['page'] ?? 'home';
@@ -70,6 +69,7 @@ class SettingsPage
             'username' => self::username(),
             'backup-single' =>    self::backupSingleButton(),
             'telegram' => self::telegramBackup(),
+            'update' => self::update(),
             default => self::home()
         };
 
@@ -91,6 +91,7 @@ class SettingsPage
                     <li><a href="settings.php?page=security">🛡️ الأمان</a></li>
                     <li><a href="settings.php?page=language">🌐 اللغة</a></li>
                     <li><a href="settings.php?page=telegram">📤 تلكرام باك أب</a></li>
+                    <li><a href="settings.php?page=update">📤 تحديث</a></li>
                 </ul>
             </div>';
     }
@@ -683,6 +684,28 @@ class SettingsPage
                         }
                     </script>
                 </div>';
+    }
+    private static function update()
+    {
+        echo '
+            <div class="card">
+                <h3>تحديث النظام</h3>
+                <p>يمكنك تحديث النظام إلى أحدث إصدار.</p>
+                <button class="save-btn" id="update-btn">تحديث</button>
+                <script>
+                    document.querySelector("#update-btn").onclick = async () => {
+                        Showindicator(document.body);
+                        const response = await sendRequest({ type: "settings", job: "update" });
+                        indicatorRemover();
+                        if (response?.status === "updated") {
+                            showNotification("تم التحديث بنجاح");
+                            setTimeout(() => location.reload(), 2000);
+                        } else {
+                            showNotification("فشل في التحديث");
+                        }
+                    };
+                </script>
+            </div>';
     }
     function __destruct()
     {
